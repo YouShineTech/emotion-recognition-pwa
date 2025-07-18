@@ -1,0 +1,66 @@
+{
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
+    "source.organizeImports": true
+  },
+  "editor.rulers": [100],
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  
+  "jest.autoRun": {
+    "watch": true,
+    "onSave": "test-src-file"
+  },
+  "jest.showCoverageOnLoad": true,
+  "jest.debugMode": true,
+  
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/coverage": true,
+    "**/.nyc_output": true
+  },
+  
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/coverage": true
+  },
+  
+  "emmet.includeLanguages": {
+    "typescript": "html"
+  },
+  
+  "debug.console.fontSize": 14,
+  "debug.console.wordWrap": true,
+  
+  "terminal.integrated.fontSize": 14,
+  "terminal.integrated.shell.osx": "/bin/zsh",
+  
+  "git.autofetch": true,
+  "git.enableSmartCommit": true,
+  
+  "eslint.workingDirectories": ["client", "server"],
+  "eslint.validate": [
+    "javascript",
+    "typescript"
+  ],
+  
+  "prettier.configPath": ".prettierrc",
+  "prettier.requireConfig": true,
+  
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}

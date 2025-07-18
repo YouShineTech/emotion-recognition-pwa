@@ -1,0 +1,108 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "🚀 Debug Server",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/server/src/index.ts",
+      "outFiles": ["${workspaceFolder}/server/dist/**/*.js"],
+      "runtimeArgs": ["-r", "ts-node/register", "-r", "tsconfig-paths/register"],
+      "env": {
+        "NODE_ENV": "development",
+        "DEBUG": "emotion-pwa:*",
+        "PORT": "3001"
+      },
+      "console": "integratedTerminal",
+      "restart": true,
+      "protocol": "inspector",
+      "sourceMaps": true,
+      "cwd": "${workspaceFolder}/server"
+    },
+    {
+      "name": "🌐 Debug Client",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/client/src",
+      "sourceMapPathOverrides": {
+        "webpack:///src/*": "${webRoot}/*",
+        "webpack:///./*": "${workspaceFolder}/*"
+      },
+      "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-profile"
+    },
+    {
+      "name": "🧪 Debug Jest Tests",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": [
+        "--runInBand",
+        "--no-cache",
+        "--verbose",
+        "--detectOpenHandles"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "NODE_ENV": "test"
+      }
+    },
+    {
+      "name": "🔍 Debug Specific Test",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": [
+        "--runInBand",
+        "--no-cache",
+        "${fileBasenameNoExtension}"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "NODE_ENV": "test"
+      }
+    },
+    {
+      "name": "📡 Debug WebRTC Module",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/debug-webrtc.js",
+      "env": {
+        "DEBUG": "emotion-pwa:webrtc:*",
+        "NODE_ENV": "development"
+      },
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "🎭 Debug Emotion Pipeline",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/debug-emotion-pipeline.js",
+      "env": {
+        "DEBUG": "emotion-pwa:emotion:*",
+        "NODE_ENV": "development"
+      },
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "🔗 Debug Module Communication",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/module-monitor.js",
+      "env": {
+        "DEBUG": "emotion-pwa:modules:*",
+        "NODE_ENV": "development"
+      },
+      "console": "integratedTerminal"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "🚀 Debug Full Stack",
+      "configurations": ["🚀 Debug Server", "🌐 Debug Client"],
+      "stopAll": true
+    }
+  ]
+}

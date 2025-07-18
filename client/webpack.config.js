@@ -1,0 +1,93 @@
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+module.exports = (env, argv) => {
+  const isProduction = argv.mode === 'production';
+  
+  return {
+    entry: './src/index.ts',
+    
+    output: {
+      path: path.resolve(__dirname, 'dist'),
+      filename: isProduction ? '[name].[contenthash].js' : 'bundle.js',
+      clean: true,
+      publicPath: '/'
+    },
+    
+    resolve: {
+      extensions: ['.ts', '.tsx', '.js', '.jsx'],
+      alias: {
+        '@': path.resolve(__dirname, 'src'),
+        '@/shared': path.resolve(__dirname, '../shared')
+      }
+    },
+    
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          use: 'ts-loader',
+          exclude: /node_modules/
+        },
+        {
+          test: /\.css$/,
+          use: ['style-loader', 'css-loader']
+        },
+        {
+          test: /\.(png|svg|jpg|jpeg|gif)$/i,
+          type: 'asset/resource'
+        }
+      ]
+    },
+    
+    plugins: [
+      new HtmlWebpackPlugin({
+        template: './public/index.html',
+        filename: 'index.html',
+        inject: 'body'
+      })
+    ],
+    
+    devServer: {
+      static: {
+        directory: path.join(__dirname, 'public')
+      },
+      port: 3000,
+      hot: true,
+      open: true,
+      historyApiFallback: true,
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3001',
+          changeOrigin: true
+        },
+        '/socket.io': {
+          target: 'http://localhost:3001',
+          ws: true,
+          changeOrigin: true
+        }
+      }
+    },
+    
+    devtool: isProduction ? 'source-map' : 'eval-source-map',
+    
+    optimization: {
+      splitChunks: isProduction ? {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all'
+          }
+        }
+      } : false
+    },
+    
+    performance: {
+      hints: isProduction ? 'warning' : false,
+      maxAssetSize: 250000,
+      maxEntrypointSize: 250000
+    }
+  };
+};

@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # Client Development Server
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client:/app
+      - ./shared:/app/shared
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_API_URL=http://localhost:3001
+      - REACT_APP_WS_URL=ws://localhost:3001
+    depends_on:
+      - server
+
+  # Server Application
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3001:3001"
+      - "3002:3002" # Mediasoup worker ports
+      - "3003:3003"
+      - "3004:3004"
+      - "3005:3005"
+    volumes:
+      - ./server:/app
+      - ./shared:/app/shared
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - REDIS_URL=redis://redis:6379
+      - MEDIASOUP_LISTEN_IP=0.0.0.0
+      - MEDIASOUP_ANNOUNCED_IP=127.0.0.1
+    depends_on:
+      - redis
+      - nginx
+
+  # Redis for session state and caching
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+  # Nginx for static assets and load balancing
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./client/dist:/usr/share/nginx/html
+    depends_on:
+      - server
+
+  # Mediasoup Media Server (separate container for scaling)
+  mediasoup:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.mediasoup
+    ports:
+      - "40000-40100:40000-40100/udp" # RTP ports
+    environment:
+      - NODE_ENV=development
+      - MEDIASOUP_LISTEN_IP=0.0.0.0
+      - MEDIASOUP_ANNOUNCED_IP=127.0.0.1
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+
+volumes:
+  redis_data:
+
+networks:
+  default:
+    driver: bridge
