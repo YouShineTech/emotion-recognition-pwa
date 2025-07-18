@@ -1,7 +1,7 @@
 // Jest setup for client-side tests
 
 // Mock WebRTC APIs
-global.RTCPeerConnection = jest.fn().mockImplementation(() => ({
+const mockRTCPeerConnection = jest.fn().mockImplementation(() => ({
   createOffer: jest.fn(),
   createAnswer: jest.fn(),
   setLocalDescription: jest.fn(),
@@ -11,12 +11,17 @@ global.RTCPeerConnection = jest.fn().mockImplementation(() => ({
   createDataChannel: jest.fn().mockReturnValue({
     send: jest.fn(),
     close: jest.fn(),
-    readyState: 'open'
+    readyState: 'open',
   }),
   close: jest.fn(),
   connectionState: 'connected',
-  onconnectionstatechange: null
+  onconnectionstatechange: null,
 }));
+
+// Add the generateCertificate static method
+(mockRTCPeerConnection as any).generateCertificate = jest.fn().mockResolvedValue({});
+
+global.RTCPeerConnection = mockRTCPeerConnection as any;
 
 global.RTCSessionDescription = jest.fn();
 global.RTCIceCandidate = jest.fn();
@@ -28,21 +33,21 @@ Object.defineProperty(navigator, 'mediaDevices', {
     getUserMedia: jest.fn().mockResolvedValue({
       getTracks: jest.fn().mockReturnValue([
         { stop: jest.fn(), kind: 'video' },
-        { stop: jest.fn(), kind: 'audio' }
-      ])
+        { stop: jest.fn(), kind: 'audio' },
+      ]),
     }),
     enumerateDevices: jest.fn().mockResolvedValue([
       { deviceId: 'camera1', kind: 'videoinput', label: 'Camera 1' },
-      { deviceId: 'mic1', kind: 'audioinput', label: 'Microphone 1' }
-    ])
-  }
+      { deviceId: 'mic1', kind: 'audioinput', label: 'Microphone 1' },
+    ]),
+  },
 });
 
 // Mock MediaStream
 global.MediaStream = jest.fn().mockImplementation(() => ({
   getTracks: jest.fn().mockReturnValue([]),
   addTrack: jest.fn(),
-  removeTrack: jest.fn()
+  removeTrack: jest.fn(),
 }));
 
 // Mock Canvas API
@@ -61,17 +66,14 @@ HTMLCanvasElement.prototype.getContext = jest.fn().mockReturnValue({
   lineTo: jest.fn(),
   closePath: jest.fn(),
   stroke: jest.fn(),
-  fill: jest.fn()
+  fill: jest.fn(),
 });
 
 // Mock console methods for cleaner test output
 const originalError = console.error;
 beforeAll(() => {
   console.error = (...args) => {
-    if (
-      typeof args[0] === 'string' &&
-      args[0].includes('Warning: ReactDOM.render is deprecated')
-    ) {
+    if (typeof args[0] === 'string' && args[0].includes('Warning: ReactDOM.render is deprecated')) {
       return;
     }
     originalError.call(console, ...args);

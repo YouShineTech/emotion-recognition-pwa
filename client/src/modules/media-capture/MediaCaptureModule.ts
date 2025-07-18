@@ -1,11 +1,11 @@
 // Media Capture Module - Client Side
 // Handles device media access and stream management
 
-import { 
-  MediaCaptureModule as IMediaCaptureModule,
+import {
   CaptureConfig,
+  MediaCaptureModule as IMediaCaptureModule,
+  MediaCaptureError,
   MediaCaptureResult,
-  MediaCaptureError
 } from '@/shared/interfaces';
 
 export class MediaCaptureModule implements IMediaCaptureModule {
@@ -15,7 +15,7 @@ export class MediaCaptureModule implements IMediaCaptureModule {
   async requestPermissions(): Promise<MediaCaptureResult> {
     // STUB: Mock implementation
     console.log('[MediaCaptureModule] Requesting permissions...');
-    
+
     // Mock successful permission request
     return {
       success: true,
@@ -26,33 +26,33 @@ export class MediaCaptureModule implements IMediaCaptureModule {
           deviceId: 'mock-camera-1',
           kind: 'videoinput',
           label: 'Mock Camera 1',
-          groupId: 'group1'
+          groupId: 'group1',
         } as MediaDeviceInfo,
         {
           deviceId: 'mock-mic-1',
           kind: 'audioinput',
           label: 'Mock Microphone 1',
-          groupId: 'group1'
-        } as MediaDeviceInfo
-      ]
+          groupId: 'group1',
+        } as MediaDeviceInfo,
+      ],
     };
   }
 
-  async startCapture(config: CaptureConfig): Promise<MediaStream> {
+  async startCapture(config: CaptureConfig): Promise<any> {
     // STUB: Mock implementation
     console.log('[MediaCaptureModule] Starting capture with config:', config);
-    
-    // Create mock MediaStream
+
+    // Create mock MediaStream (use global mock from setupTests)
     const mockStream = new MediaStream();
     this.currentStream = mockStream;
-    
+
     return mockStream;
   }
 
   stopCapture(): void {
     // STUB: Mock implementation
     console.log('[MediaCaptureModule] Stopping capture...');
-    
+
     if (this.currentStream) {
       this.currentStream.getTracks().forEach(track => track.stop());
       this.currentStream = null;
@@ -62,7 +62,7 @@ export class MediaCaptureModule implements IMediaCaptureModule {
   async switchCamera(deviceId: string): Promise<void> {
     // STUB: Mock implementation
     console.log('[MediaCaptureModule] Switching to camera:', deviceId);
-    
+
     // Mock camera switch
     await new Promise(resolve => setTimeout(resolve, 100));
   }

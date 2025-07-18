@@ -17,11 +17,10 @@
     "jsx": "react-jsx",
     "declaration": true,
     "outDir": "./dist",
-    "rootDir": "./src",
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["*"],
-      "@/modules/*": ["modules/*"],
+      "@/*": ["src/*"],
+      "@/modules/*": ["src/modules/*"],
       "@/shared/*": ["../shared/*"]
     }
   },

@@ -11,12 +11,12 @@
     "skipLibCheck": true,
     "declaration": true,
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "../",
     "baseUrl": "./src",
     "paths": {
       "@/*": ["*"],
       "@/modules/*": ["modules/*"],
-      "@/shared/*": ["../shared/*"]
+      "@/shared/*": ["../../shared/*"]
     },
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,

@@ -1,11 +1,11 @@
 // Media Relay Module - Server Side
 // Scalable WebRTC media server using Mediasoup
 
-import { 
+import {
   MediaRelayModule as IMediaRelayModule,
-  RelaySession,
   MediaStreamData,
-  ResourceMetrics
+  RelaySession,
+  ResourceMetrics,
 } from '@/shared/interfaces';
 
 export class MediaRelayModule implements IMediaRelayModule {
@@ -16,15 +16,15 @@ export class MediaRelayModule implements IMediaRelayModule {
   async createSession(sessionId: string): Promise<RelaySession> {
     // STUB: Mock implementation
     console.log('[MediaRelayModule] Creating session:', sessionId);
-    
+
     const session: RelaySession = {
       sessionId,
       createdAt: new Date(),
       isActive: true,
       routerId: `router_${sessionId}`,
-      transportId: `transport_${sessionId}`
+      transportId: `transport_${sessionId}`,
     };
-    
+
     this.sessions.set(sessionId, session);
     return session;
   }
@@ -32,12 +32,12 @@ export class MediaRelayModule implements IMediaRelayModule {
   async routeStream(sessionId: string, stream: MediaStreamData): Promise<void> {
     // STUB: Mock implementation
     console.log('[MediaRelayModule] Routing stream for session:', sessionId);
-    
+
     const session = this.sessions.get(sessionId);
     if (!session) {
       throw new Error(`Session ${sessionId} not found`);
     }
-    
+
     // Mock stream routing
     await new Promise(resolve => setTimeout(resolve, 10));
   }
@@ -45,14 +45,14 @@ export class MediaRelayModule implements IMediaRelayModule {
   subscribeToStream(sessionId: string, callback: (data: MediaStreamData) => void): void {
     // STUB: Mock implementation
     console.log('[MediaRelayModule] Subscribing to stream:', sessionId);
-    
+
     // Mock periodic data emission
     setInterval(() => {
       const mockData: MediaStreamData = {
         sessionId,
-        timestamp: Date.now(),
+        timestamp: new Date(),
         videoFrame: new ArrayBuffer(1024),
-        audioChunk: new ArrayBuffer(512)
+        audioChunk: new ArrayBuffer(512),
       };
       callback(mockData);
     }, 100); // 10 FPS mock data
@@ -61,7 +61,7 @@ export class MediaRelayModule implements IMediaRelayModule {
   closeSession(sessionId: string): void {
     // STUB: Mock implementation
     console.log('[MediaRelayModule] Closing session:', sessionId);
-    
+
     const session = this.sessions.get(sessionId);
     if (session) {
       session.isActive = false;
@@ -79,7 +79,7 @@ export class MediaRelayModule implements IMediaRelayModule {
       cpuUsage: Math.random() * 100,
       memoryUsage: Math.random() * 100,
       networkBandwidth: Math.random() * 1000,
-      activeConnections: this.getActiveSessionCount()
+      activeConnections: this.getActiveSessionCount(),
     };
   }
 

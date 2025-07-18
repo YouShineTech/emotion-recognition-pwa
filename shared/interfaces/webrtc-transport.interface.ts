@@ -5,16 +5,16 @@ import { ApiResponse, ModuleError } from './common.interface';
 
 export interface WebRTCTransportModule {
   initialize(config: WebRTCConfig): Promise<TransportResult>;
-  attachMediaStream(stream: MediaStream): Promise<void>;
+  attachMediaStream(stream: any): Promise<void>; // MediaStream in browser
   sendData(data: any): Promise<void>;
   onDataReceived(callback: (data: any) => void): void;
   disconnect(): void;
-  getConnectionState(): RTCPeerConnectionState;
-  onStateChange(callback: (state: RTCPeerConnectionState) => void): void;
+  getConnectionState(): string; // RTCPeerConnectionState in browser
+  onStateChange(callback: (state: string) => void): void;
 }
 
 export interface WebRTCConfig {
-  iceServers: RTCIceServer[];
+  iceServers: any[]; // RTCIceServer[] in browser
   signalingUrl: string;
   sessionId: string;
   stunServers: string[];
@@ -30,6 +30,6 @@ export interface TransportResult extends ApiResponse {
 }
 
 export interface WebRTCError extends ModuleError {
-  connectionState: RTCPeerConnectionState;
-  iceConnectionState: RTCIceConnectionState;
+  connectionState: string; // RTCPeerConnectionState in browser
+  iceConnectionState: string; // RTCIceConnectionState in browser
 }

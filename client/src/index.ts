@@ -18,7 +18,7 @@ interface AppState {
 const appState: AppState = {
   isConnected: false,
   sessionId: null,
-  currentStream: null
+  currentStream: null,
 };
 
 // DOM elements
@@ -30,14 +30,14 @@ const statusElement = document.getElementById('status') as HTMLDivElement;
 // Initialize application
 async function initializeApp(): Promise<void> {
   console.log('[App] Initializing Emotion Recognition PWA...');
-  
+
   // Set up event listeners
   startButton.addEventListener('click', startEmotionRecognition);
   stopButton.addEventListener('click', stopEmotionRecognition);
-  
+
   // Update UI
   updateUI();
-  
+
   console.log('[App] Application initialized');
 }
 
@@ -45,67 +45,67 @@ async function initializeApp(): Promise<void> {
 async function startEmotionRecognition(): Promise<void> {
   try {
     updateStatus('Requesting permissions...');
-    
+
     // Request media permissions
     const permissionResult = await mediaCaptureModule.requestPermissions();
     if (!permissionResult.success) {
       throw new Error('Permission denied');
     }
-    
+
     updateStatus('Starting media capture...');
-    
+
     // Start media capture
     const stream = await mediaCaptureModule.startCapture({
       video: {
         width: { min: 640, ideal: 1280, max: 1920 },
         height: { min: 480, ideal: 720, max: 1080 },
         frameRate: { min: 15, ideal: 30, max: 60 },
-        facingMode: 'user'
+        facingMode: 'user',
       },
       audio: {
         sampleRate: 48000,
         channelCount: 2,
         echoCancellation: true,
-        noiseSuppression: true
-      }
+        noiseSuppression: true,
+      },
     });
-    
+
     // Display video preview
     videoElement.srcObject = stream;
     appState.currentStream = stream;
-    
+
     updateStatus('Connecting to server...');
-    
+
     // Initialize WebRTC connection
     const transportResult = await webrtcTransportModule.initialize({
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
       signalingUrl: 'ws://localhost:3001',
       sessionId: `session_${Date.now()}`,
-      stunServers: ['stun:stun.l.google.com:19302']
+      stunServers: ['stun:stun.l.google.com:19302'],
     });
-    
+
     if (!transportResult.success) {
       throw new Error('Failed to initialize WebRTC connection');
     }
-    
+
     // Attach media stream to WebRTC
     await webrtcTransportModule.attachMediaStream(stream);
-    
+
     // Set up overlay data reception
-    webrtcTransportModule.onDataReceived((overlayData) => {
+    webrtcTransportModule.onDataReceived(overlayData => {
       console.log('[App] Received overlay data:', overlayData);
       // TODO: Render overlays on video
     });
-    
+
     appState.isConnected = true;
     appState.sessionId = transportResult.connectionId || null;
-    
+
     updateStatus('Connected - Emotion recognition active');
     updateUI();
-    
   } catch (error) {
     console.error('[App] Error starting emotion recognition:', error);
-    updateStatus(`Error: ${error.message}`);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    updateStatus(`Error: ${errorMessage}`);
     stopEmotionRecognition();
   }
 }
@@ -113,21 +113,21 @@ async function startEmotionRecognition(): Promise<void> {
 // Stop emotion recognition session
 function stopEmotionRecognition(): void {
   console.log('[App] Stopping emotion recognition...');
-  
+
   // Stop media capture
   mediaCaptureModule.stopCapture();
-  
+
   // Disconnect WebRTC
   webrtcTransportModule.disconnect();
-  
+
   // Clear video preview
   videoElement.srcObject = null;
-  
+
   // Reset state
   appState.isConnected = false;
   appState.sessionId = null;
   appState.currentStream = null;
-  
+
   updateStatus('Disconnected');
   updateUI();
 }
@@ -136,7 +136,7 @@ function stopEmotionRecognition(): void {
 function updateUI(): void {
   startButton.disabled = appState.isConnected;
   stopButton.disabled = !appState.isConnected;
-  
+
   if (appState.isConnected) {
     startButton.textContent = 'Connected';
     stopButton.textContent = 'Stop Recognition';

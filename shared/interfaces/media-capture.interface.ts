@@ -5,7 +5,7 @@ import { ApiResponse, ModuleError } from './common.interface';
 
 export interface MediaCaptureModule {
   requestPermissions(): Promise<MediaCaptureResult>;
-  startCapture(config: CaptureConfig): Promise<MediaStream>;
+  startCapture(config: CaptureConfig): Promise<any>; // MediaStream in browser
   stopCapture(): void;
   switchCamera(deviceId: string): Promise<void>;
   onError(callback: (error: MediaCaptureError) => void): void;
@@ -28,8 +28,8 @@ export interface CaptureConfig {
 }
 
 export interface MediaCaptureResult extends ApiResponse {
-  stream?: MediaStream;
-  availableDevices: MediaDeviceInfo[];
+  stream?: any; // MediaStream in browser
+  availableDevices: any[]; // MediaDeviceInfo[] in browser
 }
 
 export interface MediaCaptureError extends ModuleError {

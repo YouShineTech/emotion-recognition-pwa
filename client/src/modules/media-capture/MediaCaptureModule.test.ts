@@ -1,8 +1,8 @@
 // Unit tests for Media Capture Module
 // Test scenarios based on design specifications
 
-import { MediaCaptureModule } from './MediaCaptureModule';
 import { CaptureConfig } from '@/shared/interfaces';
+import { MediaCaptureModule } from './MediaCaptureModule';
 
 describe('MediaCaptureModule', () => {
   let mediaCaptureModule: MediaCaptureModule;
@@ -18,7 +18,7 @@ describe('MediaCaptureModule', () => {
   describe('requestPermissions', () => {
     it('should successfully request permissions and return available devices', async () => {
       const result = await mediaCaptureModule.requestPermissions();
-      
+
       expect(result.success).toBe(true);
       expect(result.availableDevices).toHaveLength(2);
       expect(result.availableDevices[0].kind).toBe('videoinput');
@@ -39,18 +39,19 @@ describe('MediaCaptureModule', () => {
           width: { min: 640, ideal: 1280, max: 1920 },
           height: { min: 480, ideal: 720, max: 1080 },
           frameRate: { min: 15, ideal: 30, max: 60 },
-          facingMode: 'user'
+          facingMode: 'user',
         },
         audio: {
           sampleRate: 48000,
           channelCount: 2,
           echoCancellation: true,
-          noiseSuppression: true
-        }
+          noiseSuppression: true,
+        },
       };
 
       const stream = await mediaCaptureModule.startCapture(config);
-      
+
+      expect(stream).toBeDefined();
       expect(stream).toBeInstanceOf(MediaStream);
     });
 
@@ -68,19 +69,19 @@ describe('MediaCaptureModule', () => {
           width: { min: 640, ideal: 1280, max: 1920 },
           height: { min: 480, ideal: 720, max: 1080 },
           frameRate: { min: 15, ideal: 30, max: 60 },
-          facingMode: 'user'
+          facingMode: 'user',
         },
         audio: {
           sampleRate: 48000,
           channelCount: 2,
           echoCancellation: true,
-          noiseSuppression: true
-        }
+          noiseSuppression: true,
+        },
       };
 
       await mediaCaptureModule.startCapture(config);
       mediaCaptureModule.stopCapture();
-      
+
       // Verify cleanup occurred
       expect(true).toBe(true); // Placeholder - will verify stream cleanup
     });
@@ -89,9 +90,9 @@ describe('MediaCaptureModule', () => {
   describe('switchCamera', () => {
     it('should switch to specified camera device', async () => {
       const deviceId = 'mock-camera-2';
-      
+
       await mediaCaptureModule.switchCamera(deviceId);
-      
+
       // Verify camera switch occurred
       expect(true).toBe(true); // Placeholder
     });
@@ -101,7 +102,7 @@ describe('MediaCaptureModule', () => {
     it('should trigger error callback when error occurs', () => {
       const errorCallback = jest.fn();
       mediaCaptureModule.onError(errorCallback);
-      
+
       // TODO: Trigger an error and verify callback is called
       // This will be implemented when actual error scenarios are added
       expect(errorCallback).not.toHaveBeenCalled(); // Placeholder

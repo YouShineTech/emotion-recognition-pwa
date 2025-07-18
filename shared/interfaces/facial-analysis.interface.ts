@@ -1,26 +1,18 @@
 // Facial Analysis Module Interface
 // Version 1.0
 
-import { ApiResponse, ModuleError, EmotionScore, BoundingBox, Point2D } from './common.interface';
+import { ApiResponse, BoundingBox, EmotionScore, Point2D } from './common.interface';
+import { ExtractedVideoFrame } from './frame-extraction.interface';
 
 export interface FacialAnalysisModule {
-  analyzeFrame(frame: VideoFrame): Promise<FacialAnalysisResult>;
+  analyzeFrame(frame: ExtractedVideoFrame): Promise<FacialAnalysisResult>;
   setConfidenceThreshold(threshold: number): void;
   enableLandmarkDetection(enabled: boolean): void;
 }
 
-export interface VideoFrame {
-  sessionId: string;
-  timestamp: number;
-  imageData: ImageData;
-  width: number;
-  height: number;
-  format: 'RGBA' | 'RGB24';
-}
-
 export interface FacialAnalysisResult extends ApiResponse {
   sessionId: string;
-  timestamp: number;
+  timestamp: Date;
   faces: DetectedFace[];
   processingTime: number;
 }
