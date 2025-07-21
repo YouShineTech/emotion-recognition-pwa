@@ -26,10 +26,12 @@
       "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}/client/src",
       "sourceMapPathOverrides": {
-        "webpack:///src/*": "${webRoot}/*",
-        "webpack:///./*": "${workspaceFolder}/*"
+        "webpack:///src/*": "${workspaceFolder}/client/src/*",
+        "webpack:///./*": "${workspaceFolder}/*",
+        "webpack:///./src/*": "${workspaceFolder}/client/src/*"
       },
-      "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-profile"
+      "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-profile",
+      "trace": true
     },
     {
       "name": "🧪 Debug Jest Tests",
