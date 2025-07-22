@@ -1,12 +1,12 @@
 // Main Server Entry Point
 // Emotion Recognition PWA Backend
 
-import express from 'express';
 import cors from 'cors';
+import dotenv from 'dotenv';
+import express from 'express';
 import helmet from 'helmet';
 import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
-import dotenv from 'dotenv';
 
 // Import modules
 import { MediaRelayModule } from './modules/media-relay/MediaRelayModule';
@@ -19,16 +19,18 @@ const app = express();
 const server = createServer(app);
 const io = new SocketIOServer(server, {
   cors: {
-    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
-    methods: ["GET", "POST"]
-  }
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    methods: ['GET', 'POST'],
+  },
 });
 
 // Middleware
 app.use(helmet());
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || "http://localhost:3000"
-}));
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  })
+);
 app.use(express.json());
 
 // Initialize modules
@@ -41,7 +43,7 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     activeConnections: mediaRelayModule.getActiveSessionCount(),
-    resourceUsage: mediaRelayModule.getResourceUsage()
+    resourceUsage: mediaRelayModule.getResourceUsage(),
   });
 });
 
@@ -50,12 +52,12 @@ app.post('/api/sessions', async (req, res) => {
   try {
     const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const session = await mediaRelayModule.createSession(sessionId);
-    
+
     logger.info(`Created session: ${sessionId}`);
     res.json({
       success: true,
       data: session,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
   } catch (error) {
     logger.error('Error creating session:', error);
@@ -64,15 +66,15 @@ app.post('/api/sessions', async (req, res) => {
       error: {
         code: 'SESSION_CREATION_FAILED',
         message: 'Failed to create session',
-        timestamp: new Date()
-      }
+        timestamp: new Date(),
+      },
     });
   }
 });
 
 app.get('/api/sessions/:id', (req, res) => {
   const sessionId = req.params.id;
-  
+
   // STUB: Mock session status
   res.json({
     success: true,
@@ -80,23 +82,23 @@ app.get('/api/sessions/:id', (req, res) => {
       sessionId,
       status: 'active',
       createdAt: new Date(),
-      lastActivity: new Date()
+      lastActivity: new Date(),
     },
-    timestamp: new Date()
+    timestamp: new Date(),
   });
 });
 
 app.delete('/api/sessions/:id', (req, res) => {
   const sessionId = req.params.id;
-  
+
   try {
     mediaRelayModule.closeSession(sessionId);
     logger.info(`Closed session: ${sessionId}`);
-    
+
     res.json({
       success: true,
       message: 'Session closed successfully',
-      timestamp: new Date()
+      timestamp: new Date(),
     });
   } catch (error) {
     logger.error(`Error closing session ${sessionId}:`, error);
@@ -105,32 +107,32 @@ app.delete('/api/sessions/:id', (req, res) => {
       error: {
         code: 'SESSION_CLOSE_FAILED',
         message: 'Failed to close session',
-        timestamp: new Date()
-      }
+        timestamp: new Date(),
+      },
     });
   }
 });
 
 // WebSocket connection handling
-io.on('connection', (socket) => {
+io.on('connection', socket => {
   logger.info(`Client connected: ${socket.id}`);
-  
+
   // WebRTC signaling
-  socket.on('offer', (data) => {
+  socket.on('offer', data => {
     logger.debug(`Received offer from ${socket.id}`);
     socket.broadcast.emit('offer', data);
   });
-  
-  socket.on('answer', (data) => {
+
+  socket.on('answer', data => {
     logger.debug(`Received answer from ${socket.id}`);
     socket.broadcast.emit('answer', data);
   });
-  
-  socket.on('ice-candidate', (data) => {
+
+  socket.on('ice-candidate', data => {
     logger.debug(`Received ICE candidate from ${socket.id}`);
     socket.broadcast.emit('ice-candidate', data);
   });
-  
+
   socket.on('disconnect', () => {
     logger.info(`Client disconnected: ${socket.id}`);
   });
@@ -144,8 +146,8 @@ app.use((error: Error, req: express.Request, res: express.Response, next: expres
     error: {
       code: 'INTERNAL_SERVER_ERROR',
       message: 'An unexpected error occurred',
-      timestamp: new Date()
-    }
+      timestamp: new Date(),
+    },
   });
 });
 
