@@ -1,66 +1,28 @@
 {
-  "typescript.preferences.importModuleSpecifier": "relative",
-  "typescript.suggest.autoImports": true,
-  "typescript.updateImportsOnFileMove.enabled": "always",
-  
+  "keyboard.dispatch": "keyCode",
+  "workbench.colorTheme": "Cursor Dark",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
-    "source.organizeImports": "explicit"
+    "source.fixAll.eslint": true
   },
-  "editor.rulers": [100],
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "files.associations": {
+    "*.ts": "typescript"
+  },
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+  "workbench.startupEditor": "readme",
+  "extensions.ignoreRecommendations": false,
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
-  
-  "jest.autoRun": {
-    "watch": true,
-    "onSave": "test-src-file"
-  },
-  "jest.showCoverageOnLoad": true,
-  "jest.debugMode": true,
-  
-  "files.exclude": {
-    "**/node_modules": true,
-    "**/dist": true,
-    "**/coverage": true,
-    "**/.nyc_output": true
-  },
-  
-  "search.exclude": {
-    "**/node_modules": true,
-    "**/dist": true,
-    "**/coverage": true
-  },
-  
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
   "emmet.includeLanguages": {
     "typescript": "html"
   },
-  
-  "debug.console.fontSize": 14,
-  "debug.console.wordWrap": true,
-  
-  "terminal.integrated.fontSize": 14,
-  "terminal.integrated.shell.osx": "/bin/zsh",
-  
-  "git.autofetch": true,
-  "git.enableSmartCommit": true,
-  
-  "eslint.workingDirectories": ["client", "server"],
-  "eslint.validate": [
-    "javascript",
-    "typescript"
-  ],
-  
-  "prettier.configPath": ".prettierrc",
-  "prettier.requireConfig": true,
-  
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  "jest.autoRun": "off",
+  "jest.showCoverageOnLoad": true,
+  "jest.coverageFormatter": "DefaultFormatter"
 }

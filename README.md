@@ -23,79 +23,83 @@ The application follows a modular architecture with 11 independent, swappable mo
 - **Connection Manager Module**: Session lifecycle and health monitoring
 - **Nginx Web Server Module**: Static asset serving and load balancing
 
-## 📁 Project Structure
+## 📁 Root Directory Structure & Purpose
 
-```
-emotion-recognition-pwa/
-├── client/                    # PWA frontend application
-│   ├── src/
-│   │   ├── modules/          # Client-side modules
-│   │   ├── index.ts          # Client entry point
-│   │   └── setupTests.ts     # Test configuration
-│   ├── package.json          # Client dependencies
-│   ├── tsconfig.json         # TypeScript configuration
-│   └── webpack.config.js     # Build configuration
-├── server/                   # Backend application
-│   ├── src/
-│   │   ├── modules/          # Server-side modules
-│   │   ├── index.ts          # Server entry point
-│   │   └── setupTests.ts     # Test configuration
-│   ├── package.json          # Server dependencies
-│   └── tsconfig.json         # TypeScript configuration
-├── shared/                   # Shared interfaces and types
-│   └── interfaces/           # Module contracts and data types
-├── docs/                     # Comprehensive documentation
-│   ├── ARCHITECTURE.md       # System architecture overview
-│   ├── BUILD_GUIDE.md        # Build and deployment guide
-│   ├── DEBUGGING_GUIDE.md    # Troubleshooting guide
-│   ├── DESIGN_SPECIFICATION.md # Detailed design documentation
-│   ├── GITHUB_SETUP.md       # GitHub configuration guide
-│   ├── IMPLEMENTATION_PLAN.md # 9-task implementation roadmap
-│   ├── NODE_COMPATIBILITY.md # Node.js version requirements
-│   └── REQUIREMENTS_SPECIFICATION.md # Functional requirements
-├── scripts/                  # Development and deployment scripts
-│   ├── debug-webrtc.js       # WebRTC debugging utilities
-│   ├── health-check.js       # System health monitoring
-│   ├── interactive-dev.js    # Interactive development tools
-│   └── module-monitor.js     # Module performance monitoring
-├── .github/                  # GitHub configuration
-│   ├── workflows/            # CI/CD pipeline definitions
-│   └── branch-protection.yml # Branch protection rules
-├── .husky/                   # Git hooks for code quality
-│   ├── pre-commit            # Pre-commit hooks
-│   └── pre-push              # Pre-push hooks
-├── docker-compose.yml        # Development environment
-├── .env.example              # Environment variable template
-├── .eslintrc.js             # Code linting configuration
-├── .prettierrc              # Code formatting configuration
-├── .gitignore               # Git ignore rules
-├── package.json             # Root package configuration
-└── README.md               # This file
-```
+### **Core Configuration Files**
 
-## 📚 Documentation Overview
+| File               | Purpose                                                                          |
+| ------------------ | -------------------------------------------------------------------------------- |
+| **`.env.example`** | Environment variable template showing all required configuration options         |
+| **`.eslintrc.js`** | Global ESLint configuration for TypeScript code quality and style                |
+| **`.prettierrc`**  | Code formatting rules ensuring consistent code style across the project          |
+| **`.gitignore`**   | Specifies files and directories to exclude from version control                  |
+| **`package.json`** | Root package configuration with scripts for development, testing, and deployment |
+| **`typedoc.json`** | TypeDoc configuration for automatic API documentation generation                 |
 
-### Core Documentation Files
+### **Development Environment**
 
-- **[IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)** - Complete 9-task implementation roadmap following Module Development Ruleset
-- **[DESIGN_SPECIFICATION.md](docs/DESIGN_SPECIFICATION.md)** - Detailed system design with usage scenarios and architecture
-- **[REQUIREMENTS_SPECIFICATION.md](docs/REQUIREMENTS_SPECIFICATION.md)** - Functional requirements with acceptance criteria
-- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - High-level system architecture overview
-- **[BUILD_GUIDE.md](docs/BUILD_GUIDE.md)** - Step-by-step build and deployment instructions
+| Directory/File              | Purpose                                                                                             |
+| --------------------------- | --------------------------------------------------------------------------------------------------- |
+| **`client/`**               | **Frontend PWA application** - Browser-based client with WebRTC, emotion overlays, and PWA features |
+| **`server/`**               | **Backend application** - Node.js server handling WebRTC, AI processing, and session management     |
+| **`shared/`**               | **Shared interfaces and types** - Module contracts ensuring type safety between client and server   |
+| **`docker-compose.yml`**    | **Development environment** - Containerized setup with Redis, Nginx, and application services       |
+| **`.vscode/settings.json`** | **Cursor/VS Code configuration** - Optimized settings for TypeScript development and testing        |
 
-### Configuration Files
+### **Documentation & Specifications**
 
-- **`.env.example`** - Environment variable template for all configurations
-- **`.eslintrc.js`** - Code linting rules for TypeScript/JavaScript
-- **`.prettierrc`** - Code formatting standards
-- **`tsconfig.json`** - TypeScript configuration for client and server
-- **`docker-compose.yml`** - Development environment setup
+| Directory/File                           | Purpose                                                                                  |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **`docs/`**                              | **Comprehensive documentation** - Architecture, design, build guides, and specifications |
+| **`docs/ARCHITECTURE.md`**               | **System architecture overview** - UML diagrams and module relationships                 |
+| **`docs/BUILD_GUIDE.md`**                | **Step-by-step build instructions** - Development setup and deployment procedures        |
+| **`docs/DEBUGGING_GUIDE.md`**            | **Troubleshooting guide** - Common issues and debugging techniques                       |
+| **`docs/DESIGN_SPECIFICATION.md`**       | **Detailed design documentation** - Usage scenarios and technical decisions              |
+| **`docs/GITHUB_SETUP.md`**               | **GitHub configuration guide** - Repository setup and branch protection                  |
+| **`docs/IMPLEMENTATION_PLAN.md`**        | **9-task implementation roadmap** - Module-by-module development plan                    |
+| **`docs/NODE_COMPATIBILITY.md`**         | **Node.js version requirements** - Compatibility matrix and upgrade paths                |
+| **`docs/REQUIREMENTS_SPECIFICATION.md`** | **Functional requirements** - User stories and acceptance criteria                       |
 
-### Development Tools
+### **Development Tools & Scripts**
 
-- **`.husky/`** - Git hooks for code quality enforcement
-- **`.github/`** - CI/CD pipeline and GitHub configuration
-- **`scripts/`** - Development utilities and monitoring tools
+| Directory/File                   | Purpose                                                                    |
+| -------------------------------- | -------------------------------------------------------------------------- |
+| **`scripts/`**                   | **Development utilities** - Helper scripts for debugging and monitoring    |
+| **`scripts/debug-webrtc.js`**    | **WebRTC debugging tools** - Connection diagnostics and media analysis     |
+| **`scripts/health-check.js`**    | **System health monitoring** - Service availability and performance checks |
+| **`scripts/interactive-dev.js`** | **Interactive development tools** - CLI utilities for development workflow |
+| **`scripts/module-monitor.js`**  | **Module performance monitoring** - Real-time metrics and logging          |
+
+### **CI/CD & Quality Assurance**
+
+| Directory/File                      | Purpose                                                                       |
+| ----------------------------------- | ----------------------------------------------------------------------------- |
+| **`.github/`**                      | **GitHub Actions CI/CD** - Automated testing, building, and deployment        |
+| **`.github/workflows/ci.yml`**      | **Continuous integration pipeline** - Linting, testing, and security scanning |
+| **`.github/branch-protection.yml`** | **Branch protection rules** - Code review and merge requirements              |
+| **`.husky/`**                       | **Git hooks** - Pre-commit and pre-push quality checks                        |
+| **`.husky/pre-commit`**             | **Pre-commit hooks** - Linting and formatting validation                      |
+| **`.husky/pre-push`**               | **Pre-push hooks** - Test execution before pushing to remote                  |
+
+### **Environment Configuration**
+
+| File                   | Purpose                                                                  |
+| ---------------------- | ------------------------------------------------------------------------ |
+| **`.env.development`** | **Development environment variables** - Local development configuration  |
+| **`.env.staging`**     | **Staging environment variables** - Pre-production testing configuration |
+| **`.env.production`**  | **Production environment variables** - Live deployment configuration     |
+
+### **TypeScript & Build Configuration**
+
+| Directory/File                 | Purpose                                                             |
+| ------------------------------ | ------------------------------------------------------------------- |
+| **`client/tsconfig.json`**     | **Client TypeScript configuration** - Frontend compilation settings |
+| **`server/tsconfig.json`**     | **Server TypeScript configuration** - Backend compilation settings  |
+| **`client/webpack.config.js`** | **Client build configuration** - Webpack bundling for PWA           |
+| **`client/jest.config.js`**    | **Client testing configuration** - Jest setup for frontend tests    |
+| **`server/jest.config.js`**    | **Server testing configuration** - Jest setup for backend tests     |
+| **`client/.eslintrc.js`**      | **Client ESLint configuration** - Frontend-specific linting rules   |
+| **`server/.eslintrc.js`**      | **Server ESLint configuration** - Backend-specific linting rules    |
 
 ## 🚀 Quick Start
 
@@ -314,7 +318,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🗺️ Roadmap
 
-- [ ] Foundation Framework Implementation
+- [x] Foundation Framework Implementation
 - [ ] Proof of Concept Validation
 - [ ] Core Module Development
 - [ ] Integration Testing
