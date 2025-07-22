@@ -23,47 +23,59 @@ jest.mock('redis', () => ({
   })
 }));
 
-// Mock Mediasoup
-jest.mock('mediasoup', () => ({
-  createWorker: jest.fn().mockResolvedValue({
-    createRouter: jest.fn().mockResolvedValue({
-      createWebRtcTransport: jest.fn().mockResolvedValue({
-        connect: jest.fn().mockResolvedValue(undefined),
-        produce: jest.fn().mockResolvedValue({
-          id: 'producer-id',
-          kind: 'video'
-        }),
-        consume: jest.fn().mockResolvedValue({
-          id: 'consumer-id',
-          kind: 'video'
+// Mock Mediasoup - only mock if available
+try {
+  jest.mock('mediasoup', () => ({
+    createWorker: jest.fn().mockResolvedValue({
+      createRouter: jest.fn().mockResolvedValue({
+        createWebRtcTransport: jest.fn().mockResolvedValue({
+          connect: jest.fn().mockResolvedValue(undefined),
+          produce: jest.fn().mockResolvedValue({
+            id: 'producer-id',
+            kind: 'video'
+          }),
+          consume: jest.fn().mockResolvedValue({
+            id: 'consumer-id',
+            kind: 'video'
+          })
         })
+      }),
+      close: jest.fn().mockResolvedValue(undefined)
+    })
+  }));
+} catch (error) {
+  console.warn('Mediasoup not available, skipping mock');
+}
+
+// Mock OpenCV - only mock if available
+try {
+  jest.mock('opencv4nodejs', () => ({
+    imread: jest.fn().mockReturnValue({}),
+    imwrite: jest.fn().mockReturnValue(true),
+    CascadeClassifier: jest.fn().mockImplementation(() => ({
+      detectMultiScale: jest.fn().mockReturnValue([])
+    }))
+  }));
+} catch (error) {
+  console.warn('OpenCV not available, skipping mock');
+}
+
+// Mock TensorFlow - only mock if available
+try {
+  jest.mock('@tensorflow/tfjs-node', () => ({
+    loadLayersModel: jest.fn().mockResolvedValue({
+      predict: jest.fn().mockReturnValue({
+        dataSync: jest.fn().mockReturnValue([0.1, 0.2, 0.3, 0.4])
       })
     }),
-    close: jest.fn().mockResolvedValue(undefined)
-  })
-}));
-
-// Mock OpenCV
-jest.mock('opencv4nodejs', () => ({
-  imread: jest.fn().mockReturnValue({}),
-  imwrite: jest.fn().mockReturnValue(true),
-  CascadeClassifier: jest.fn().mockImplementation(() => ({
-    detectMultiScale: jest.fn().mockReturnValue([])
-  }))
-}));
-
-// Mock TensorFlow
-jest.mock('@tensorflow/tfjs-node', () => ({
-  loadLayersModel: jest.fn().mockResolvedValue({
-    predict: jest.fn().mockReturnValue({
-      dataSync: jest.fn().mockReturnValue([0.1, 0.2, 0.3, 0.4])
+    tensor: jest.fn().mockReturnValue({
+      reshape: jest.fn().mockReturnThis(),
+      expandDims: jest.fn().mockReturnThis()
     })
-  }),
-  tensor: jest.fn().mockReturnValue({
-    reshape: jest.fn().mockReturnThis(),
-    expandDims: jest.fn().mockReturnThis()
-  })
-}));
+  }));
+} catch (error) {
+  console.warn('TensorFlow not available, skipping mock');
+}
 
 // Mock child_process for external tools
 jest.mock('child_process', () => ({

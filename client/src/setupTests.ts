@@ -44,11 +44,12 @@ Object.defineProperty(navigator, 'mediaDevices', {
 });
 
 // Mock MediaStream
-global.MediaStream = jest.fn().mockImplementation(() => ({
+const mockMediaStream = {
   getTracks: jest.fn().mockReturnValue([]),
   addTrack: jest.fn(),
   removeTrack: jest.fn(),
-}));
+};
+global.MediaStream = jest.fn().mockImplementation(() => mockMediaStream);
 
 // Mock Canvas API
 HTMLCanvasElement.prototype.getContext = jest.fn().mockReturnValue({
