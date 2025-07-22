@@ -29,38 +29,27 @@ winston.addColors(colors);
 const format = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
   winston.format.colorize({ all: true }),
-  winston.format.printf(
-    (info) => `${info.timestamp} ${info.level}: ${info.message}`,
-  ),
+  winston.format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
 );
 
 // Define transports
 const transports = [
   // Console transport
   new winston.transports.Console({
-    format: winston.format.combine(
-      winston.format.colorize(),
-      winston.format.simple()
-    )
+    format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
   }),
-  
+
   // File transport for errors
   new winston.transports.File({
     filename: path.join(process.cwd(), 'logs', 'error.log'),
     level: 'error',
-    format: winston.format.combine(
-      winston.format.timestamp(),
-      winston.format.json()
-    )
+    format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
   }),
-  
+
   // File transport for all logs
   new winston.transports.File({
     filename: path.join(process.cwd(), 'logs', 'combined.log'),
-    format: winston.format.combine(
-      winston.format.timestamp(),
-      winston.format.json()
-    )
+    format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
   }),
 ];
 

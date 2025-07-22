@@ -1,7 +1,7 @@
 // Unit tests for Connection Manager Module
 // Test scenarios based on design specifications
 
-describe('ConnectionManagerModule', () => {
+describe('Module', () => {
   let connectionManager: any;
 
   beforeEach(() => {
@@ -17,7 +17,7 @@ describe('ConnectionManagerModule', () => {
     };
   });
 
-  describe('interface validation', () => {
+  describe('Module', () => {
     it('should have required methods', () => {
       expect(typeof connectionManager.initialize).toBe('function');
       expect(typeof connectionManager.createSession).toBe('function');
@@ -30,7 +30,7 @@ describe('ConnectionManagerModule', () => {
     });
   });
 
-  describe('session management', () => {
+  describe('Module', () => {
     it('should create session without errors', () => {
       expect(() => {
         connectionManager.createSession('test-user');

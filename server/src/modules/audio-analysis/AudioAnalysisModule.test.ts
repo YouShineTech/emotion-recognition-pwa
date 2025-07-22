@@ -1,7 +1,7 @@
 // Unit tests for Audio Analysis Module
 // Test scenarios based on design specifications
 
-describe('AudioAnalysisModule', () => {
+describe('Module', () => {
   let audioAnalysisModule: any;
 
   beforeEach(() => {
@@ -16,7 +16,7 @@ describe('AudioAnalysisModule', () => {
     };
   });
 
-  describe('interface validation', () => {
+  describe('Module', () => {
     it('should have required methods', () => {
       expect(typeof audioAnalysisModule.initialize).toBe('function');
       expect(typeof audioAnalysisModule.analyzeAudio).toBe('function');
@@ -28,7 +28,7 @@ describe('AudioAnalysisModule', () => {
     });
   });
 
-  describe('initialization', () => {
+  describe('Module', () => {
     it('should initialize without errors', () => {
       expect(() => {
         audioAnalysisModule.initialize({ modelPath: './models/audio_model.h5' });
@@ -36,7 +36,7 @@ describe('AudioAnalysisModule', () => {
     });
   });
 
-  describe('audio analysis', () => {
+  describe('Module', () => {
     it('should analyze audio without errors', () => {
       expect(() => {
         audioAnalysisModule.analyzeAudio(new Uint8Array([1, 2, 3, 4]));
@@ -44,7 +44,7 @@ describe('AudioAnalysisModule', () => {
     });
   });
 
-  describe('model management', () => {
+  describe('Module', () => {
     it('should load model without errors', () => {
       expect(() => {
         audioAnalysisModule.loadModel('./models/audio_model.h5');

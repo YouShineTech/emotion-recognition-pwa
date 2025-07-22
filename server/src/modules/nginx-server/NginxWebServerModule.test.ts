@@ -1,7 +1,7 @@
 // Unit tests for $(echo $module | sed 's/-/ /g' | sed 's/\b\(.\)/\u\1/g') Module
 // Test scenarios based on design specifications
 
-describe('$(echo $module | sed 's/-/ /g' | sed 's/\b\(.\)/\u\1/g')Module', () => {
+describe('Module', () => {
   let module: any;
 
   beforeEach(() => {
@@ -14,7 +14,7 @@ describe('$(echo $module | sed 's/-/ /g' | sed 's/\b\(.\)/\u\1/g')Module', () =>
     };
   });
 
-  describe('interface validation', () => {
+  describe('Module', () => {
     it('should have required methods', () => {
       expect(typeof module.initialize).toBe('function');
       expect(typeof module.process).toBe('function');
@@ -24,7 +24,7 @@ describe('$(echo $module | sed 's/-/ /g' | sed 's/\b\(.\)/\u\1/g')Module', () =>
     });
   });
 
-  describe('initialization', () => {
+  describe('Module', () => {
     it('should initialize without errors', () => {
       expect(() => {
         module.initialize({});
@@ -32,7 +32,7 @@ describe('$(echo $module | sed 's/-/ /g' | sed 's/\b\(.\)/\u\1/g')Module', () =>
     });
   });
 
-  describe('processing', () => {
+  describe('Module', () => {
     it('should process without errors', () => {
       expect(() => {
         module.process('test-data');

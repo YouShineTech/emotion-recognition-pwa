@@ -123,7 +123,7 @@ export class OverlayRendererModule implements IOverlayRendererModule {
 
     const { emotionLabel, confidence, position } = audioOverlay;
 
-    let x = 10;
+    const x = 10;
     let y = 30;
 
     if (position === 'top') {

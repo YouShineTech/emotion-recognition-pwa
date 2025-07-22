@@ -44,7 +44,7 @@ async function initializeApp(): Promise<void> {
 // Start emotion recognition session
 async function startEmotionRecognition(): Promise<void> {
   try {
-    debugger; // 🐛 BREAKPOINT: Click "Start Emotion Recognition" to stop here
+    // debugger; // 🐛 BREAKPOINT: Click "Start Emotion Recognition" to stop here
     updateStatus('Requesting permissions...');
 
     // Request media permissions
@@ -155,7 +155,7 @@ function updateStatus(message: string): void {
 
 // Debug test - this should hit immediately when page loads
 console.log('🐛 DEBUG: Client code loaded - set breakpoint here!');
-debugger; // 🐛 BREAKPOINT: Script loading - before DOM ready
+// debugger; // 🐛 BREAKPOINT: Script loading - before DOM ready
 
 // Initialize app when DOM is loaded
 if (document.readyState === 'loading') {

@@ -23,17 +23,15 @@ export class ConnectionManagerModule implements IConnectionManagerModule {
       userId: userId || `user_${Date.now()}`,
       createdAt: new Date(),
       status: 'connected',
-      connectionTime: new Date(),
       lastActivity: new Date(),
-      mediaStreams: [],
       processingStats: {
         framesProcessed: 0,
         averageLatency: 0,
         errorCount: 0,
         qualityMetrics: {
-          resolution: '1280x720',
-          frameRate: 30,
-          compressionRatio: 0.8,
+          videoQuality: 'high',
+          audioQuality: 'high',
+          processingLoad: 0.5,
         },
       },
     };
@@ -58,10 +56,10 @@ export class ConnectionManagerModule implements IConnectionManagerModule {
           // 1% chance of issue
           this.handleConnectionIssue({
             sessionId,
-            type: 'latency',
+            type: 'degraded',
             message: 'High latency detected',
             timestamp: new Date(),
-            severity: 'warning',
+            severity: 'medium',
           });
         }
       }
@@ -116,22 +114,36 @@ export class ConnectionManagerModule implements IConnectionManagerModule {
     const session = this.sessions.get(sessionId);
     if (!session) {
       return {
-        sessionId,
-        status: 'disconnected',
+        status: 'unhealthy',
         latency: 0,
         packetLoss: 0,
-        lastHeartbeat: new Date(),
-        isHealthy: false,
+        bandwidth: 0,
+        lastCheck: new Date(),
       };
     }
 
+    // Map session status to health status
+    let healthStatus: 'healthy' | 'degraded' | 'unhealthy';
+    switch (session.status) {
+      case 'connected':
+        healthStatus = 'healthy';
+        break;
+      case 'connecting':
+        healthStatus = 'degraded';
+        break;
+      case 'disconnected':
+      case 'error':
+      default:
+        healthStatus = 'unhealthy';
+        break;
+    }
+
     return {
-      sessionId,
-      status: session.status,
+      status: healthStatus,
       latency: Math.random() * 100, // Mock latency
       packetLoss: Math.random() * 0.05, // Mock packet loss
-      lastHeartbeat: session.lastActivity,
-      isHealthy: session.status === 'connected',
+      bandwidth: 1000, // Mock bandwidth
+      lastCheck: session.lastActivity,
     };
   }
 

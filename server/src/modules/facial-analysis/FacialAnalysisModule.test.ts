@@ -1,42 +1,18 @@
-// Unit tests for $(echo $module | sed 's/-/ /g' | sed 's/\b\(.\)/\u\1/g') Module
+// Unit tests for Facial Analysis Module
 // Test scenarios based on design specifications
 
-describe('$(echo $module | sed 's/-/ /g' | sed 's/\b\(.\)/\u\1/g')Module', () => {
-  let module: any;
+import { FacialAnalysisModule } from './FacialAnalysisModule';
+
+describe('Module', () => {
+  let module: FacialAnalysisModule;
 
   beforeEach(() => {
-    module = {
-      initialize: () => {},
-      process: () => {},
-      start: () => {},
-      stop: () => {},
-      destroy: () => {},
-    };
+    module = new FacialAnalysisModule();
   });
 
-  describe('interface validation', () => {
-    it('should have required methods', () => {
-      expect(typeof module.initialize).toBe('function');
-      expect(typeof module.process).toBe('function');
-      expect(typeof module.start).toBe('function');
-      expect(typeof module.stop).toBe('function');
-      expect(typeof module.destroy).toBe('function');
-    });
-  });
-
-  describe('initialization', () => {
-    it('should initialize without errors', () => {
-      expect(() => {
-        module.initialize({});
-      }).not.toThrow();
-    });
-  });
-
-  describe('processing', () => {
-    it('should process without errors', () => {
-      expect(() => {
-        module.process('test-data');
-      }).not.toThrow();
+  describe('Module', () => {
+    it('should be defined', () => {
+      expect(module).toBeDefined();
     });
   });
 });
