@@ -1,0 +1,44 @@
+# Branch Protection Rules Configuration
+# This file documents the branch protection settings that should be configured in GitHub
+
+# Main branch protection
+main:
+  required_status_checks:
+    strict: true
+    contexts:
+      - 'Lint and Format Check'
+      - 'TypeScript Type Checking'
+      - 'Unit Tests'
+      - 'Build Check'
+      - 'Security Scan'
+      - 'Integration Tests'
+  enforce_admins: false
+  required_pull_request_reviews:
+    required_approving_review_count: 2
+    dismiss_stale_reviews: true
+    require_code_owner_reviews: true
+  restrictions:
+    users: []
+    teams: ['emotion-recognition-team']
+  allow_force_pushes: false
+  allow_deletions: false
+
+# Develop branch protection
+develop:
+  required_status_checks:
+    strict: true
+    contexts:
+      - 'Lint and Format Check'
+      - 'TypeScript Type Checking'
+      - 'Unit Tests'
+      - 'Build Check'
+      - 'Security Scan'
+  enforce_admins: false
+  required_pull_request_reviews:
+    required_approving_review_count: 1
+    dismiss_stale_reviews: true
+  restrictions:
+    users: []
+    teams: ['emotion-recognition-team']
+  allow_force_pushes: false
+  allow_deletions: false

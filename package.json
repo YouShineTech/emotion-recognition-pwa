@@ -110,8 +110,12 @@
     "cli-table3": "^0.6.3",
     "concurrently": "^8.2.2",
     "cypress": "^13.6.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.3",
     "husky": "^8.0.3",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "prettier": "^3.6.2",
+    "typedoc": "^0.28.7"
   },
   "husky": {
     "hooks": {

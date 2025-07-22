@@ -1,19 +1,12 @@
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
-  plugins: [
-    '@typescript-eslint',
-    'prettier'
-  ],
-  extends: [
-    'eslint:recommended',
-    '@typescript-eslint/recommended',
-    'prettier'
-  ],
+  plugins: ['@typescript-eslint', 'prettier'],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
   parserOptions: {
     ecmaVersion: 2020,
     sourceType: 'module',
-    project: ['./client/tsconfig.json', './server/tsconfig.json']
+    project: ['./client/tsconfig.json', './server/tsconfig.json'],
   },
   rules: {
     'prettier/prettier': 'error',
@@ -24,18 +17,13 @@ module.exports = {
     '@typescript-eslint/no-empty-function': 'warn',
     'no-console': 'warn',
     'prefer-const': 'error',
-    'no-var': 'error'
+    'no-var': 'error',
   },
   env: {
     node: true,
     browser: true,
     es6: true,
-    jest: true
+    jest: true,
   },
-  ignorePatterns: [
-    'dist/',
-    'node_modules/',
-    'coverage/',
-    '*.config.js'
-  ]
+  ignorePatterns: ['dist/', 'node_modules/', 'coverage/', '*.config.js'],
 };
