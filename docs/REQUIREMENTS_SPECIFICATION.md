@@ -1,4 +1,4 @@
-# Requirements Document
+# Requirements Specification - Emotion Recognition PWA
 
 ## Introduction
 
