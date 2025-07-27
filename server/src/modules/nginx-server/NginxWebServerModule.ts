@@ -8,7 +8,7 @@ import {
   SecurityHeaders,
   StaticAssetResponse,
   UpstreamServer,
-} from '@/shared/interfaces';
+} from '@/shared/interfaces/nginx-server.interface';
 
 export class NginxWebServerModule implements INginxWebServerModule {
   private nginxConfig: any = null;

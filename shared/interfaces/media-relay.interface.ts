@@ -14,8 +14,8 @@ export interface RelaySession {
   sessionId: string;
   createdAt: Date;
   isActive: boolean;
-  routerId?: string;
-  transportId?: string;
+  routerId: string;
+  transportId: string;
   producerId?: string;
 }
 

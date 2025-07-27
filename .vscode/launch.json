@@ -2,48 +2,33 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "🚀 Debug Server",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/server/src/index.ts",
-      "outFiles": ["${workspaceFolder}/server/dist/**/*.js"],
-      "runtimeArgs": ["-r", "ts-node/register", "-r", "tsconfig-paths/register"],
-      "env": {
-        "NODE_ENV": "development",
-        "DEBUG": "emotion-pwa:*",
-        "PORT": "3001"
-      },
-      "console": "integratedTerminal",
-      "restart": true,
-      "protocol": "inspector",
-      "sourceMaps": true,
-      "cwd": "${workspaceFolder}/server"
-    },
-    {
-      "name": "🌐 Debug Client",
+      "name": "🌐 Debug Client (Chrome)",
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}/client/src",
+      "sourceMaps": true,
+      "preLaunchTask": "npm: dev:client",
       "sourceMapPathOverrides": {
-        "webpack:///src/*": "${workspaceFolder}/client/src/*",
-        "webpack:///./*": "${workspaceFolder}/*",
-        "webpack:///./src/*": "${workspaceFolder}/client/src/*"
-      },
-      "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-profile",
-      "trace": true
+        "webpack:///src/*": "${webRoot}/*"
+      }
     },
     {
-      "name": "🧪 Debug Jest Tests",
+      "name": "🚀 Debug Client (Edge)",
+      "type": "edge",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/client/src",
+      "sourceMaps": true,
+      "preLaunchTask": "npm: dev:client"
+    },
+    {
+      "name": "🧪 Debug Jest Tests (Client)",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/node_modules/.bin/jest",
-      "args": [
-        "--runInBand",
-        "--no-cache",
-        "--verbose",
-        "--detectOpenHandles"
-      ],
+      "program": "${workspaceFolder}/client/node_modules/.bin/jest",
+      "args": ["--runInBand", "--no-cache"],
+      "cwd": "${workspaceFolder}/client",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "env": {
@@ -51,15 +36,33 @@
       }
     },
     {
-      "name": "🔍 Debug Specific Test",
+      "name": "🧪 Debug MediaCapture Tests",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "program": "${workspaceFolder}/client/node_modules/.bin/jest",
+      "args": [
+        "--runInBand",
+        "--no-cache",
+        "--testPathPattern=MediaCaptureModule.test.ts"
+      ],
+      "cwd": "${workspaceFolder}/client",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "NODE_ENV": "test"
+      }
+    },
+    {
+      "name": "🔍 Debug Current Test File",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/client/node_modules/.bin/jest",
       "args": [
         "--runInBand",
         "--no-cache",
         "${fileBasenameNoExtension}"
       ],
+      "cwd": "${workspaceFolder}/client",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "env": {
@@ -67,44 +70,31 @@
       }
     },
     {
-      "name": "📡 Debug WebRTC Module",
+      "name": "🧪 Debug Jest Tests (Server)",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/scripts/debug-webrtc.js",
-      "env": {
-        "DEBUG": "emotion-pwa:webrtc:*",
-        "NODE_ENV": "development"
-      },
-      "console": "integratedTerminal"
+      "program": "${workspaceFolder}/server/node_modules/.bin/jest",
+      "args": ["--runInBand", "--no-cache"],
+      "cwd": "${workspaceFolder}/server",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
     },
-    {
-      "name": "🎭 Debug Emotion Pipeline",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/scripts/debug-emotion-pipeline.js",
-      "env": {
-        "DEBUG": "emotion-pwa:emotion:*",
-        "NODE_ENV": "development"
-      },
-      "console": "integratedTerminal"
-    },
-    {
-      "name": "🔗 Debug Module Communication",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/scripts/module-monitor.js",
-      "env": {
-        "DEBUG": "emotion-pwa:modules:*",
-        "NODE_ENV": "development"
-      },
-      "console": "integratedTerminal"
-    }
-  ],
-  "compounds": [
     {
       "name": "🚀 Debug Full Stack",
-      "configurations": ["🚀 Debug Server", "🌐 Debug Client"],
-      "stopAll": true
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/server/src/index.ts",
+      "cwd": "${workspaceFolder}/server",
+      "outFiles": ["${workspaceFolder}/server/dist/**/*.js"],
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "console": "integratedTerminal",
+      "preLaunchTask": "npm: dev:server",
+      "serverReadyAction": {
+        "action": "startDebugging",
+        "name": "🌐 Debug Client (Chrome)"
+      }
     }
   ]
 }

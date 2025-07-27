@@ -2,11 +2,11 @@
 // Facial emotion recognition using OpenFace 2.0 toolkit
 
 import {
-  EmotionScore,
-  ExtractedVideoFrame,
   FacialAnalysisResult,
   FacialAnalysisModule as IFacialAnalysisModule,
-} from '@/shared/interfaces';
+} from '@/shared/interfaces/facial-analysis.interface';
+import { ExtractedVideoFrame } from '@/shared/interfaces/frame-extraction.interface';
+import { EmotionScore } from '@/shared/interfaces/common.interface';
 
 export class FacialAnalysisModule implements IFacialAnalysisModule {
   private confidenceThreshold: number = 0.7;

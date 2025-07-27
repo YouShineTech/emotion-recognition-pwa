@@ -1,7 +1,7 @@
 // PWA Shell Module - Client Side
 // Progressive Web App features and lifecycle management
 
-import { PWAShellModule as IPWAShellModule } from '@/shared/interfaces';
+import { PWAShellModule as IPWAShellModule } from '@/shared/interfaces/pwa-shell.interface';
 
 export class PWAShellModule implements IPWAShellModule {
   private serviceWorkerRegistration: ServiceWorkerRegistration | null = null;

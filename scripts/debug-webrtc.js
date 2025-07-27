@@ -1,234 +1,229 @@
 #!/usr/bin/env node
 
-/**
- * WebRTC Module Debugger
- * Interactive debugging tool for WebRTC connections
- */
+// WebRTC Debug Script
+// Connection diagnostics and media analysis tools
 
-const readline = require('readline');
-const chalk = require('chalk');
-const {
-  WebRTCTransportModule,
-} = require('../client/src/modules/webrtc-transport/WebRTCTransportModule');
+const http = require('http');
+const WebSocket = require('ws');
+
+const colors = {
+  green: '\x1b[32m',
+  red: '\x1b[31m',
+  yellow: '\x1b[33m',
+  blue: '\x1b[34m',
+  cyan: '\x1b[36m',
+  magenta: '\x1b[35m',
+  reset: '\x1b[0m',
+};
+
+const log = (message, color = colors.reset) => {
+  const timestamp = new Date().toLocaleTimeString();
+  console.log(`${color}[${timestamp}] ${message}${colors.reset}`);
+};
 
 class WebRTCDebugger {
   constructor() {
-    this.module = null;
-    this.rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-
-    this.setupCommands();
-    this.start();
-  }
-
-  setupCommands() {
-    this.commands = {
-      init: {
-        description: 'Initialize WebRTC module',
-        handler: this.initModule.bind(this),
-      },
-      connect: {
-        description: 'Test connection to signaling server',
-        handler: this.testConnection.bind(this),
-      },
-      send: {
-        description: 'Send test data through data channel',
-        handler: this.sendTestData.bind(this),
-      },
-      state: {
-        description: 'Show connection state',
-        handler: this.showState.bind(this),
-      },
-      stats: {
-        description: 'Show WebRTC statistics',
-        handler: this.showStats.bind(this),
-      },
-      disconnect: {
-        description: 'Disconnect from server',
-        handler: this.disconnect.bind(this),
-      },
-      help: {
-        description: 'Show available commands',
-        handler: this.showHelp.bind(this),
-      },
-      exit: {
-        description: 'Exit debugger',
-        handler: this.exit.bind(this),
-      },
+    this.connections = new Map();
+    this.stats = {
+      totalConnections: 0,
+      activeConnections: 0,
+      failedConnections: 0,
+      dataChannelMessages: 0,
     };
   }
 
-  start() {
-    console.log(chalk.bold.blue('🔧 WebRTC Module Debugger'));
-    console.log(chalk.gray('Type "help" for available commands\n'));
+  async start() {
+    log('🔧 Starting WebRTC Debugger...', colors.blue);
 
-    this.prompt();
+    // Test server connectivity
+    await this.testServerConnection();
+
+    // Monitor WebSocket signaling
+    this.monitorSignaling();
+
+    // Display debug interface
+    this.displayDebugInterface();
+
+    // Start periodic stats update
+    setInterval(() => {
+      this.updateStats();
+    }, 2000);
   }
 
-  prompt() {
-    this.rl.question(chalk.cyan('webrtc> '), input => {
-      this.handleCommand(input.trim());
+  async testServerConnection() {
+    log('🔍 Testing server connection...', colors.cyan);
+
+    try {
+      const response = await this.makeRequest('http://localhost:3001/api/health');
+      if (response) {
+        log('✅ Server is accessible', colors.green);
+        log(`📊 Active connections: ${response.activeConnections || 0}`, colors.cyan);
+
+        if (response.resourceUsage) {
+          const { cpuUsage, memoryUsage } = response.resourceUsage;
+          log(`💻 Server resources: CPU ${cpuUsage.toFixed(1)}%, Memory ${memoryUsage.toFixed(1)}%`, colors.cyan);
+        }
+      }
+    } catch (error) {
+      log(`❌ Server connection failed: ${error.message}`, colors.red);
+    }
+  }
+
+  monitorSignaling() {
+    log('🔌 Connecting to WebSocket signaling server...', colors.cyan);
+
+    try {
+      const ws = new WebSocket('ws://localhost:3001/socket.io/?EIO=4&transport=websocket');
+
+      ws.on('open', () => {
+        log('✅ WebSocket connection established', colors.green);
+      });
+
+      ws.on('message', (data) => {
+        try {
+          const message = data.toString();
+          this.handleSignalingMessage(message);
+        } catch (error) {
+          log(`⚠️  Error parsing WebSocket message: ${error.message}`, colors.yellow);
+        }
+      });
+
+      ws.on('error', (error) => {
+        log(`❌ WebSocket error: ${error.message}`, colors.red);
+      });
+
+      ws.on('close', () => {
+        log('🔌 WebSocket connection closed', colors.yellow);
+
+        // Attempt to reconnect after 5 seconds
+        setTimeout(() => {
+          log('🔄 Attempting to reconnect...', colors.cyan);
+          this.monitorSignaling();
+        }, 5000);
+      });
+
+    } catch (error) {
+      log(`❌ Failed to connect to WebSocket: ${error.message}`, colors.red);
+    }
+  }
+
+  handleSignalingMessage(message) {
+    // Parse Socket.IO message format
+    if (message.startsWith('42')) {
+      try {
+        const jsonData = message.substring(2);
+        const [event, data] = JSON.parse(jsonData);
+
+        switch (event) {
+          case 'offer':
+            log('📤 WebRTC Offer received', colors.magenta);
+            this.stats.totalConnections++;
+            break;
+
+          case 'answer':
+            log('📥 WebRTC Answer received', colors.magenta);
+            break;
+
+          case 'ice-candidate':
+            log('🧊 ICE Candidate received', colors.cyan);
+            break;
+
+          case 'overlay-data':
+            log('🎭 Overlay data received', colors.green);
+            this.stats.dataChannelMessages++;
+            this.analyzeOverlayData(data);
+            break;
+
+          default:
+            log(`📨 Unknown signaling event: ${event}`, colors.yellow);
+        }
+      } catch (error) {
+        log(`⚠️  Error parsing signaling message: ${error.message}`, colors.yellow);
+      }
+    }
+  }
+
+  analyzeOverlayData(data) {
+    if (data && data.facialOverlays) {
+      const faceCount = data.facialOverlays.length;
+      log(`👤 Faces detected: ${faceCount}`, colors.green);
+
+      data.facialOverlays.forEach((face, index) => {
+        log(`  Face ${index + 1}: ${face.emotionLabel} (${(face.confidence * 100).toFixed(1)}%)`, colors.green);
+      });
+    }
+
+    if (data && data.audioOverlay) {
+      log(`🎵 Audio emotion: ${data.audioOverlay.emotionLabel} (${(data.audioOverlay.confidence * 100).toFixed(1)}%)`, colors.green);
+    }
+
+    if (data && data.totalProcessingTime) {
+      log(`⏱️  Processing time: ${data.totalProcessingTime}ms`, colors.cyan);
+    }
+  }
+
+  displayDebugInterface() {
+    console.clear();
+    log('🔧 WebRTC Debug Dashboard', colors.blue);
+    log('==========================', colors.blue);
+
+    this.updateStats();
+
+    log('', colors.reset);
+    log('Available Commands:', colors.yellow);
+    log('  Ctrl+C - Exit debugger', colors.yellow);
+    log('  Monitor logs above for real-time WebRTC activity', colors.yellow);
+  }
+
+  updateStats() {
+    // Update active connections from server
+    this.makeRequest('http://localhost:3001/api/health')
+      .then(response => {
+        if (response && response.activeConnections !== undefined) {
+          this.stats.activeConnections = response.activeConnections;
+        }
+      })
+      .catch(() => {
+        // Silently handle errors
+      });
+
+    // Display current stats
+    log('📊 Connection Stats:', colors.cyan);
+    log(`  Total Connections: ${this.stats.totalConnections}`, colors.cyan);
+    log(`  Active Connections: ${this.stats.activeConnections}`, colors.cyan);
+    log(`  Data Channel Messages: ${this.stats.dataChannelMessages}`, colors.cyan);
+  }
+
+  makeRequest(url) {
+    return new Promise((resolve, reject) => {
+      const request = http.get(url, { timeout: 5000 }, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(data));
+          } catch (error) {
+            resolve(data);
+          }
+        });
+      });
+
+      request.on('error', reject);
+      request.on('timeout', () => {
+        request.destroy();
+        reject(new Error('Request timeout'));
+      });
     });
-  }
-
-  handleCommand(input) {
-    const [command, ...args] = input.split(' ');
-
-    if (this.commands[command]) {
-      this.commands[command].handler(args);
-    } else if (input) {
-      console.log(chalk.red(`Unknown command: ${command}`));
-      console.log(chalk.gray('Type "help" for available commands'));
-    }
-
-    setTimeout(() => this.prompt(), 100);
-  }
-
-  async initModule(args) {
-    try {
-      console.log(chalk.yellow('Initializing WebRTC module...'));
-
-      this.module = new WebRTCTransportModule();
-
-      const config = {
-        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-        signalingUrl: args[0] || 'ws://localhost:3001',
-        sessionId: `debug_${Date.now()}`,
-        stunServers: ['stun:stun.l.google.com:19302'],
-      };
-
-      const result = await this.module.initialize(config);
-
-      if (result.success) {
-        console.log(chalk.green('✅ Module initialized successfully'));
-        console.log(chalk.gray(`Connection ID: ${result.connectionId}`));
-
-        // Set up event listeners
-        this.module.onStateChange(state => {
-          console.log(chalk.blue(`🔄 Connection state: ${state}`));
-        });
-
-        this.module.onDataReceived(data => {
-          console.log(chalk.green(`📥 Received data: ${JSON.stringify(data)}`));
-        });
-      } else {
-        console.log(chalk.red('❌ Failed to initialize module'));
-      }
-    } catch (error) {
-      console.log(chalk.red(`❌ Error: ${error.message}`));
-    }
-  }
-
-  async testConnection(args) {
-    if (!this.module) {
-      console.log(chalk.red('❌ Module not initialized. Run "init" first.'));
-      return;
-    }
-
-    try {
-      console.log(chalk.yellow('Testing connection...'));
-
-      const state = this.module.getConnectionState();
-      console.log(chalk.blue(`Current state: ${state}`));
-
-      if (state === 'connected') {
-        console.log(chalk.green('✅ Connection is active'));
-      } else {
-        console.log(chalk.yellow(`⚠️  Connection state: ${state}`));
-      }
-    } catch (error) {
-      console.log(chalk.red(`❌ Error: ${error.message}`));
-    }
-  }
-
-  async sendTestData(args) {
-    if (!this.module) {
-      console.log(chalk.red('❌ Module not initialized. Run "init" first.'));
-      return;
-    }
-
-    try {
-      const testData = {
-        type: 'debug_message',
-        timestamp: Date.now(),
-        message: args.join(' ') || 'Hello from debugger!',
-        sessionId: 'debug_session',
-      };
-
-      console.log(chalk.yellow('Sending test data...'));
-      await this.module.sendData(testData);
-      console.log(chalk.green('✅ Data sent successfully'));
-      console.log(chalk.gray(`Data: ${JSON.stringify(testData, null, 2)}`));
-    } catch (error) {
-      console.log(chalk.red(`❌ Error: ${error.message}`));
-    }
-  }
-
-  showState(args) {
-    if (!this.module) {
-      console.log(chalk.red('❌ Module not initialized. Run "init" first.'));
-      return;
-    }
-
-    const state = this.module.getConnectionState();
-    console.log(chalk.blue(`Connection State: ${state}`));
-
-    // Additional state information would be shown here
-    console.log(chalk.gray('Detailed state information:'));
-    console.log(chalk.gray('- Peer Connection: Active'));
-    console.log(chalk.gray('- Data Channel: Open'));
-    console.log(chalk.gray('- ICE Connection: Connected'));
-  }
-
-  showStats(args) {
-    if (!this.module) {
-      console.log(chalk.red('❌ Module not initialized. Run "init" first.'));
-      return;
-    }
-
-    console.log(chalk.blue('📊 WebRTC Statistics:'));
-    console.log(chalk.gray('- Messages Sent: 0'));
-    console.log(chalk.gray('- Messages Received: 0'));
-    console.log(chalk.gray('- Connection Uptime: 0s'));
-    console.log(chalk.gray('- Bandwidth Usage: 0 KB/s'));
-  }
-
-  disconnect(args) {
-    if (!this.module) {
-      console.log(chalk.red('❌ Module not initialized.'));
-      return;
-    }
-
-    console.log(chalk.yellow('Disconnecting...'));
-    this.module.disconnect();
-    console.log(chalk.green('✅ Disconnected'));
-    this.module = null;
-  }
-
-  showHelp(args) {
-    console.log(chalk.bold.blue('\n📚 Available Commands:'));
-
-    for (const [command, info] of Object.entries(this.commands)) {
-      console.log(chalk.cyan(`  ${command.padEnd(12)} - ${info.description}`));
-    }
-
-    console.log(chalk.gray('\nExample usage:'));
-    console.log(chalk.gray('  init ws://localhost:3001'));
-    console.log(chalk.gray('  send Hello World'));
-    console.log('');
-  }
-
-  exit(args) {
-    console.log(chalk.yellow('👋 Goodbye!'));
-    if (this.module) {
-      this.module.disconnect();
-    }
-    this.rl.close();
-    process.exit(0);
   }
 }
 
-// Start debugger
-new WebRTCDebugger();
+// Start debugging
+const debugger = new WebRTCDebugger();
+
+// Handle graceful shutdown
+process.on('SIGINT', () => {
+  log('👋 WebRTC Debugger stopped', colors.blue);
+  process.exit(0);
+});
+
+debugger.start();

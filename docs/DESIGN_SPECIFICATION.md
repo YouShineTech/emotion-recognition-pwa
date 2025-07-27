@@ -234,6 +234,15 @@ interface OverlayData {
 - **Backend**: Jest + Supertest for API endpoints and processing pipeline
 - **OpenFace Integration**: Mock OpenFace responses for consistent testing
 - **Audio AI**: Mock audio processing with known emotion datasets
+- **Interface Testing**: Explicit imports enable precise mocking of only required interfaces
+
+```typescript
+// Test can import only what the module actually uses
+import { MediaCaptureModule } from '../shared/interfaces/media-capture.interface';
+import { EmotionScore } from '../shared/interfaces/common.interface';
+
+// No need to mock unrelated interfaces
+```
 
 ### Integration Testing
 

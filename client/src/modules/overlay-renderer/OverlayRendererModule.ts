@@ -1,7 +1,8 @@
 // Overlay Renderer Module - Client Side
 // Canvas-based overlay rendering on video feed
 
-import { OverlayRendererModule as IOverlayRendererModule, OverlayData } from '@/shared/interfaces';
+import { OverlayRendererModule as IOverlayRendererModule } from '@/shared/interfaces/overlay-renderer.interface';
+import { OverlayData } from '@/shared/interfaces/overlay-data.interface';
 
 export class OverlayRendererModule implements IOverlayRendererModule {
   private videoElement: HTMLVideoElement | null = null;

@@ -1,188 +1,223 @@
 #!/usr/bin/env node
 
-/**
- * Module Communication Monitor
- * Real-time monitoring of inter-module communication
- */
+// Module Monitor Script
+// Real-time monitoring of module performance and status
 
-const EventEmitter = require('events');
-const chalk = require('chalk');
-const Table = require('cli-table3');
+const http = require('http');
+const WebSocket = require('ws');
 
-class ModuleMonitor extends EventEmitter {
+const colors = {
+  green: '\x1b[32m',
+  red: '\x1b[31m',
+  yellow: '\x1b[33m',
+  blue: '\x1b[34m',
+  cyan: '\x1b[36m',
+  reset: '\x1b[0m',
+};
+
+const log = (message, color = colors.reset) => {
+  const timestamp = new Date().toLocaleTimeString();
+  console.log(`${color}[${timestamp}] ${message}${colors.reset}`);
+};
+
+class ModuleMonitor {
   constructor() {
-    super();
-    this.modules = new Map();
-    this.communications = [];
-    this.startTime = Date.now();
+    this.modules = [
+      'MediaCaptureModule',
+      'WebRTCTransportModule',
+      'OverlayRendererModule',
+      'PWAShellModule',
+      'MediaRelayModule',
+      'FacialAnalysisModule',
+      'AudioAnalysisModule',
+      'OverlayDataGenerator',
+    ];
 
-    this.setupMonitoring();
-    this.startDisplay();
+    this.stats = {};
+    this.isRunning = false;
   }
 
-  setupMonitoring() {
-    // Monitor module registrations
-    this.on('module:register', moduleInfo => {
-      this.modules.set(moduleInfo.name, {
-        ...moduleInfo,
-        registeredAt: Date.now(),
-        messageCount: 0,
+  async start() {
+    log('🔍 Starting Module Monitor...', colors.blue);
+    this.isRunning = true;
+
+    // Initialize stats
+    this.modules.forEach(module => {
+      this.stats[module] = {
+        status: 'unknown',
+        lastUpdate: null,
         errorCount: 0,
-        lastActivity: Date.now(),
-      });
-
-      console.log(chalk.green(`✅ Module registered: ${moduleInfo.name}`));
+        successCount: 0,
+      };
     });
 
-    // Monitor module communications
-    this.on('module:communication', commInfo => {
-      const { from, to, type, data, timestamp } = commInfo;
+    // Start monitoring loops
+    this.startHealthMonitoring();
+    this.startPerformanceMonitoring();
+    this.startLogMonitoring();
 
-      this.communications.push({
-        from,
-        to,
-        type,
-        dataSize: JSON.stringify(data).length,
-        timestamp: timestamp || Date.now(),
-        success: true,
-      });
+    // Display initial status
+    this.displayStatus();
 
-      // Update module stats
-      if (this.modules.has(from)) {
-        const module = this.modules.get(from);
-        module.messageCount++;
-        module.lastActivity = Date.now();
+    // Set up periodic status updates
+    setInterval(() => {
+      if (this.isRunning) {
+        this.displayStatus();
+      }
+    }, 5000);
+  }
+
+  stop() {
+    log('🛑 Stopping Module Monitor...', colors.yellow);
+    this.isRunning = false;
+  }
+
+  startHealthMonitoring() {
+    const checkHealth = async () => {
+      if (!this.isRunning) return;
+
+      try {
+        const response = await this.makeRequest('http://localhost:3001/api/health');
+        if (response) {
+          log('✅ Server health check passed', colors.green);
+          this.updateModuleStatus('MediaRelayModule', 'healthy');
+        }
+      } catch (error) {
+        log(`❌ Server health check failed: ${error.message}`, colors.red);
+        this.updateModuleStatus('MediaRelayModule', 'unhealthy');
       }
 
-      console.log(chalk.blue(`📡 ${from} → ${to}: ${type} (${JSON.stringify(data).length} bytes)`));
-    });
+      setTimeout(checkHealth, 10000); // Check every 10 seconds
+    };
 
-    // Monitor module errors
-    this.on('module:error', errorInfo => {
-      const { module, error, timestamp } = errorInfo;
+    checkHealth();
+  }
 
-      if (this.modules.has(module)) {
-        const moduleInfo = this.modules.get(module);
-        moduleInfo.errorCount++;
-        moduleInfo.lastActivity = Date.now();
+  startPerformanceMonitoring() {
+    const checkPerformance = async () => {
+      if (!this.isRunning) return;
+
+      try {
+        const response = await this.makeRequest('http://localhost:3001/api/health');
+        if (response && response.resourceUsage) {
+          const { cpuUsage, memoryUsage, activeConnections } = response.resourceUsage;
+          log(`📊 Performance: CPU ${cpuUsage.toFixed(1)}%, Memory ${memoryUsage.toFixed(1)}%, Connections ${activeConnections}`, colors.cyan);
+        }
+      } catch (error) {
+        // Silently handle performance monitoring errors
       }
 
-      console.log(chalk.red(`❌ Error in ${module}: ${error.message}`));
-    });
+      setTimeout(checkPerformance, 15000); // Check every 15 seconds
+    };
+
+    checkPerformance();
   }
 
-  startDisplay() {
-    // Clear screen and show header
-    console.clear();
-    console.log(chalk.bold.cyan('🔍 Module Communication Monitor'));
-    console.log(chalk.gray('Press Ctrl+C to exit\n'));
+  startLogMonitoring() {
+    // Monitor console logs for module activity
+    const originalLog = console.log;
+    console.log = (...args) => {
+      const message = args.join(' ');
 
-    // Update display every 2 seconds
-    setInterval(() => {
-      this.updateDisplay();
-    }, 2000);
-  }
-
-  updateDisplay() {
-    // Module Status Table
-    const moduleTable = new Table({
-      head: ['Module', 'Status', 'Messages', 'Errors', 'Last Activity'],
-      colWidths: [20, 10, 10, 8, 15],
-    });
-
-    for (const [name, info] of this.modules) {
-      const timeSinceActivity = Date.now() - info.lastActivity;
-      const status = timeSinceActivity < 5000 ? chalk.green('Active') : chalk.yellow('Idle');
-
-      const lastActivity =
-        timeSinceActivity < 1000 ? 'Just now' : `${Math.floor(timeSinceActivity / 1000)}s ago`;
-
-      moduleTable.push([
-        name,
-        status,
-        info.messageCount.toString(),
-        info.errorCount > 0 ? chalk.red(info.errorCount.toString()) : '0',
-        lastActivity,
-      ]);
-    }
-
-    // Recent Communications Table
-    const commTable = new Table({
-      head: ['Time', 'From', 'To', 'Type', 'Size'],
-      colWidths: [12, 15, 15, 15, 10],
-    });
-
-    const recentComms = this.communications.slice(-10);
-    for (const comm of recentComms) {
-      const time = new Date(comm.timestamp).toLocaleTimeString();
-      commTable.push([time, comm.from, comm.to, comm.type, `${comm.dataSize}b`]);
-    }
-
-    // Clear and redraw
-    console.clear();
-    console.log(chalk.bold.cyan('🔍 Module Communication Monitor'));
-    console.log(chalk.gray(`Running for ${Math.floor((Date.now() - this.startTime) / 1000)}s\n`));
-
-    console.log(chalk.bold('📊 Module Status:'));
-    console.log(moduleTable.toString());
-
-    console.log(chalk.bold('\n📡 Recent Communications:'));
-    console.log(commTable.toString());
-
-    console.log(chalk.gray('\nPress Ctrl+C to exit'));
-  }
-
-  // Simulate module activity for testing
-  simulateActivity() {
-    const modules = ['MediaCapture', 'WebRTCTransport', 'MediaRelay', 'FacialAnalysis'];
-
-    // Register modules
-    modules.forEach(name => {
-      this.emit('module:register', {
-        name,
-        version: '1.0.0',
-        type: name.includes('Capture') ? 'client' : 'server',
+      // Check for module activity in logs
+      this.modules.forEach(module => {
+        if (message.includes(`[${module}]`)) {
+          this.updateModuleActivity(module);
+        }
       });
+
+      originalLog.apply(console, args);
+    };
+  }
+
+  updateModuleStatus(module, status) {
+    if (this.stats[module]) {
+      this.stats[module].status = status;
+      this.stats[module].lastUpdate = new Date();
+
+      if (status === 'healthy') {
+        this.stats[module].successCount++;
+      } else {
+        this.stats[module].errorCount++;
+      }
+    }
+  }
+
+  updateModuleActivity(module) {
+    if (this.stats[module]) {
+      this.stats[module].lastUpdate = new Date();
+      this.stats[module].status = 'active';
+    }
+  }
+
+  displayStatus() {
+    console.clear();
+    log('🔍 Module Monitor Dashboard', colors.blue);
+    log('============================', colors.blue);
+
+    this.modules.forEach(module => {
+      const stats = this.stats[module];
+      const statusColor = this.getStatusColor(stats.status);
+      const lastUpdate = stats.lastUpdate ?
+        stats.lastUpdate.toLocaleTimeString() : 'Never';
+
+      log(`${module.padEnd(25)} ${stats.status.padEnd(10)} Last: ${lastUpdate} ✓${stats.successCount} ✗${stats.errorCount}`, statusColor);
     });
 
-    // Simulate communications
-    setInterval(() => {
-      const from = modules[Math.floor(Math.random() * modules.length)];
-      const to = modules[Math.floor(Math.random() * modules.length)];
+    log('============================', colors.blue);
+    log('Press Ctrl+C to stop monitoring', colors.yellow);
+  }
 
-      if (from !== to) {
-        this.emit('module:communication', {
-          from,
-          to,
-          type: 'data_transfer',
-          data: { mockData: 'test', timestamp: Date.now() },
+  getStatusColor(status) {
+    switch (status) {
+      case 'healthy':
+      case 'active':
+        return colors.green;
+      case 'unhealthy':
+        return colors.red;
+      case 'unknown':
+        return colors.yellow;
+      default:
+        return colors.reset;
+    }
+  }
+
+  makeRequest(url) {
+    return new Promise((resolve, reject) => {
+      const request = http.get(url, { timeout: 5000 }, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(data));
+          } catch (error) {
+            resolve(data);
+          }
         });
-      }
-    }, 1000);
-
-    // Simulate occasional errors
-    setInterval(() => {
-      const module = modules[Math.floor(Math.random() * modules.length)];
-      this.emit('module:error', {
-        module,
-        error: new Error('Simulated error for testing'),
       });
-    }, 10000);
+
+      request.on('error', reject);
+      request.on('timeout', () => {
+        request.destroy();
+        reject(new Error('Request timeout'));
+      });
+    });
   }
 }
 
 // Start monitoring
 const monitor = new ModuleMonitor();
 
-// If running in test mode, simulate activity
-if (process.argv.includes('--simulate')) {
-  monitor.simulateActivity();
-}
-
-// Graceful shutdown
+// Handle graceful shutdown
 process.on('SIGINT', () => {
-  console.log(chalk.yellow('\n👋 Shutting down module monitor...'));
+  monitor.stop();
+  log('👋 Module Monitor stopped', colors.blue);
   process.exit(0);
 });
 
-module.exports = ModuleMonitor;
+process.on('SIGTERM', () => {
+  monitor.stop();
+  process.exit(0);
+});
+
+monitor.start();

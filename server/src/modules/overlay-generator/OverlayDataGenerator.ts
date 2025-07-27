@@ -2,11 +2,11 @@
 // Combines facial and audio analysis results into unified overlay metadata
 
 import {
-  AudioAnalysisResult,
-  FacialAnalysisResult,
   OverlayDataGenerator as IOverlayDataGenerator,
   OverlayData,
-} from '@/shared/interfaces';
+} from '@/shared/interfaces/overlay-data.interface';
+import { AudioAnalysisResult } from '@/shared/interfaces/audio-analysis.interface';
+import { FacialAnalysisResult } from '@/shared/interfaces/facial-analysis.interface';
 
 export class OverlayDataGenerator implements IOverlayDataGenerator {
   private overlayStyle: any = { colorScheme: 'default', opacity: 0.8 };

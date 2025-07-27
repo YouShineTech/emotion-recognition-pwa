@@ -3,7 +3,7 @@
   "workbench.colorTheme": "Cursor Dark",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "typescript.preferences.includePackageJsonAutoImports": "on",
   "files.associations": {

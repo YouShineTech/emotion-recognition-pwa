@@ -6,7 +6,7 @@ import {
   ConnectionIssue,
   ConnectionManagerModule as IConnectionManagerModule,
   SessionInfo,
-} from '@/shared/interfaces';
+} from '@/shared/interfaces/connection-manager.interface';
 
 export class ConnectionManagerModule implements IConnectionManagerModule {
   private sessions: Map<string, SessionInfo> = new Map();

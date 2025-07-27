@@ -5,7 +5,7 @@ import {
   WebRTCTransportModule as IWebRTCTransportModule,
   TransportResult,
   WebRTCConfig,
-} from '@/shared/interfaces';
+} from '@/shared/interfaces/webrtc-transport.interface';
 
 export class WebRTCTransportModule implements IWebRTCTransportModule {
   private peerConnection: RTCPeerConnection | null = null;

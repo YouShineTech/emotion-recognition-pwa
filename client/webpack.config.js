@@ -75,7 +75,7 @@ module.exports = (env, argv) => {
       },
     },
 
-    devtool: isProduction ? 'source-map' : 'eval-cheap-module-source-map',
+    devtool: isProduction ? 'source-map' : 'inline-source-map',
 
     optimization: {
       splitChunks: isProduction

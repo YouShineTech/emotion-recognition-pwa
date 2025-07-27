@@ -5,11 +5,11 @@ import { ApiResponse, ModuleError } from './common.interface';
 
 export interface WebRTCTransportModule {
   initialize(config: WebRTCConfig): Promise<TransportResult>;
-  attachMediaStream(stream: any): Promise<void>; // MediaStream in browser
+  attachMediaStream(stream: any): Promise<void>; // MediaStream in browser, any for testing
   sendData(data: any): Promise<void>;
   onDataReceived(callback: (data: any) => void): void;
   disconnect(): void;
-  getConnectionState(): string; // RTCPeerConnectionState in browser
+  getConnectionState(): string; // RTCPeerConnectionState in browser, string for testing
   onStateChange(callback: (state: string) => void): void;
 }
 

@@ -6,7 +6,7 @@ import {
   MediaCaptureModule as IMediaCaptureModule,
   MediaCaptureError,
   MediaCaptureResult,
-} from '@/shared/interfaces';
+} from '@/shared/interfaces/media-capture.interface';
 
 export class MediaCaptureModule implements IMediaCaptureModule {
   private currentStream: MediaStream | null = null;

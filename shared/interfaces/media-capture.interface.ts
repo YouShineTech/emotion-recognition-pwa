@@ -5,7 +5,7 @@ import { ApiResponse, ModuleError } from './common.interface';
 
 export interface MediaCaptureModule {
   requestPermissions(): Promise<MediaCaptureResult>;
-  startCapture(config: CaptureConfig): Promise<any>; // MediaStream in browser
+  startCapture(config: CaptureConfig): Promise<any>; // MediaStream in browser, any for testing
   stopCapture(): void;
   switchCamera(deviceId: string): Promise<void>;
   onError(callback: (error: MediaCaptureError) => void): void;

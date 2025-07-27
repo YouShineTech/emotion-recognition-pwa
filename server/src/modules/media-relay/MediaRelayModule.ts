@@ -6,7 +6,7 @@ import {
   MediaStreamData,
   RelaySession,
   ResourceMetrics,
-} from '@/shared/interfaces';
+} from '@/shared/interfaces/media-relay.interface';
 
 export class MediaRelayModule implements IMediaRelayModule {
   private sessions: Map<string, RelaySession> = new Map();

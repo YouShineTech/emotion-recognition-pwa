@@ -1,302 +1,124 @@
 #!/usr/bin/env node
 
-/**
- * System Health Check
- * Verifies that all components are working correctly
- */
+// Health Check Script
+// Verifies that all services are running and accessible
 
 const http = require('http');
-const fs = require('fs');
-const path = require('path');
-const chalk = require('chalk');
 const { exec } = require('child_process');
-const { promisify } = require('util');
 
-const execAsync = promisify(exec);
+const colors = {
+  green: '\x1b[32m',
+  red: '\x1b[31m',
+  yellow: '\x1b[33m',
+  blue: '\x1b[34m',
+  reset: '\x1b[0m',
+};
 
-class HealthChecker {
-  constructor(options = {}) {
-    this.checks = [];
-    this.results = [];
-    this.basicMode = options.basic || false;
-  }
+const log = (message, color = colors.reset) => {
+  console.log(`${color}${message}${colors.reset}`);
+};
 
-  async runAllChecks() {
-    console.log(chalk.bold.blue('🏥 System Health Check'));
-    console.log(chalk.gray('Verifying build environment and dependencies...\n'));
-
-    // Define all health checks
-    this.checks = [
-      { name: 'Node.js Version', check: this.checkNodeVersion.bind(this) },
-      { name: 'NPM Version', check: this.checkNpmVersion.bind(this) },
-      { name: 'Project Structure', check: this.checkProjectStructure.bind(this) },
-      { name: 'Dependencies Installed', check: this.checkDependencies.bind(this) },
-      { name: 'TypeScript Configuration', check: this.checkTypeScriptConfig.bind(this) },
-      { name: 'Build System', check: this.checkBuildSystem.bind(this) },
-      { name: 'Test Framework', check: this.checkTestFramework.bind(this) },
-      { name: 'Docker Environment', check: this.checkDockerEnvironment.bind(this) },
-      { name: 'Server Health', check: this.checkServerHealth.bind(this) },
-      { name: 'Redis Connection', check: this.checkRedisConnection.bind(this) },
-      { name: 'Environment Configuration', check: this.checkEnvironmentConfig.bind(this) },
-    ];
-
-    // Run all checks
-    for (const check of this.checks) {
-      await this.runCheck(check);
-    }
-
-    // Display results
-    this.displayResults();
-
-    return this.results.every(result => result.status === 'pass');
-  }
-
-  async runCheck(check) {
-    try {
-      console.log(chalk.yellow(`⏳ Checking ${check.name}...`));
-
-      const result = await check.check();
-
-      this.results.push({
-        name: check.name,
-        status: 'pass',
-        message: result.message || 'OK',
-        details: result.details,
-      });
-
-      console.log(chalk.green(`✅ ${check.name}: ${result.message || 'OK'}`));
-    } catch (error) {
-      this.results.push({
-        name: check.name,
-        status: 'fail',
-        message: error.message,
-        details: error.details,
-      });
-
-      console.log(chalk.red(`❌ ${check.name}: ${error.message}`));
-    }
-  }
-
-  async checkNodeVersion() {
-    const { stdout } = await execAsync('node --version');
-    const version = stdout.trim();
-    const majorVersion = parseInt(version.substring(1).split('.')[0]);
-
-    if (majorVersion < 18) {
-      throw new Error(`Node.js ${majorVersion} detected. Requires Node.js 18+`);
-    }
-
-    let message = `${version} (✓ Compatible)`;
-    if (this.basicMode && majorVersion < 20) {
-      message += ' - Basic mode (some features limited)';
-    }
-
-    return { message };
-  }
-
-  async checkNpmVersion() {
-    const { stdout } = await execAsync('npm --version');
-    const version = stdout.trim();
-    const majorVersion = parseInt(version.split('.')[0]);
-
-    if (majorVersion < 8) {
-      throw new Error(`npm ${majorVersion} detected. Requires npm 8+`);
-    }
-
-    return { message: `${version} (✓ Compatible)` };
-  }
-
-  async checkProjectStructure() {
-    const requiredPaths = [
-      'client/package.json',
-      'server/package.json',
-      'shared/interfaces',
-      '.github/workflows',
-      'docker-compose.yml',
-      'README.md',
-    ];
-
-    const missing = [];
-
-    for (const filePath of requiredPaths) {
-      if (!fs.existsSync(filePath)) {
-        missing.push(filePath);
+const checkService = (name, url, timeout = 5000) => {
+  return new Promise((resolve) => {
+    const request = http.get(url, { timeout }, (res) => {
+      if (res.statusCode === 200) {
+        log(`✅ ${name} is healthy`, colors.green);
+        resolve(true);
+      } else {
+        log(`❌ ${name} returned status ${res.statusCode}`, colors.red);
+        resolve(false);
       }
-    }
+    });
 
-    if (missing.length > 0) {
-      throw new Error(`Missing files/directories: ${missing.join(', ')}`);
-    }
+    request.on('error', (error) => {
+      log(`❌ ${name} is not accessible: ${error.message}`, colors.red);
+      resolve(false);
+    });
 
-    return { message: `All required files present (${requiredPaths.length} checked)` };
-  }
+    request.on('timeout', () => {
+      log(`❌ ${name} timed out`, colors.red);
+      request.destroy();
+      resolve(false);
+    });
+  });
+};
 
-  async checkDependencies() {
-    const clientNodeModules = fs.existsSync('client/node_modules');
-    const serverNodeModules = fs.existsSync('server/node_modules');
-    const rootNodeModules = fs.existsSync('node_modules');
-
-    if (!clientNodeModules || !serverNodeModules || !rootNodeModules) {
-      throw new Error('Dependencies not installed. Run "npm run install:all"');
-    }
-
-    return { message: 'All dependencies installed' };
-  }
-
-  async checkTypeScriptConfig() {
-    const clientTsConfig = fs.existsSync('client/tsconfig.json');
-    const serverTsConfig = fs.existsSync('server/tsconfig.json');
-
-    if (!clientTsConfig || !serverTsConfig) {
-      throw new Error('TypeScript configuration missing');
-    }
-
-    // Test TypeScript compilation
-    try {
-      await execAsync('cd client && npx tsc --noEmit');
-      await execAsync('cd server && npx tsc --noEmit');
-    } catch (error) {
-      throw new Error('TypeScript compilation errors detected');
-    }
-
-    return { message: 'TypeScript configuration valid' };
-  }
-
-  async checkBuildSystem() {
-    try {
-      // Test client build
-      await execAsync('cd client && npm run build', { timeout: 30000 });
-
-      // Test server build
-      await execAsync('cd server && npm run build', { timeout: 30000 });
-
-      return { message: 'Build system working correctly' };
-    } catch (error) {
-      throw new Error('Build system failed. Check build configuration');
-    }
-  }
-
-  async checkTestFramework() {
-    try {
-      // Run a quick test to verify Jest is working
-      await execAsync('npm run test:client -- --passWithNoTests', { timeout: 15000 });
-      await execAsync('npm run test:server -- --passWithNoTests', { timeout: 15000 });
-
-      return { message: 'Test framework configured correctly' };
-    } catch (error) {
-      if (this.basicMode) {
-        return { message: 'Test framework available (some tests may fail in basic mode)' };
+const checkRedis = () => {
+  return new Promise((resolve) => {
+    exec('redis-cli ping', (error, stdout) => {
+      if (error) {
+        log(`❌ Redis is not accessible: ${error.message}`, colors.red);
+        resolve(false);
+      } else if (stdout.trim() === 'PONG') {
+        log(`✅ Redis is healthy`, colors.green);
+        resolve(true);
+      } else {
+        log(`❌ Redis returned unexpected response: ${stdout}`, colors.red);
+        resolve(false);
       }
-      throw new Error('Test framework not working. Check Jest configuration');
-    }
-  }
+    });
+  });
+};
 
-  async checkDockerEnvironment() {
-    try {
-      await execAsync('docker --version');
-      await execAsync('docker-compose --version');
+const checkDocker = () => {
+  return new Promise((resolve) => {
+    exec('docker-compose ps', (error, stdout) => {
+      if (error) {
+        log(`⚠️  Docker Compose not running: ${error.message}`, colors.yellow);
+        resolve(false);
+      } else {
+        const lines = stdout.split('\n').filter(line => line.trim());
+        const services = lines.slice(1); // Skip header
 
-      return { message: 'Docker environment available' };
-    } catch (error) {
-      return { message: 'Docker not available (optional for development)' };
-    }
-  }
-
-  async checkServerHealth() {
-    return new Promise((resolve, reject) => {
-      const req = http.get('http://localhost:3001/api/health', { timeout: 5000 }, res => {
-        if (res.statusCode === 200) {
-          resolve({ message: 'Server responding correctly' });
+        if (services.length === 0) {
+          log(`⚠️  No Docker services running`, colors.yellow);
+          resolve(false);
         } else {
-          reject(new Error(`Server returned status ${res.statusCode}`));
+          log(`✅ Docker Compose services: ${services.length} running`, colors.green);
+          resolve(true);
         }
-      });
-
-      req.on('error', () => {
-        resolve({ message: 'Server not running (start with "npm run dev")' });
-      });
-
-      req.on('timeout', () => {
-        req.destroy();
-        reject(new Error('Server health check timeout'));
-      });
+      }
     });
+  });
+};
+
+async function runHealthCheck() {
+  const isBasic = process.argv.includes('--basic');
+
+  log('🏥 Running Health Check...', colors.blue);
+  log('========================', colors.blue);
+
+  const checks = [];
+
+  // Basic checks
+  checks.push(checkService('Server API', 'http://localhost:3001/api/health'));
+
+  if (!isBasic) {
+    // Full checks
+    checks.push(checkService('Client Dev Server', 'http://localhost:3000'));
+    checks.push(checkRedis());
+    checks.push(checkDocker());
   }
 
-  async checkRedisConnection() {
-    try {
-      await execAsync('redis-cli ping', { timeout: 5000 });
-      return { message: 'Redis connection successful' };
-    } catch (error) {
-      return { message: 'Redis not running (start with Docker or locally)' };
-    }
-  }
+  const results = await Promise.all(checks);
+  const healthyCount = results.filter(Boolean).length;
+  const totalCount = results.length;
 
-  async checkEnvironmentConfig() {
-    const envFiles = ['.env.example'];
-    const missing = envFiles.filter(file => !fs.existsSync(file));
+  log('========================', colors.blue);
 
-    if (missing.length > 0) {
-      throw new Error(`Missing environment files: ${missing.join(', ')}`);
-    }
-
-    return { message: 'Environment configuration files present' };
-  }
-
-  displayResults() {
-    console.log('\n' + chalk.bold.blue('📊 Health Check Summary'));
-    console.log('='.repeat(50));
-
-    const passed = this.results.filter(r => r.status === 'pass').length;
-    const failed = this.results.filter(r => r.status === 'fail').length;
-
-    console.log(chalk.green(`✅ Passed: ${passed}`));
-    console.log(chalk.red(`❌ Failed: ${failed}`));
-    console.log(chalk.blue(`📋 Total: ${this.results.length}`));
-
-    if (failed > 0) {
-      console.log('\n' + chalk.bold.red('❌ Failed Checks:'));
-      this.results
-        .filter(r => r.status === 'fail')
-        .forEach(result => {
-          console.log(chalk.red(`  • ${result.name}: ${result.message}`));
-        });
-    }
-
-    console.log('\n' + chalk.bold.cyan('🚀 Quick Start Commands:'));
-    console.log(chalk.gray('  npm run setup     - Complete environment setup'));
-    console.log(chalk.gray('  npm run dev       - Start development servers'));
-    console.log(chalk.gray('  npm test          - Run all tests'));
-    console.log(chalk.gray('  npm run docker:up - Start with Docker'));
-
-    if (failed === 0) {
-      console.log('\n' + chalk.bold.green('🎉 All systems operational! Ready for development.'));
-    } else {
-      console.log(
-        '\n' + chalk.bold.yellow('⚠️  Some issues detected. Please resolve before continuing.')
-      );
-    }
+  if (healthyCount === totalCount) {
+    log(`🎉 All services healthy (${healthyCount}/${totalCount})`, colors.green);
+    process.exit(0);
+  } else {
+    log(`⚠️  Some services unhealthy (${healthyCount}/${totalCount})`, colors.yellow);
+    process.exit(1);
   }
 }
 
-// Run health check if called directly
-if (require.main === module) {
-  const basicMode = process.argv.includes('--basic');
-  const checker = new HealthChecker({ basic: basicMode });
+// Handle uncaught errors
+process.on('uncaughtException', (error) => {
+  log(`❌ Uncaught error: ${error.message}`, colors.red);
+  process.exit(1);
+});
 
-  if (basicMode) {
-    console.log(chalk.yellow('🔧 Running in Basic Mode (Node.js 18 compatible)'));
-  }
-
-  checker
-    .runAllChecks()
-    .then(success => {
-      process.exit(success ? 0 : 1);
-    })
-    .catch(error => {
-      console.error(chalk.red('Health check failed:', error.message));
-      process.exit(1);
-    });
-}
-
-module.exports = HealthChecker;
+runHealthCheck();

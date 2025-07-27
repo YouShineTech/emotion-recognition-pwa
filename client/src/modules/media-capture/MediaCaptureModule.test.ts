@@ -1,7 +1,7 @@
 // Unit tests for Media Capture Module
 // Test scenarios based on design specifications
 
-import { CaptureConfig } from '@/shared/interfaces';
+import { CaptureConfig } from '@/shared/interfaces/media-capture.interface';
 import { MediaCaptureModule } from './MediaCaptureModule';
 
 describe('MediaCaptureModule', () => {

@@ -12,7 +12,7 @@ export interface FrameExtractionModule {
 
 export interface ExtractedVideoFrame {
   sessionId: string;
-  timestamp: number;
+  timestamp: Date;
   imageData: any; // ImageData in browser
   width: number;
   height: number;
@@ -21,7 +21,7 @@ export interface ExtractedVideoFrame {
 
 export interface ExtractedAudioChunk {
   sessionId: string;
-  timestamp: number;
+  timestamp: Date;
   audioBuffer: any; // AudioBuffer in browser
   duration: number;
   sampleRate: 44100 | 48000;

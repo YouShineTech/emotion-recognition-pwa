@@ -26,7 +26,18 @@ graph TB
     end
 
     subgraph "Shared Interfaces"
-        SI[Shared Interfaces]
+        MCI[media-capture.interface]
+        WTI[webrtc-transport.interface]
+        ORI[overlay-renderer.interface]
+        PSI[pwa-shell.interface]
+        MRI[media-relay.interface]
+        FEI[frame-extraction.interface]
+        FAI[facial-analysis.interface]
+        AAI[audio-analysis.interface]
+        OGI[overlay-data.interface]
+        CMI[connection-manager.interface]
+        NWI[nginx-server.interface]
+        CI[common.interface]
     end
 
     MC -->|Media Stream| WT
@@ -41,17 +52,17 @@ graph TB
     CM -->|Session Management| MR
     NW -->|Static Assets| PS
 
-    SI -.->|Implements| MC
-    SI -.->|Implements| WT
-    SI -.->|Implements| OR
-    SI -.->|Implements| PS
-    SI -.->|Implements| MR
-    SI -.->|Implements| FE
-    SI -.->|Implements| FA
-    SI -.->|Implements| AA
-    SI -.->|Implements| OG
-    SI -.->|Implements| CM
-    SI -.->|Implements| NW
+    MCI -.->|Implements| MC
+    WTI -.->|Implements| WT
+    ORI -.->|Implements| OR
+    PSI -.->|Implements| PS
+    MRI -.->|Implements| MR
+    FEI -.->|Implements| FE
+    FAI -.->|Implements| FA
+    AAI -.->|Implements| AA
+    OGI -.->|Implements| OG
+    CMI -.->|Implements| CM
+    NWI -.->|Implements| NW
 ```
 
 ## 📊 Module Relationship Diagram
@@ -301,6 +312,53 @@ Feature: Modular Architecture
 | OverlayGenerator  | Data fusion      | Emotion synthesis  | Accuracy improvement    |
 | NginxWebServer    | Deployment       | Static serving     | Production readiness    |
 
+## 🔧 Interface Import Architecture
+
+### Explicit Import Strategy
+
+The system uses explicit interface imports instead of a central export hub to achieve:
+
+1. **Minimal Dependencies**: Each module imports only the interfaces it actually uses
+2. **Tree Shaking**: Build tools can eliminate unused interfaces for smaller bundles
+3. **Clear Dependencies**: Import statements explicitly show module relationships
+4. **Independent Development**: Modules can be developed without coordinating through a central hub
+
+### Interface Dependency Hierarchy
+
+```mermaid
+graph TD
+    CI[common.interface] --> MCI[media-capture.interface]
+    CI --> WTI[webrtc-transport.interface]
+    CI --> CMI[connection-manager.interface]
+    CI --> AAI[audio-analysis.interface]
+    CI --> FAI[facial-analysis.interface]
+
+    MRI[media-relay.interface] --> FEI[frame-extraction.interface]
+    FEI --> FAI
+    FEI --> AAI
+
+    AAI --> OGI[overlay-data.interface]
+    FAI --> OGI
+    CI --> OGI
+
+    OGI --> ORI[overlay-renderer.interface]
+
+    PSI[pwa-shell.interface]
+    NWI[nginx-server.interface]
+```
+
+### Import Examples
+
+```typescript
+// Explicit, minimal imports - each module imports only what it needs
+import { MediaCaptureModule, CaptureConfig } from '../shared/interfaces/media-capture.interface';
+import { EmotionScore, BoundingBox } from '../shared/interfaces/common.interface';
+
+// Cross-module dependencies are explicit
+import { ExtractedVideoFrame } from '../shared/interfaces/frame-extraction.interface';
+import { FacialAnalysisResult } from '../shared/interfaces/facial-analysis.interface';
+```
+
 ## 🔧 API Design Principles
 
 1. **Single Responsibility**: Each module has one clear purpose
@@ -308,5 +366,7 @@ Feature: Modular Architecture
 3. **Dependency Inversion**: High-level modules don't depend on low-level implementations
 4. **Open/Closed**: Interfaces are open for extension, closed for modification
 5. **Version Compatibility**: All interfaces include version numbers for evolution
+6. **Explicit Dependencies**: All imports use specific interface file paths
+7. **Minimal Coupling**: Modules import only required interfaces, not entire interface collections
 
 This architecture ensures the emotion recognition PWA can scale from prototype to production while maintaining code quality and user experience.

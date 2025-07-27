@@ -3,10 +3,10 @@
 
 import {
   AudioAnalysisResult,
-  EmotionScore,
-  ExtractedAudioChunk,
   AudioAnalysisModule as IAudioAnalysisModule,
-} from '@/shared/interfaces';
+} from '@/shared/interfaces/audio-analysis.interface';
+import { ExtractedAudioChunk } from '@/shared/interfaces/frame-extraction.interface';
+import { EmotionScore } from '@/shared/interfaces/common.interface';
 
 export class AudioAnalysisModule implements IAudioAnalysisModule {
   private modelType: 'fast' | 'accurate' = 'fast';
