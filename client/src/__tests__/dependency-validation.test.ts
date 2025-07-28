@@ -7,7 +7,7 @@
 
 import fs from 'fs';
 import path from 'path';
-const glob = require('glob');
+import { glob } from 'glob';
 
 describe('Client-Side Dependency Validation', () => {
   const SHARED_INTERFACES_DIR = path.resolve(__dirname, '../../../shared/interfaces');
@@ -54,7 +54,7 @@ describe('Client-Side Dependency Validation', () => {
             content.match(/@\/shared\/interfaces\/([^'"]+)\.interface/g) || [];
 
           interfaceImports.forEach(importPath => {
-            const interfaceName = importPath.match(/\/([^\/]+)\.interface$/)?.[1];
+            const interfaceName = importPath.match(/\/([^/]+)\.interface$/)?.[1];
             if (interfaceName) {
               expect(clientRelevantInterfaces).toContain(`${interfaceName}.interface`);
             }

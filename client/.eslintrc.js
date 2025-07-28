@@ -10,7 +10,7 @@ module.exports = {
   plugins: ['@typescript-eslint', 'prettier'],
   extends: [
     'eslint:recommended',
-    '@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended',
     'prettier',
   ],
   env: {
@@ -79,5 +79,16 @@ module.exports = {
     'coverage/',
     '*.config.js',
     'public/',
+  ],
+  overrides: [
+    {
+      files: ['**/*.test.ts', '**/*.test.tsx'],
+      parserOptions: {
+        project: null,
+      },
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+      },
+    },
   ],
 };

@@ -7,7 +7,6 @@
 
 import fs from 'fs';
 import path from 'path';
-import { glob } from 'glob';
 
 export interface DependencyGraph {
   [interfaceName: string]: string[];
@@ -29,11 +28,14 @@ export interface ModuleImportInfo {
  * Build a dependency graph from interface files
  */
 export function buildInterfaceDependencyGraph(interfacesDir: string): DependencyGraph {
-  const interfaceFiles = glob.sync(`${interfacesDir}/*.interface.ts`);
+  const interfaceFiles = fs
+    .readdirSync(interfacesDir)
+    .filter(file => file.endsWith('.interface.ts'));
   const dependencies: DependencyGraph = {};
 
-  interfaceFiles.forEach(file => {
-    const content = fs.readFileSync(file, 'utf8');
+  interfaceFiles.forEach((file: string) => {
+    const fullPath = path.join(interfacesDir, file);
+    const content = fs.readFileSync(fullPath, 'utf8');
     const imports = content.match(/from\s+['"]\.\/([^'"]+)\.interface['"]/g) || [];
     const fileName = path.basename(file, '.ts');
 
@@ -165,15 +167,18 @@ export function validateNoCentralHubs(interfacesDir: string): ValidationResult {
 export function validateSingleResponsibility(interfacesDir: string): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
-  const interfaceFiles = glob.sync(`${interfacesDir}/*.interface.ts`);
+  const interfaceFiles = fs
+    .readdirSync(interfacesDir)
+    .filter(file => file.endsWith('.interface.ts'));
 
-  interfaceFiles.forEach(file => {
-    const content = fs.readFileSync(file, 'utf8');
+  interfaceFiles.forEach((file: string) => {
+    const fullPath = path.join(interfacesDir, file);
+    const content = fs.readFileSync(fullPath, 'utf8');
     const moduleInterfaceCount = (content.match(/export\s+interface\s+\w+Module/g) || []).length;
 
     if (moduleInterfaceCount > 1) {
       errors.push(
-        `${file} contains ${moduleInterfaceCount} module interfaces. Each file should serve exactly one module.`
+        `${fullPath} contains ${moduleInterfaceCount} module interfaces. Each file should serve exactly one module.`
       );
     }
 
@@ -189,7 +194,7 @@ export function validateSingleResponsibility(interfacesDir: string): ValidationR
       const hasExpectedInterface = content.includes(`interface ${expectedInterfaceName}`);
       if (!hasExpectedInterface) {
         warnings.push(
-          `${file} should contain interface ${expectedInterfaceName} based on filename`
+          `${fullPath} should contain interface ${expectedInterfaceName} based on filename`
         );
       }
     }
@@ -219,9 +224,9 @@ export function validateExplicitImports(moduleFiles: string[]): ValidationResult
     },
   ];
 
-  const requiredPattern = /from\s+['"]@\/shared\/interfaces\/[^\/]+\.interface['"]/;
+  const requiredPattern = /from\s+['"]@\/shared\/interfaces\/[^/]+\.interface['"]/;
 
-  moduleFiles.forEach(file => {
+  moduleFiles.forEach((file: string) => {
     if (!fs.existsSync(file)) return;
 
     const content = fs.readFileSync(file, 'utf8');
@@ -261,14 +266,16 @@ export function calculateInterfaceImpact(
   interfacesDir: string,
   moduleFiles: string[]
 ): Map<string, string[]> {
-  const interfaceFiles = glob.sync(`${interfacesDir}/*.interface.ts`);
+  const interfaceFiles = fs
+    .readdirSync(interfacesDir)
+    .filter(file => file.endsWith('.interface.ts'));
   const impactMap = new Map<string, string[]>();
 
-  interfaceFiles.forEach(interfaceFile => {
+  interfaceFiles.forEach((interfaceFile: string) => {
     const interfaceName = path.basename(interfaceFile, '.ts');
     const affectedModules: string[] = [];
 
-    moduleFiles.forEach(moduleFile => {
+    moduleFiles.forEach((moduleFile: string) => {
       if (fs.existsSync(moduleFile)) {
         const content = fs.readFileSync(moduleFile, 'utf8');
         const importPattern = new RegExp(
@@ -294,7 +301,7 @@ export function validateTreeShakingCompatibility(moduleFiles: string[]): Validat
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  moduleFiles.forEach(file => {
+  moduleFiles.forEach((file: string) => {
     if (!fs.existsSync(file)) return;
 
     const content = fs.readFileSync(file, 'utf8');

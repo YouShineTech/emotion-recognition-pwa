@@ -39,9 +39,9 @@ describe('FacialAnalysisModule', () => {
       expect(result.success).toBe(true);
       expect(result.sessionId).toBe('test-session-123');
       expect(result.faces).toHaveLength(1);
-      expect(result.faces[0].emotions).toHaveLength(2);
-      expect(result.faces[0].emotions[0].emotion).toBe('happy');
-      expect(result.faces[0].emotions[0].confidence).toBe(0.85);
+      expect(result.faces[0]?.emotions).toHaveLength(2);
+      expect(result.faces[0]?.emotions[0]?.emotion).toBe('happy');
+      expect(result.faces[0]?.emotions[0]?.confidence).toBe(0.85);
     });
 
     it('should handle processing errors gracefully', async () => {

@@ -8,7 +8,7 @@
 
 import fs from 'fs';
 import path from 'path';
-const glob = require('glob');
+import { glob } from 'glob';
 
 describe('Dependency Validation', () => {
   const SHARED_INTERFACES_DIR = path.resolve(__dirname, '../../../shared/interfaces');
@@ -76,7 +76,7 @@ describe('Dependency Validation', () => {
         ...glob.sync(`${SERVER_MODULES_DIR}/**/*.ts`),
       ];
 
-      const validInterfaceImportPattern = /from\s+['"]@\/shared\/interfaces\/[^\/]+\.interface['"]/;
+      const validInterfaceImportPattern = /from\s+['"]@\/shared\/interfaces\/[^/]+\.interface['"]/;
 
       moduleFiles.forEach((file: string) => {
         if (fs.existsSync(file)) {
@@ -210,13 +210,13 @@ describe('Dependency Validation', () => {
         }
 
         // Convert kebab-case filename to PascalCase for interface matching
-        const expectedInterfaceName =
-          fileName
-            .split('-')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join('') + 'Module';
+        // const expectedInterfaceName =
+        //   fileName
+        //     .split('-')
+        //     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        //     .join('') + 'Module';
 
-        const hasExpectedInterface = content.includes(`interface ${expectedInterfaceName}`);
+        // const hasExpectedInterface = content.includes(`interface ${expectedInterfaceName}`);
 
         // Each interface file should have at least one exported interface
         const hasExportedInterface = content.includes('export interface');
@@ -354,7 +354,7 @@ describe('Dependency Validation', () => {
             const pathMatch = importStatement.match(/from\s+['"]([^'"]+)['"]/);
             if (pathMatch && pathMatch[1]) {
               const importPath = pathMatch[1];
-              pathPatterns.add(importPath.replace(/\/[^\/]+\.interface$/, ''));
+              pathPatterns.add(importPath.replace(/\/[^/]+\.interface$/, ''));
             }
           });
         }
