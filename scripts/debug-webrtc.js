@@ -218,7 +218,7 @@ class WebRTCDebugger {
 }
 
 // Start debugging
-const debugger = new WebRTCDebugger();
+const debugTool = new WebRTCDebugger();
 
 // Handle graceful shutdown
 process.on('SIGINT', () => {
@@ -226,4 +226,4 @@ process.on('SIGINT', () => {
   process.exit(0);
 });
 
-debugger.start();
+debugTool.start();
