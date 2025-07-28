@@ -1,0 +1,17 @@
+{
+  "recommendations": [
+    "ms-vscode.vscode-typescript-next",
+    "ms-vscode.vscode-json",
+    "ms-vscode.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "orta.vscode-jest",
+    "ms-vscode.vscode-chrome-debug",
+    "ms-vscode.vscode-edge-devtools",
+    "bradlc.vscode-tailwindcss",
+    "ms-vscode.vscode-npm-script",
+    "formulahendry.auto-rename-tag",
+    "christian-kohler.path-intellisense",
+    "ms-vscode.vscode-docker"
+  ],
+  "unwantedRecommendations": []
+}

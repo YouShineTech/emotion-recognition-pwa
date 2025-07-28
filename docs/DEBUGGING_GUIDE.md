@@ -1,310 +1,189 @@
-# Dynamic Debugging & Development Guide
+# 🚀 Complete Debugging Guide for Emotion Recognition PWA
 
-## 🚀 **Interactive Development Console**
+## Overview
 
-Start the interactive development environment:
+This guide explains how to use the enhanced debugging setup for dynamic module debugging in your emotion recognition PWA project.
 
-```bash
-npm run dev:interactive
-```
+## 📋 Current Debug Configurations
 
-This gives you a command-line interface to control development in real-time.
+### 🌐 **Frontend Debugging (Client-side)**
 
-### **Interactive Commands:**
+- **Debug Client (Chrome)**: Launches Chrome with your PWA at localhost:3000
+- **Debug Client (Edge)**: Same as above but using Microsoft Edge
+- **Full Stack Debug**: Starts server + automatically launches Chrome client
 
-| Command                       | Description                     | Example                |
-| ----------------------------- | ------------------------------- | ---------------------- |
-| `start`                       | Start development servers       | `start`                |
-| `debug`                       | Start servers in debug mode     | `debug`                |
-| `task 2`                      | Work on specific task           | `task 2`               |
-| `module media-capture`        | Focus on specific module        | `module media-capture` |
-| `test`                        | Run tests in watch mode         | `test`                 |
-| `inspect client/src/index.ts` | View file contents              | `inspect <file>`       |
-| `edit server/src/index.ts`    | Open file in VS Code            | `edit <file>`          |
-| `monitor`                     | Watch module communications     | `monitor`              |
-| `status`                      | Show current development status | `status`               |
+### 🧪 **Module-Specific Testing**
 
-## 🐛 **VS Code Debugging (Step-through)**
+Each module has its own debug configuration:
 
-### **1. Debug Server Code:**
+#### **Client Modules:**
 
-```bash
-# Method 1: VS Code Debug Panel
-1. Open server/src/index.ts
-2. Set breakpoints (click left of line numbers)
-3. Press F5 → Select "🚀 Debug Server"
-4. Code execution stops at breakpoints
+- **Debug MediaCapture Tests**: Tests camera/microphone access
+- **Debug OverlayRenderer Tests**: Tests emotion overlay rendering
+- **Debug PWAShell Tests**: Tests PWA functionality
+- **Debug WebRTCTransport Tests**: Tests WebRTC communication
 
-# Method 2: Interactive Console
-npm run dev:interactive
-> debug
-# Then attach VS Code debugger
-```
+#### **Server Modules:**
 
-### **2. Debug Client Code:**
+- **Debug AudioAnalysis Tests**: Tests audio emotion analysis
+- **Debug FacialAnalysis Tests**: Tests facial emotion analysis
+- **Debug FrameExtraction Tests**: Tests video frame processing
+- **Debug MediaRelay Tests**: Tests media streaming
+- **Debug ConnectionManager Tests**: Tests WebRTC connections
+- **Debug NginxServer Tests**: Tests web server functionality
+- **Debug OverlayGenerator Tests**: Tests overlay data generation
 
-```bash
-# Method 1: VS Code + Chrome
-1. Start server: npm run dev:server
-2. Set breakpoints in client/src/index.ts
-3. Press F5 → Select "🌐 Debug Client"
-4. Chrome opens with DevTools attached
+### 🔍 **Dynamic Debugging Options**
 
-# Method 2: Chrome DevTools
-1. Open http://localhost:3000
-2. Press F12 → Sources tab
-3. Find your TypeScript files
-4. Set breakpoints and step through
-```
+- **Debug Current Test File**: Debugs whatever test file you have open
+- **Debug All Client Modules**: Runs all client module tests
+- **Debug All Server Modules**: Runs all server module tests
 
-### **3. Debug Full Stack:**
+## 🎯 **Step-by-Step Dynamic Module Debugging**
 
-```bash
-# Debug both client and server simultaneously
-1. Press F5 → Select "🚀 Debug Full Stack"
-2. Both debuggers start together
-3. Set breakpoints in both client and server code
-```
+### **Method 1: Individual Module Debugging**
 
-## 🔍 **Step-by-Step Debugging Workflow**
+1. **Open the module file** you want to debug (e.g., `MediaCaptureModule.ts`)
+2. **Set breakpoints** by clicking left of line numbers
+3. **Press F5** or go to Run → Start Debugging
+4. **Select the specific module test** from the dropdown
+5. **Watch the execution flow** - you can step through module → test → module
 
-### **Example: Debug Media Capture Module**
+### **Method 2: Test-Driven Debugging**
 
-1. **Start Interactive Mode:**
+1. **Open the test file** for the module (e.g., `MediaCaptureModule.test.ts`)
+2. **Set breakpoints** in both the test AND the module
+3. **Press F5** → Select "Debug Current Test File"
+4. **Step through**: Test → Module → Test → Module
+5. **Watch variables** change as tests execute
 
-   ```bash
-   npm run dev:interactive
-   > module media-capture
-   ```
+### **Method 3: Full Integration Debugging**
 
-2. **Set Breakpoints:**
-
-   ```bash
-   # Open in VS Code
-   > edit client/src/modules/media-capture/MediaCaptureModule.ts
-
-   # Set breakpoints on these lines:
-   - Line 17: requestPermissions() method
-   - Line 43: startCapture() method
-   - Line 54: stopCapture() method
-   ```
-
-3. **Start Debug Mode:**
-
-   ```bash
-   > debug
-   # Server starts with debugger attached
-   ```
-
-4. **Trigger Breakpoints:**
-
-   ```bash
-   # Open browser to http://localhost:3000
-   # Click "Start Emotion Recognition"
-   # Code execution stops at your breakpoints
-   ```
-
-5. **Step Through Code:**
-   - **F10** - Step over (next line)
-   - **F11** - Step into (enter function)
-   - **Shift+F11** - Step out (exit function)
-   - **F5** - Continue execution
-
-## 📊 **Real-time Development Monitoring**
-
-### **Module Communication Monitor:**
-
-```bash
-npm run dev:interactive
-> monitor
-
-# Shows real-time communication between modules:
-📡 MediaCapture → WebRTCTransport: data_transfer (1024 bytes)
-📡 WebRTCTransport → MediaRelay: stream_data (2048 bytes)
-```
-
-### **Live Code Changes:**
-
-```bash
-# Watch mode - automatically rebuilds on changes
-npm run dev:interactive
-> build
-
-# Make changes to any file
-# Build automatically triggers
-# Browser auto-refreshes
-```
-
-## 🧪 **Test-Driven Development**
-
-### **Interactive Testing:**
-
-```bash
-npm run dev:interactive
-> test
-
-# Tests run in watch mode
-# Make code changes
-# Tests automatically re-run
-# See results in real-time
-```
-
-### **Debug Failing Tests:**
-
-```bash
-# In VS Code:
-1. Open test file: client/src/modules/media-capture/MediaCaptureModule.test.ts
-2. Set breakpoints in test or source code
-3. Press F5 → Select "🧪 Debug Jest Tests"
-4. Step through test execution
-```
-
-## 🎯 **Task-Focused Development**
-
-### **Work on Specific Tasks:**
-
-```bash
-npm run dev:interactive
-> task 2
-
-# Shows task details:
-📝 Task Details:
-WebRTC Media Capture PoC
-- Create basic HTML page with getUserMedia API integration
-- Implement camera/microphone permission handling
-- Add device enumeration and selection functionality
-- Test cross-browser compatibility
-
-# Now all commands are focused on this task
-[Task 2] dev> status
-[Task 2] dev> module media-capture
-[Task 2] dev> test
-```
+1. **Start Full Stack Debug** (F5 → "Debug Full Stack")
+2. **Set breakpoints** in both client and server modules
+3. **Use browser** normally - breakpoints will hit when modules are called
+4. **Watch the flow**: Browser → Client Module → Server Module → Response
 
 ## 🔧 **Advanced Debugging Techniques**
 
-### **1. Chrome DevTools Integration:**
+### **Cross-Module Debugging**
 
-```bash
-# Start debug server
-npm run dev:debug
-
-# Open Chrome and go to:
-chrome://inspect
-
-# Click "inspect" next to your Node.js process
-# Full Chrome DevTools for server-side code
+```typescript
+// Example: Debugging MediaCapture → WebRTCTransport flow
+// 1. Set breakpoints in both modules
+// 2. Start "Debug Full Stack"
+// 3. Trigger media capture in browser
+// 4. Watch execution move between modules
 ```
 
-### **2. Network Debugging:**
+### **Real-time Variable Inspection**
 
-```bash
-# Monitor WebRTC connections
-1. Open Chrome DevTools (F12)
-2. Go to Network tab
-3. Filter by "WS" (WebSocket)
-4. See real-time WebRTC signaling
+- **Variables Panel**: Shows current values
+- **Watch Panel**: Add expressions to monitor
+- **Call Stack**: See the execution path through modules
+- **Console**: Interact with running code
+
+### **Conditional Breakpoints**
+
+Right-click on breakpoint → Add condition:
+
+```typescript
+// Example conditions:
+deviceId === 'specific-camera-id';
+stream.getVideoTracks().length > 0;
+error.message.includes('permission');
 ```
 
-### **3. Performance Profiling:**
+## 📁 **Project Structure for Debugging**
 
-```bash
-# In Chrome DevTools:
-1. Performance tab
-2. Click Record
-3. Interact with your app
-4. Stop recording
-5. Analyze performance bottlenecks
+```
+client/src/modules/
+├── media-capture/          # Camera/microphone access
+├── overlay-renderer/       # Emotion overlay display
+├── pwa-shell/             # PWA functionality
+└── webrtc-transport/      # Client-side WebRTC
+
+server/src/modules/
+├── audio-analysis/        # Audio emotion detection
+├── facial-analysis/       # Facial emotion detection
+├── frame-extraction/      # Video frame processing
+├── media-relay/          # Media streaming
+├── connection-manager/   # WebRTC connections
+├── nginx-server/         # Web server
+└── overlay-generator/    # Overlay data creation
 ```
 
-## 📝 **Code Inspection & Editing**
+## 🎮 **Quick Start Commands**
 
-### **Quick File Inspection:**
-
-```bash
-npm run dev:interactive
-> inspect client/src/index.ts
-
-# Shows file contents with line numbers
-📄 client/src/index.ts (150 lines)
-──────────────────────────────────────────────────
-  1: // Client Entry Point
-  2: // Emotion Recognition PWA Frontend
-  3:
-  4: import { MediaCaptureModule } from './modules/media-capture/MediaCaptureModule';
-  ...
-```
-
-### **Quick Editing:**
+### **Start Development with Debugging**
 
 ```bash
-> edit server/src/index.ts
-# Opens file in VS Code immediately
+# Method 1: Use VSCode
+F5 → Select "Debug Full Stack"
+
+# Method 2: Manual
+cd server && npm run dev    # Terminal 1
+cd client && npm run dev    # Terminal 2
 ```
 
-## 🚨 **Error Debugging**
-
-### **Common Debugging Scenarios:**
-
-1. **WebRTC Connection Issues:**
-
-   ```bash
-   # Debug WebRTC module specifically
-   npm run debug:webrtc
-   > init ws://localhost:3001
-   > connect
-   > state
-   ```
-
-2. **Module Communication Problems:**
-
-   ```bash
-   # Monitor module interactions
-   npm run dev:interactive
-   > monitor
-   # Watch for failed communications
-   ```
-
-3. **Build Errors:**
-   ```bash
-   # Watch build process
-   npm run dev:interactive
-   > build
-   # See compilation errors in real-time
-   ```
-
-## 💡 **Pro Tips**
-
-### **Efficient Debugging Workflow:**
-
-1. **Use Interactive Console** for quick commands
-2. **Set Strategic Breakpoints** at module boundaries
-3. **Monitor Module Communications** to understand data flow
-4. **Use Watch Mode** for immediate feedback
-5. **Debug Tests** to understand expected behavior
-
-### **Keyboard Shortcuts:**
-
-- **F5** - Start debugging
-- **Ctrl+Shift+F5** - Restart debugging
-- **F9** - Toggle breakpoint
-- **F10** - Step over
-- **F11** - Step into
-- **Shift+F11** - Step out
-
-## 🎮 **Try It Now!**
+### **Debug Specific Module**
 
 ```bash
-# Start interactive development
-npm run dev:interactive
+# Find your module test file
+code client/src/modules/[module-name]/[ModuleName]Module.test.ts
 
-# Try these commands:
-> help
-> status
-> start
-> task 2
-> module media-capture
-> debug
+# Press F5 → Select "[ModuleName] Tests"
 ```
 
-This gives you complete control over the development process with real-time debugging, monitoring, and code inspection! 🚀
+## 🐛 **Common Debugging Scenarios**
+
+### **"My breakpoint isn't hitting"**
+
+1. Check if source maps are enabled
+2. Verify the correct debug configuration
+3. Ensure the file is actually being executed
+
+### **"I want to see module interactions"**
+
+1. Use "Debug Full Stack"
+2. Set breakpoints in multiple modules
+3. Watch the call stack as execution flows
+
+### **"Testing individual POC functionality"**
+
+1. Open the specific module test
+2. Use module-specific debug configuration
+3. Step through the POC implementation
+
+## 🎓 **Learning Path for Embedded Developers**
+
+### **Week 1: Understanding the Architecture**
+
+- Start with individual module tests
+- Use "Debug [Module] Tests" configurations
+- Focus on one module at a time
+
+### **Week 2: Integration Flow**
+
+- Use "Debug Full Stack"
+- Set breakpoints in client → server communication
+- Watch WebRTC negotiation process
+
+### **Week 3: Advanced Debugging**
+
+- Use conditional breakpoints
+- Debug race conditions in async operations
+- Profile performance across modules
+
+## 🚨 **Pro Tips**
+
+1. **Use the Debug Console**: You can execute code in the context of your running application
+2. **Watch Expressions**: Add `module.exports` to see what's being exported
+3. **Call Stack Navigation**: Click any frame to jump to that point in execution
+4. **Restart Debugging**: Ctrl+Shift+F5 to restart with same configuration
+
+## 📝 **Next Steps**
+
+- Try debugging a simple module first (MediaCapture)
+- Then move to integration debugging
+- Finally, debug the full emotion recognition flow
