@@ -24,6 +24,7 @@
     "socket.io-client": "^4.7.4"
   },
   "devDependencies": {
+    "@types/glob": "^9.0.0",
     "@types/jest": "^29.5.8",
     "@types/node": "^20.9.0",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
