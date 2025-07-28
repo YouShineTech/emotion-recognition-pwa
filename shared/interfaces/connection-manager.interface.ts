@@ -1,8 +1,6 @@
 // Connection Manager Module Interface
 // Version 1.0
 
-import { ProcessingStats } from './common.interface';
-
 export interface ConnectionManagerModule {
   createSession(userId?: string): Promise<SessionInfo>;
   monitorConnection(sessionId: string): void;
@@ -35,4 +33,17 @@ export interface ConnectionIssue {
   message: string;
   timestamp: Date;
   severity: 'low' | 'medium' | 'high';
+}
+
+export interface ProcessingStats {
+  framesProcessed: number;
+  averageLatency: number;
+  errorCount: number;
+  qualityMetrics: QualityMetrics;
+}
+
+export interface QualityMetrics {
+  videoQuality: 'low' | 'medium' | 'high';
+  audioQuality: 'low' | 'medium' | 'high';
+  processingLoad: number; // 0.0 to 1.0
 }

@@ -33,6 +33,37 @@ module.exports = {
 
     // Prettier integration
     'prettier/prettier': 'error',
+
+    // Modular import validation rules
+    'no-restricted-imports': [
+      'error',
+      {
+        patterns: [
+          {
+            group: ['**/index', '**/index.ts', '**/index.js'],
+            message: 'Importing from index files is not allowed. Use explicit interface imports instead.',
+          },
+          {
+            group: ['../../../shared/interfaces/index*'],
+            message: 'Central export hubs are not allowed. Import directly from specific interface files.',
+          },
+          {
+            group: ['@/shared/interfaces/index*'],
+            message: 'Central export hubs are not allowed. Import directly from specific interface files.',
+          },
+        ],
+        paths: [
+          {
+            name: '@/shared/interfaces',
+            message: 'Import from specific interface files, not the interfaces directory.',
+          },
+          {
+            name: '../../../shared/interfaces',
+            message: 'Import from specific interface files, not the interfaces directory.',
+          },
+        ],
+      },
+    ],
   },
   settings: {
     'import/resolver': {

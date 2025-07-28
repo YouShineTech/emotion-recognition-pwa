@@ -17,8 +17,7 @@ module.exports = (env, argv) => {
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.jsx'],
       alias: {
-        '@': path.resolve(__dirname, 'src'),
-        '@/shared': path.resolve(__dirname, '../shared'),
+        '@': path.resolve(__dirname, '..'),
       },
     },
 
@@ -78,6 +77,9 @@ module.exports = (env, argv) => {
     devtool: isProduction ? 'source-map' : 'inline-source-map',
 
     optimization: {
+      // Enable tree-shaking for better interface-level optimization
+      usedExports: true,
+      sideEffects: false,
       splitChunks: isProduction
         ? {
             chunks: 'all',
@@ -86,6 +88,12 @@ module.exports = (env, argv) => {
                 test: /[\\/]node_modules[\\/]/,
                 name: 'vendors',
                 chunks: 'all',
+              },
+              interfaces: {
+                test: /[\\/]shared[\\/]interfaces[\\/]/,
+                name: 'interfaces',
+                chunks: 'all',
+                priority: 10,
               },
             },
           }

@@ -12,15 +12,18 @@
     "declaration": true,
     "outDir": "./dist",
     "rootDir": "../",
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["*"],
-      "@/modules/*": ["modules/*"],
-      "@/shared/*": ["../../shared/*"]
+      "@/*": ["../*"]
     },
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    // Additional compiler checks for modular imports
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true
   },
   "include": [
     "src/**/*",
