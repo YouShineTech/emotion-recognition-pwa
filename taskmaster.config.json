@@ -1,0 +1,25 @@
+{
+  "name": "emotion-recognition-pwa",
+  "description": "Task management for real-time emotion recognition PWA with WebRTC and AI processing",
+  "database": {
+    "path": "./taskmaster.db",
+    "encrypted": false
+  },
+  "mcp": {
+    "server": "@astrotask/mcp",
+    "logLevel": "info"
+  },
+  "categories": [
+    "frontend",
+    "backend",
+    "ai-processing",
+    "webrtc",
+    "devops",
+    "testing",
+    "documentation"
+  ],
+  "defaultTaskTemplate": {
+    "status": "pending",
+    "priority": "medium"
+  }
+}

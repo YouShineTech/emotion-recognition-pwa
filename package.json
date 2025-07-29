@@ -104,9 +104,15 @@
     "perf:monitor": "node scripts/performance-monitor.js",
     "perf:report": "node scripts/performance-report.js",
     "kill:ports": "lsof -ti:3000,3001,6379 | xargs kill -9 || true",
-    "reset": "npm run kill:ports && npm run clean:install && npm run setup"
+    "reset": "npm run kill:ports && npm run clean:install && npm run setup",
+    "taskmaster:dev": "npx @astrotask/mcp --database-path ./taskmaster.db --log-level debug",
+    "taskmaster:start": "npx @astrotask/mcp --database-path ./taskmaster.db",
+    "taskmaster:reset": "rm -f taskmaster.db && npm run taskmaster:start",
+    "taskmaster:backup": "cp taskmaster.db taskmaster-backup-$(date +%Y%m%d-%H%M%S).db",
+    "taskmaster:status": "echo \"Taskmaster AI is configured and ready to use!\""
   },
   "devDependencies": {
+    "@astrotask/mcp": "^1.3.0",
     "@typescript-eslint/eslint-plugin": "^8.37.0",
     "@typescript-eslint/parser": "^8.37.0",
     "artillery": "^2.0.23",
