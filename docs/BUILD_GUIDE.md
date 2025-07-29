@@ -407,14 +407,14 @@ npm run perf:report
 
 ## Quick Reference Commands
 
-| Command | Description |
-|---------|-------------|
-| `npm run setup` | Complete environment setup |
-| `npm run dev` | Start development servers |
-| `npm test` | Run all tests |
-| `npm run build:dev` | Development build |
-| `npm run health:check` | Verify system health |
-| `npm run clean:install` | Clean reinstall |
-| `npm run ci:local` | Run CI pipeline locally |
+| Command                 | Description                |
+| ----------------------- | -------------------------- |
+| `npm run setup`         | Complete environment setup |
+| `npm run dev`           | Start development servers  |
+| `npm test`              | Run all tests              |
+| `npm run build:dev`     | Development build          |
+| `npm run health:check`  | Verify system health       |
+| `npm run clean:install` | Clean reinstall            |
+| `npm run ci:local`      | Run CI pipeline locally    |
 
 For more detailed information, see individual module documentation in `/docs/modules/`.

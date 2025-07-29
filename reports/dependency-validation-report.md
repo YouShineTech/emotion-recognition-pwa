@@ -61,4 +61,4 @@ The modular interface architecture successfully meets all requirements:
 
 ---
 
-*This report was generated automatically by the dependency validation test suite.*
+_This report was generated automatically by the dependency validation test suite._

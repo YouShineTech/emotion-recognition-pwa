@@ -13,10 +13,7 @@ module.exports = {
   },
 
   // Test file patterns
-  testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.(ts|js)',
-    '<rootDir>/src/**/*.(test|spec).(ts|js)',
-  ],
+  testMatch: ['<rootDir>/src/**/__tests__/**/*.(ts|js)', '<rootDir>/src/**/*.(test|spec).(ts|js)'],
 
   // File extensions to consider
   moduleFileExtensions: ['ts', 'js', 'json'],
@@ -46,10 +43,7 @@ module.exports = {
   },
 
   // Ignore patterns
-  testPathIgnorePatterns: [
-    '<rootDir>/node_modules/',
-    '<rootDir>/dist/',
-  ],
+  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/dist/'],
 
   // Clear mocks between tests
   clearMocks: true,

@@ -40,11 +40,7 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/client/node_modules/.bin/jest",
-      "args": [
-        "--runInBand",
-        "--no-cache",
-        "--testPathPattern=MediaCaptureModule.test.ts"
-      ],
+      "args": ["--runInBand", "--no-cache", "--testPathPattern=MediaCaptureModule.test.ts"],
       "cwd": "${workspaceFolder}/client",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
@@ -57,11 +53,7 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/client/node_modules/.bin/jest",
-      "args": [
-        "--runInBand",
-        "--no-cache",
-        "${fileBasenameNoExtension}"
-      ],
+      "args": ["--runInBand", "--no-cache", "${fileBasenameNoExtension}"],
       "cwd": "${workspaceFolder}/client",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",

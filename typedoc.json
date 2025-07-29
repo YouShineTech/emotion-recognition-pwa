@@ -1,9 +1,5 @@
 {
-  "entryPoints": [
-    "client/src/index.ts",
-    "server/src/index.ts",
-    "shared/interfaces/index.ts"
-  ],
+  "entryPoints": ["client/src/index.ts", "server/src/index.ts", "shared/interfaces/index.ts"],
   "out": "docs/api",
   "name": "Emotion Recognition PWA API Documentation",
   "readme": "README.md",
@@ -32,12 +28,5 @@
   ],
   "categorizeByGroup": true,
   "defaultCategory": "Other",
-  "categoryOrder": [
-    "Modules",
-    "Interfaces",
-    "Classes",
-    "Functions",
-    "Types",
-    "*"
-  ]
+  "categoryOrder": ["Modules", "Interfaces", "Classes", "Functions", "Types", "*"]
 }

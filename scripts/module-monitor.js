@@ -101,7 +101,10 @@ class ModuleMonitor {
         const response = await this.makeRequest('http://localhost:3001/api/health');
         if (response && response.resourceUsage) {
           const { cpuUsage, memoryUsage, activeConnections } = response.resourceUsage;
-          log(`📊 Performance: CPU ${cpuUsage.toFixed(1)}%, Memory ${memoryUsage.toFixed(1)}%, Connections ${activeConnections}`, colors.cyan);
+          log(
+            `📊 Performance: CPU ${cpuUsage.toFixed(1)}%, Memory ${memoryUsage.toFixed(1)}%, Connections ${activeConnections}`,
+            colors.cyan
+          );
         }
       } catch (error) {
         // Silently handle performance monitoring errors
@@ -158,10 +161,12 @@ class ModuleMonitor {
     this.modules.forEach(module => {
       const stats = this.stats[module];
       const statusColor = this.getStatusColor(stats.status);
-      const lastUpdate = stats.lastUpdate ?
-        stats.lastUpdate.toLocaleTimeString() : 'Never';
+      const lastUpdate = stats.lastUpdate ? stats.lastUpdate.toLocaleTimeString() : 'Never';
 
-      log(`${module.padEnd(25)} ${stats.status.padEnd(10)} Last: ${lastUpdate} ✓${stats.successCount} ✗${stats.errorCount}`, statusColor);
+      log(
+        `${module.padEnd(25)} ${stats.status.padEnd(10)} Last: ${lastUpdate} ✓${stats.successCount} ✗${stats.errorCount}`,
+        statusColor
+      );
     });
 
     log('============================', colors.blue);
@@ -184,9 +189,9 @@ class ModuleMonitor {
 
   makeRequest(url) {
     return new Promise((resolve, reject) => {
-      const request = http.get(url, { timeout: 5000 }, (res) => {
+      const request = http.get(url, { timeout: 5000 }, res => {
         let data = '';
-        res.on('data', chunk => data += chunk);
+        res.on('data', chunk => (data += chunk));
         res.on('end', () => {
           try {
             resolve(JSON.parse(data));

@@ -48,10 +48,13 @@ function runDependencyTests() {
     // Run integration tests (if they exist)
     console.log('\n🔗 Running integration dependency validation tests...');
     try {
-      execSync('npm run test:integration -- --testPathPattern=dependency-validation.integration --passWithNoTests', {
-        cwd: path.join(PROJECT_ROOT, 'server'),
-        stdio: 'inherit',
-      });
+      execSync(
+        'npm run test:integration -- --testPathPattern=dependency-validation.integration --passWithNoTests',
+        {
+          cwd: path.join(PROJECT_ROOT, 'server'),
+          stdio: 'inherit',
+        }
+      );
     } catch (error) {
       console.log('ℹ️  No integration tests found (this is expected)');
     }
@@ -73,16 +76,22 @@ function generateCoverageReport() {
 
   try {
     // Generate coverage for server tests
-    execSync('npm test -- --testPathPattern=dependency-validation --coverage --coverageDirectory=../reports/server-dependency-coverage', {
-      cwd: path.join(PROJECT_ROOT, 'server'),
-      stdio: 'inherit',
-    });
+    execSync(
+      'npm test -- --testPathPattern=dependency-validation --coverage --coverageDirectory=../reports/server-dependency-coverage',
+      {
+        cwd: path.join(PROJECT_ROOT, 'server'),
+        stdio: 'inherit',
+      }
+    );
 
     // Generate coverage for client tests
-    execSync('npm test -- --testPathPattern=dependency-validation --coverage --coverageDirectory=../reports/client-dependency-coverage', {
-      cwd: path.join(PROJECT_ROOT, 'client'),
-      stdio: 'inherit',
-    });
+    execSync(
+      'npm test -- --testPathPattern=dependency-validation --coverage --coverageDirectory=../reports/client-dependency-coverage',
+      {
+        cwd: path.join(PROJECT_ROOT, 'client'),
+        stdio: 'inherit',
+      }
+    );
 
     console.log('✅ Coverage reports generated in reports/ directory');
     return true;

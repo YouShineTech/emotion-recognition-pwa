@@ -61,7 +61,10 @@ class WebRTCDebugger {
 
         if (response.resourceUsage) {
           const { cpuUsage, memoryUsage } = response.resourceUsage;
-          log(`💻 Server resources: CPU ${cpuUsage.toFixed(1)}%, Memory ${memoryUsage.toFixed(1)}%`, colors.cyan);
+          log(
+            `💻 Server resources: CPU ${cpuUsage.toFixed(1)}%, Memory ${memoryUsage.toFixed(1)}%`,
+            colors.cyan
+          );
         }
       }
     } catch (error) {
@@ -79,7 +82,7 @@ class WebRTCDebugger {
         log('✅ WebSocket connection established', colors.green);
       });
 
-      ws.on('message', (data) => {
+      ws.on('message', data => {
         try {
           const message = data.toString();
           this.handleSignalingMessage(message);
@@ -88,7 +91,7 @@ class WebRTCDebugger {
         }
       });
 
-      ws.on('error', (error) => {
+      ws.on('error', error => {
         log(`❌ WebSocket error: ${error.message}`, colors.red);
       });
 
@@ -101,7 +104,6 @@ class WebRTCDebugger {
           this.monitorSignaling();
         }, 5000);
       });
-
     } catch (error) {
       log(`❌ Failed to connect to WebSocket: ${error.message}`, colors.red);
     }
@@ -149,12 +151,18 @@ class WebRTCDebugger {
       log(`👤 Faces detected: ${faceCount}`, colors.green);
 
       data.facialOverlays.forEach((face, index) => {
-        log(`  Face ${index + 1}: ${face.emotionLabel} (${(face.confidence * 100).toFixed(1)}%)`, colors.green);
+        log(
+          `  Face ${index + 1}: ${face.emotionLabel} (${(face.confidence * 100).toFixed(1)}%)`,
+          colors.green
+        );
       });
     }
 
     if (data && data.audioOverlay) {
-      log(`🎵 Audio emotion: ${data.audioOverlay.emotionLabel} (${(data.audioOverlay.confidence * 100).toFixed(1)}%)`, colors.green);
+      log(
+        `🎵 Audio emotion: ${data.audioOverlay.emotionLabel} (${(data.audioOverlay.confidence * 100).toFixed(1)}%)`,
+        colors.green
+      );
     }
 
     if (data && data.totalProcessingTime) {
@@ -196,9 +204,9 @@ class WebRTCDebugger {
 
   makeRequest(url) {
     return new Promise((resolve, reject) => {
-      const request = http.get(url, { timeout: 5000 }, (res) => {
+      const request = http.get(url, { timeout: 5000 }, res => {
         let data = '';
-        res.on('data', chunk => data += chunk);
+        res.on('data', chunk => (data += chunk));
         res.on('end', () => {
           try {
             resolve(JSON.parse(data));

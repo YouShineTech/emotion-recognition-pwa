@@ -48,9 +48,9 @@ function validateFile(filePath) {
   });
 
   // Check for proper interface imports
-  const importLines = content.split('\n').filter(line =>
-    line.trim().startsWith('import') && line.includes('shared/interfaces')
-  );
+  const importLines = content
+    .split('\n')
+    .filter(line => line.trim().startsWith('import') && line.includes('shared/interfaces'));
 
   importLines.forEach((line, lineNumber) => {
     const hasValidPattern = REQUIRED_PATTERNS.some(pattern => pattern.test(line));
@@ -143,10 +143,15 @@ function validateNoCycles() {
     const imports = content.match(/from\s+['"]\.\/([^'"]+)\.interface['"]/g) || [];
     const fileName = path.basename(file, '.ts');
 
-    dependencies.set(fileName, imports.map(imp => {
-      const match = imp.match(/from\s+['"]\.\/([^'"]+)\.interface['"]/);
-      return match ? match[1] + '.interface' : null;
-    }).filter(Boolean));
+    dependencies.set(
+      fileName,
+      imports
+        .map(imp => {
+          const match = imp.match(/from\s+['"]\.\/([^'"]+)\.interface['"]/);
+          return match ? match[1] + '.interface' : null;
+        })
+        .filter(Boolean)
+    );
   });
 
   // Simple cycle detection (could be more sophisticated)

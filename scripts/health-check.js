@@ -19,8 +19,8 @@ const log = (message, color = colors.reset) => {
 };
 
 const checkService = (name, url, timeout = 5000) => {
-  return new Promise((resolve) => {
-    const request = http.get(url, { timeout }, (res) => {
+  return new Promise(resolve => {
+    const request = http.get(url, { timeout }, res => {
       if (res.statusCode === 200) {
         log(`✅ ${name} is healthy`, colors.green);
         resolve(true);
@@ -30,7 +30,7 @@ const checkService = (name, url, timeout = 5000) => {
       }
     });
 
-    request.on('error', (error) => {
+    request.on('error', error => {
       log(`❌ ${name} is not accessible: ${error.message}`, colors.red);
       resolve(false);
     });
@@ -44,7 +44,7 @@ const checkService = (name, url, timeout = 5000) => {
 };
 
 const checkRedis = () => {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     exec('redis-cli ping', (error, stdout) => {
       if (error) {
         log(`❌ Redis is not accessible: ${error.message}`, colors.red);
@@ -61,7 +61,7 @@ const checkRedis = () => {
 };
 
 const checkDocker = () => {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     exec('docker-compose ps', (error, stdout) => {
       if (error) {
         log(`⚠️  Docker Compose not running: ${error.message}`, colors.yellow);
@@ -116,7 +116,7 @@ async function runHealthCheck() {
 }
 
 // Handle uncaught errors
-process.on('uncaughtException', (error) => {
+process.on('uncaughtException', error => {
   log(`❌ Uncaught error: ${error.message}`, colors.red);
   process.exit(1);
 });

@@ -30,10 +30,7 @@ module.exports = {
   collectCoverage: false,
 
   // Ignore patterns
-  testPathIgnorePatterns: [
-    '<rootDir>/node_modules/',
-    '<rootDir>/dist/',
-  ],
+  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/dist/'],
 
   // Clear mocks between tests
   clearMocks: true,

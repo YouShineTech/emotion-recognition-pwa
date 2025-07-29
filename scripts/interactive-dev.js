@@ -30,18 +30,18 @@ class InteractiveDev {
     });
 
     this.commands = {
-      'help': 'Show available commands',
-      'status': 'Check system status',
-      'start': 'Start development servers',
-      'stop': 'Stop development servers',
-      'test': 'Run tests',
-      'build': 'Build the project',
-      'debug': 'Start debug mode',
-      'logs': 'Show recent logs',
-      'modules': 'List all modules',
-      'health': 'Run health check',
-      'clear': 'Clear console',
-      'exit': 'Exit interactive mode',
+      help: 'Show available commands',
+      status: 'Check system status',
+      start: 'Start development servers',
+      stop: 'Stop development servers',
+      test: 'Run tests',
+      build: 'Build the project',
+      debug: 'Start debug mode',
+      logs: 'Show recent logs',
+      modules: 'List all modules',
+      health: 'Run health check',
+      clear: 'Clear console',
+      exit: 'Exit interactive mode',
     };
 
     this.processes = new Map();
@@ -57,7 +57,7 @@ class InteractiveDev {
   }
 
   showPrompt() {
-    this.rl.question('emotion-pwa> ', (input) => {
+    this.rl.question('emotion-pwa> ', input => {
       this.handleCommand(input.trim());
     });
   }
@@ -150,8 +150,14 @@ class InteractiveDev {
     const serverRunning = this.processes.has('server');
     const clientRunning = this.processes.has('client');
 
-    log(`Server: ${serverRunning ? '🟢 Running' : '🔴 Stopped'}`, serverRunning ? colors.green : colors.red);
-    log(`Client: ${clientRunning ? '🟢 Running' : '🔴 Stopped'}`, clientRunning ? colors.green : colors.red);
+    log(
+      `Server: ${serverRunning ? '🟢 Running' : '🔴 Stopped'}`,
+      serverRunning ? colors.green : colors.red
+    );
+    log(
+      `Client: ${clientRunning ? '🟢 Running' : '🔴 Stopped'}`,
+      clientRunning ? colors.green : colors.red
+    );
 
     // Check ports
     await this.checkPort(3001, 'Server API');
@@ -160,7 +166,7 @@ class InteractiveDev {
   }
 
   async checkPort(port, service) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const net = require('net');
       const socket = new net.Socket();
 
@@ -229,15 +235,15 @@ class InteractiveDev {
 
     this.processes.set(name, process);
 
-    process.stdout.on('data', (data) => {
+    process.stdout.on('data', data => {
       log(`[${name}] ${data.toString().trim()}`, colors.cyan);
     });
 
-    process.stderr.on('data', (data) => {
+    process.stderr.on('data', data => {
       log(`[${name}] ${data.toString().trim()}`, colors.red);
     });
 
-    process.on('close', (code) => {
+    process.on('close', code => {
       log(`[${name}] Process exited with code ${code}`, colors.yellow);
       this.processes.delete(name);
     });
@@ -325,7 +331,7 @@ class InteractiveDev {
   }
 
   async execCommand(command, cwd = '.') {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       exec(command, { cwd: path.join(__dirname, '..', cwd) }, (error, stdout, stderr) => {
         if (error) {
           log(`❌ Error: ${error.message}`, colors.red);

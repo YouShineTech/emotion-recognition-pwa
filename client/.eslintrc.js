@@ -8,11 +8,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
   },
   plugins: ['@typescript-eslint', 'prettier'],
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'prettier',
-  ],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
   env: {
     browser: true,
     es2020: true,
@@ -41,15 +37,18 @@ module.exports = {
         patterns: [
           {
             group: ['**/index', '**/index.ts', '**/index.js'],
-            message: 'Importing from index files is not allowed. Use explicit interface imports instead.',
+            message:
+              'Importing from index files is not allowed. Use explicit interface imports instead.',
           },
           {
             group: ['../../../shared/interfaces/index*'],
-            message: 'Central export hubs are not allowed. Import directly from specific interface files.',
+            message:
+              'Central export hubs are not allowed. Import directly from specific interface files.',
           },
           {
             group: ['@/shared/interfaces/index*'],
-            message: 'Central export hubs are not allowed. Import directly from specific interface files.',
+            message:
+              'Central export hubs are not allowed. Import directly from specific interface files.',
           },
         ],
         paths: [
@@ -73,13 +72,7 @@ module.exports = {
       },
     },
   },
-  ignorePatterns: [
-    'dist/',
-    'node_modules/',
-    'coverage/',
-    '*.config.js',
-    'public/',
-  ],
+  ignorePatterns: ['dist/', 'node_modules/', 'coverage/', '*.config.js', 'public/'],
   overrides: [
     {
       files: ['**/*.test.ts', '**/*.test.tsx'],
