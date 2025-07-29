@@ -25,6 +25,21 @@
       "runtimeArgs": ["--remote-debugging-port=9222"]
     },
     {
+      "name": "Debug Client (Firefox)",
+      "type": "firefox",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/client/src",
+      "sourceMaps": true,
+      "preLaunchTask": "npm: dev:client",
+      "pathMappings": [
+        {
+          "url": "webpack:///src",
+          "path": "${workspaceFolder}/client/src"
+        }
+      ]
+    },
+    {
       "name": "Debug Jest Tests (Client)",
       "type": "node",
       "request": "launch",

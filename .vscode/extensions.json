@@ -7,6 +7,7 @@
     "orta.vscode-jest",
     "ms-vscode.vscode-chrome-debug",
     "ms-vscode.vscode-edge-devtools",
+    "firefox-devtools.vscode-firefox-debug",
     "bradlc.vscode-tailwindcss",
     "ms-vscode.vscode-npm-script",
     "formulahendry.auto-rename-tag",
