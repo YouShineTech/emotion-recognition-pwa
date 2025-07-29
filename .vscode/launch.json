@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "🌐 Debug Client (Chrome)",
+      "name": "Debug Client (Chrome)",
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost:3000",
@@ -14,16 +14,18 @@
       }
     },
     {
-      "name": "🚀 Debug Client (Edge)",
-      "type": "edge",
+      "name": "Debug Client (Edge)",
+      "type": "chrome",
       "request": "launch",
       "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}/client/src",
       "sourceMaps": true,
-      "preLaunchTask": "npm: dev:client"
+      "preLaunchTask": "npm: dev:client",
+      "runtimeExecutable": "microsoft-edge",
+      "runtimeArgs": ["--remote-debugging-port=9222"]
     },
     {
-      "name": "🧪 Debug Jest Tests (Client)",
+      "name": "Debug Jest Tests (Client)",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/client/node_modules/.bin/jest",
@@ -36,7 +38,7 @@
       }
     },
     {
-      "name": "🧪 Debug MediaCapture Tests",
+      "name": "Debug MediaCapture Tests",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/client/node_modules/.bin/jest",
@@ -49,7 +51,7 @@
       }
     },
     {
-      "name": "🔍 Debug Current Test File",
+      "name": "Debug Current Test File",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/client/node_modules/.bin/jest",
@@ -62,7 +64,7 @@
       }
     },
     {
-      "name": "🧪 Debug Jest Tests (Server)",
+      "name": "Debug Jest Tests (Server)",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/server/node_modules/.bin/jest",
@@ -72,7 +74,7 @@
       "internalConsoleOptions": "neverOpen"
     },
     {
-      "name": "🚀 Debug Full Stack",
+      "name": "Debug Full Stack",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/server/src/index.ts",
@@ -85,7 +87,7 @@
       "preLaunchTask": "npm: dev:server",
       "serverReadyAction": {
         "action": "startDebugging",
-        "name": "🌐 Debug Client (Chrome)"
+        "name": "Debug Client (Chrome)"
       }
     }
   ]
