@@ -15,6 +15,7 @@ export class MediaCaptureModule implements IMediaCaptureModule {
   async requestPermissions(): Promise<MediaCaptureResult> {
     // STUB: Mock implementation
     console.log('[MediaCaptureModule] Requesting permissions...');
+    console.log('[DEBUG] About to return mock permission result');
 
     // Mock successful permission request
     return {
@@ -41,10 +42,13 @@ export class MediaCaptureModule implements IMediaCaptureModule {
   async startCapture(config: CaptureConfig): Promise<any> {
     // STUB: Mock implementation
     console.log('[MediaCaptureModule] Starting capture with config:', config);
+    console.log('[DEBUG] Video config:', config.video);
+    console.log('[DEBUG] Audio config:', config.audio);
 
     // Create mock MediaStream (use global mock from setupTests)
     const mockStream = new MediaStream();
     this.currentStream = mockStream;
+    console.log('[DEBUG] Created mock stream:', mockStream);
 
     return mockStream;
   }

@@ -27,7 +27,6 @@
 ## Proof of Concept Phase
 
 - [ ] 2. WebRTC Media Capture PoC
-
   - Create basic HTML page with getUserMedia API integration
   - Implement camera/microphone permission handling with specific error types (NotAllowedError, NotFoundError, OverconstrainedError)
   - Add device enumeration and selection functionality using enumerateDevices()
@@ -35,7 +34,6 @@
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5_
 
 - [ ] 3. Mediasoup Media Server PoC
-
   - Set up basic Mediasoup server with createWorker() and Router configuration
   - Configure VP8, H264, Opus, PCMU codecs with specific RTP capabilities
   - Implement WebRtcTransport for client connections with DTLS/SRTP
@@ -44,7 +42,6 @@
   - _Requirements: 7.1, 7.2, 8.1, 8.4_
 
 - [ ] 4. OpenFace Integration PoC
-
   - Install OpenFace 2.0 toolkit and configure FaceLandmarkImg executable
   - Create Node.js wrapper using child_process.spawn() for OpenFace commands
   - Implement CSV parsing for Action Units output (AU1-AU45)
@@ -53,7 +50,6 @@
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
 
 - [ ] 5. Audio Emotion AI PoC
-
   - Set up Python environment with librosa, tensorflow, and py-webrtcvad
   - Implement MFCC feature extraction (13 coefficients, spectral centroid, zero crossing rate)
   - Create CNN model for emotion classification using RAVDESS dataset
@@ -72,7 +68,6 @@
 ## Core Module Implementation
 
 - [ ] 7. Media Capture Module Implementation
-
   - Create MediaCaptureModule.ts with getUserMedia API wrapper
   - Implement CaptureConfig interface with video/audio constraints
   - Add device switching functionality with proper stream cleanup
@@ -82,7 +77,6 @@
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5_
 
 - [ ] 8. WebRTC Transport Module Implementation
-
   - Create WebRTCTransportModule.ts with RTCPeerConnection management
   - Implement Socket.IO signaling client for offer/answer/ICE candidate exchange
   - Add RTCDataChannel named 'overlayData' for emotion metadata
@@ -92,7 +86,6 @@
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
 - [ ] 9. Media Relay Module (Mediasoup) Implementation
-
   - Create MediaRelayModule.ts with Mediasoup Worker management
   - Implement Router creation with 4 workers per CPU core
   - Build WebRtcTransport and PlainTransport configuration
@@ -103,7 +96,6 @@
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 8.1, 8.2, 8.4_
 
 - [ ] 10. Frame Extraction Module Implementation
-
   - Create FrameExtractionModule.ts with FFmpeg child process integration
   - Implement RTP H.264/VP8 video decoding to RGBA ImageData
   - Add Opus/PCMU audio decoding to PCM 16-bit samples
@@ -114,7 +106,6 @@
   - _Requirements: 4.1, 5.1_
 
 - [ ] 11. Facial Analysis Module (OpenFace) Implementation
-
   - Create FacialAnalysisModule.ts with OpenFace 2.0 integration
   - Implement child_process.spawn() wrapper for FaceLandmarkImg executable
   - Build CSV parser for Action Units output files
@@ -125,7 +116,6 @@
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
 
 - [ ] 12. Audio Analysis Module Implementation
-
   - Create AudioAnalysisModule.ts with Python ML model integration
   - Implement librosa feature extraction via child_process
   - Build CNN model loading for RAVDESS emotion classification
@@ -136,7 +126,6 @@
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
 - [ ] 13. Overlay Data Generator Implementation
-
   - Create OverlayDataGenerator.ts for combining facial and audio results
   - Implement emotion fusion algorithm with weighted confidence scores
   - Build color-coded overlay generation (green=happy, red=angry, etc.)
@@ -159,7 +148,6 @@
 ## Infrastructure and Integration
 
 - [ ] 15. Connection Manager Module Implementation
-
   - Create ConnectionManagerModule.ts for session lifecycle management
   - Implement session creation with unique sessionId generation
   - Build connection health monitoring with latency tracking
@@ -170,7 +158,6 @@
   - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 9.1, 9.2, 9.3, 9.4, 9.5_
 
 - [ ] 16. PWA Shell Module Implementation
-
   - Create PWAShellModule.ts with service worker integration
   - Implement app installation prompt and offline functionality
   - Build push notification system with permission handling
@@ -193,7 +180,6 @@
 ## System Integration and Testing
 
 - [ ] 18. End-to-End Integration Testing
-
   - Integrate Media Capture with WebRTC Transport modules
   - Connect WebRTC Transport with Media Relay (Mediasoup)
   - Link Media Relay with Frame Extraction pipeline
@@ -204,7 +190,6 @@
   - _Requirements: 2.1, 2.2, 3.1, 4.1, 5.1, 7.1, 7.2_
 
 - [ ] 19. Performance Optimization and Latency Testing
-
   - Implement frame rate adaptation under high server load
   - Add video quality scaling based on server CPU utilization
   - Optimize emotion processing pipeline for sub-500ms latency
@@ -215,7 +200,6 @@
   - _Requirements: 2.4, 8.1, 8.4, 8.5, 9.1, 9.2_
 
 - [ ] 20. Scalability Testing and Load Balancing
-
   - Set up multiple Mediasoup server instances with load balancer
   - Implement auto-scaling based on connection count and CPU usage
   - Test system with 100, 500, and 1000 concurrent connections
@@ -238,7 +222,6 @@
 ## Production Deployment
 
 - [ ] 22. Production Environment Setup
-
   - Configure Hetzner cloud servers with Docker containers
   - Set up Redis cluster for session state and caching
   - Implement monitoring with Prometheus and Grafana

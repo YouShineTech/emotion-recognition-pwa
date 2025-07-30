@@ -3,12 +3,14 @@
 ## Prerequisites
 
 ### Required Software
+
 - **Node.js 18+** - [Download](https://nodejs.org/)
 - **Docker & Docker Compose** - [Download](https://docs.docker.com/get-docker/)
 - **Git** - [Download](https://git-scm.com/)
 - **VS Code** (recommended) - [Download](https://code.visualstudio.com/)
 
 ### Optional (for advanced features)
+
 - **Python 3.8+** - For audio analysis modules
 - **OpenFace 2.0** - For facial analysis (Linux/macOS)
 
@@ -42,6 +44,7 @@ nano .env.development
 ```
 
 **Required Environment Variables:**
+
 ```bash
 NODE_ENV=development
 PORT=3001
@@ -76,6 +79,7 @@ npm run build:watch
 ### 4. Start Development Servers
 
 #### Option A: Docker Compose (Recommended)
+
 ```bash
 # Start all services
 docker-compose up -d
@@ -88,6 +92,7 @@ docker-compose down
 ```
 
 #### Option B: Manual Start
+
 ```bash
 # Terminal 1: Start Redis
 redis-server
@@ -252,6 +257,7 @@ npm run test:stress
 ### Common Issues
 
 #### Port Already in Use
+
 ```bash
 # Kill processes on ports
 npm run kill:ports
@@ -262,6 +268,7 @@ lsof -ti:3001 | xargs kill -9
 ```
 
 #### Docker Issues
+
 ```bash
 # Reset Docker environment
 docker-compose down -v
@@ -270,12 +277,14 @@ npm run docker:reset
 ```
 
 #### Module Not Found Errors
+
 ```bash
 # Clear node_modules and reinstall
 npm run clean:install
 ```
 
 #### TypeScript Compilation Errors
+
 ```bash
 # Check TypeScript configuration
 npm run type:check
