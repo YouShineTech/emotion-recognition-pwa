@@ -17,26 +17,36 @@ export class MediaCaptureModule implements IMediaCaptureModule {
     console.log('[MediaCaptureModule] Requesting permissions...');
     console.log('[DEBUG] About to return mock permission result');
 
+    // Add debugging variables you can inspect
+    const startTime = Date.now();
+    const deviceCount = 2;
+    const mockDevices = [
+      {
+        deviceId: 'mock-camera-1',
+        kind: 'videoinput',
+        label: 'Mock Camera 1',
+        groupId: 'group1',
+      } as MediaDeviceInfo,
+      {
+        deviceId: 'mock-mic-1',
+        kind: 'audioinput',
+        label: 'Mock Microphone 1',
+        groupId: 'group1',
+      } as MediaDeviceInfo,
+    ];
+
     // Mock successful permission request
-    return {
+    const result = {
       success: true,
       data: null,
       timestamp: new Date(),
-      availableDevices: [
-        {
-          deviceId: 'mock-camera-1',
-          kind: 'videoinput',
-          label: 'Mock Camera 1',
-          groupId: 'group1',
-        } as MediaDeviceInfo,
-        {
-          deviceId: 'mock-mic-1',
-          kind: 'audioinput',
-          label: 'Mock Microphone 1',
-          groupId: 'group1',
-        } as MediaDeviceInfo,
-      ],
+      availableDevices: mockDevices,
     };
+
+    const endTime = Date.now();
+    console.log(`[DEBUG] Permission request took ${endTime - startTime}ms`);
+
+    return result;
   }
 
   async startCapture(config: CaptureConfig): Promise<any> {
