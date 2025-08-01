@@ -547,15 +547,15 @@ This section maps each architectural component to specific functional requiremen
 
 ### **Server-Side Architecture Traceability**
 
-| Module                      | Functional Requirements                              | Business Rules                      | Architectural Rationale                                      |
-| --------------------------- | ---------------------------------------------------- | ----------------------------------- | ------------------------------------------------------------ |
-| **MediaRelayModule**        | REQ-7 (Scalable WebRTC), REQ-8 (1000 users)          | BR-5: Concurrent session management | Mediasoup-based media routing for horizontal scaling         |
-| **FrameExtractionModule**   | REQ-4 (Video Processing), REQ-5 (Audio Processing)   | BR-6: Frame-by-frame processing     | Decodes RTP streams for AI processing pipeline               |
-| **FacialAnalysisModule**    | REQ-4 (OpenFace Processing)                          | BR-7: Facial landmark accuracy      | OpenFace integration for Action Unit extraction              |
-| **AudioAnalysisModule**     | REQ-5 (Voice Emotion Analysis)                       | BR-8: Multi-modal emotion detection | AI model integration for voice emotion classification        |
-| **OverlayDataGenerator**    | REQ-3 (Emotion Overlays), REQ-5 (Audio+Video Fusion) | BR-9: Emotion data fusion           | Combines facial and audio emotions into unified overlay data |
-| **ConnectionManagerModule** | REQ-8 (1000 users), REQ-9 (Performance Monitoring)   | BR-10: Session lifecycle management | Manages WebRTC sessions with health monitoring               |
-| **NginxWebServerModule**    | REQ-6 (Cross-platform), REQ-8 (Scalability)          | BR-11: Static asset delivery        | Serves PWA assets with SSL and load balancing                |
+| Module                      | Functional Requirements                                                    | Business Rules                      | Architectural Rationale                                      |
+| --------------------------- | -------------------------------------------------------------------------- | ----------------------------------- | ------------------------------------------------------------ |
+| **MediaRelayModule**        | REQ-7 (Scalable Media Relay), REQ-8 (1000 users)                           | BR-5: Concurrent session management | Real-time media routing for horizontal scaling               |
+| **FrameExtractionModule**   | REQ-4 (Video Processing), REQ-5 (Audio Processing)                         | BR-6: Frame-by-frame processing     | Decodes media streams for AI processing pipeline             |
+| **FacialAnalysisModule**    | REQ-4 (Facial Processing)                                                  | BR-7: Facial landmark accuracy      | AI integration for facial emotion analysis                   |
+| **AudioAnalysisModule**     | REQ-5 (Voice Emotion Analysis)                                             | BR-8: Multi-modal emotion detection | AI model integration for voice emotion classification        |
+| **OverlayDataGenerator**    | REQ-3 (Emotion Overlays), REQ-5 (Audio+Video Fusion)                       | BR-9: Emotion data fusion           | Combines facial and audio emotions into unified overlay data |
+| **ConnectionManagerModule** | REQ-8 (1000 users), REQ-9 (Performance Monitoring), REQ-34 (System Health) | BR-10: Session lifecycle management | Manages real-time sessions with health monitoring            |
+| **NginxWebServerModule**    | REQ-6 (Cross-platform), REQ-8 (Scalability), REQ-38 (Browser Support)      | BR-11: Static asset delivery        | Serves PWA assets with SSL and load balancing                |
 
 ### **Business Rules Definition**
 
