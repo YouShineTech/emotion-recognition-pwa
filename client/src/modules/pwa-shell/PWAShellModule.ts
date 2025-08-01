@@ -7,9 +7,9 @@ export class PWAShellModule implements IPWAShellModule {
   private serviceWorkerRegistration: ServiceWorkerRegistration | null = null;
   private deferredPrompt: any = null;
   private isOnline: boolean = navigator.onLine;
+  private notificationPermission: NotificationPermission = 'default';
 
   async initialize(): Promise<void> {
-    // STUB: Mock implementation
     console.log('[PWAShellModule] Initializing PWA shell...');
 
     // Register service worker
@@ -17,6 +17,12 @@ export class PWAShellModule implements IPWAShellModule {
       try {
         this.serviceWorkerRegistration = await navigator.serviceWorker.register('/sw.js');
         console.log('[PWAShellModule] Service worker registered');
+
+        // Check for updates
+        this.serviceWorkerRegistration.addEventListener('updatefound', () => {
+          console.log('[PWAShellModule] Service worker update found');
+          this.handleServiceWorkerUpdate();
+        });
       } catch (error) {
         console.error('[PWAShellModule] Service worker registration failed:', error);
       }
@@ -28,11 +34,13 @@ export class PWAShellModule implements IPWAShellModule {
     // Check if app is installable
     this.checkInstallability();
 
+    // Request notification permission
+    await this.requestNotificationPermission();
+
     console.log('[PWAShellModule] PWA shell initialized');
   }
 
   async installApp(): Promise<boolean> {
-    // STUB: Mock implementation
     console.log('[PWAShellModule] Attempting to install app...');
 
     if (this.deferredPrompt) {
@@ -51,7 +59,6 @@ export class PWAShellModule implements IPWAShellModule {
   }
 
   handleOffline(): void {
-    // STUB: Mock implementation
     console.log('[PWAShellModule] Handling offline state...');
 
     this.isOnline = false;
@@ -64,7 +71,6 @@ export class PWAShellModule implements IPWAShellModule {
   }
 
   async updateApp(): Promise<boolean> {
-    // STUB: Mock implementation
     console.log('[PWAShellModule] Checking for app updates...');
 
     if (this.serviceWorkerRegistration && this.serviceWorkerRegistration.waiting) {
@@ -74,26 +80,39 @@ export class PWAShellModule implements IPWAShellModule {
       return true;
     }
 
+    // Check for updates
+    if (this.serviceWorkerRegistration) {
+      try {
+        await this.serviceWorkerRegistration.update();
+        console.log('[PWAShellModule] Service worker update check completed');
+      } catch (error) {
+        console.error('[PWAShellModule] Update check failed:', error);
+      }
+    }
+
     console.log('[PWAShellModule] No updates available');
     return false;
   }
 
   async requestNotificationPermission(): Promise<boolean> {
-    // STUB: Mock implementation
     console.log('[PWAShellModule] Requesting notification permission...');
 
-    if ('Notification' in window) {
-      const permission = await Notification.requestPermission();
-      console.log(`[PWAShellModule] Notification permission: ${permission}`);
-      return permission === 'granted';
+    if (!('Notification' in window)) {
+      console.log('[PWAShellModule] Notifications not supported');
+      return false;
     }
 
-    console.log('[PWAShellModule] Notifications not supported');
-    return false;
+    try {
+      this.notificationPermission = await Notification.requestPermission();
+      console.log(`[PWAShellModule] Notification permission: ${this.notificationPermission}`);
+      return this.notificationPermission === 'granted';
+    } catch (error) {
+      console.error('[PWAShellModule] Notification permission request failed:', error);
+      return false;
+    }
   }
 
   showNotification(message: string, type: 'info' | 'warning' | 'error'): void {
-    // STUB: Mock implementation
     console.log(`[PWAShellModule] ${type.toUpperCase()}: ${message}`);
 
     // Create notification element
@@ -110,6 +129,7 @@ export class PWAShellModule implements IPWAShellModule {
       z-index: 1000;
       max-width: 300px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      transition: opacity 0.3s ease;
     `;
 
     // Set color based on type
@@ -131,13 +151,15 @@ export class PWAShellModule implements IPWAShellModule {
 
     // Auto-remove after 5 seconds
     setTimeout(() => {
-      if (notification.parentElement) {
-        notification.parentElement.removeChild(notification);
-      }
+      notification.style.opacity = '0';
+      setTimeout(() => {
+        if (notification.parentElement) {
+          notification.parentElement.removeChild(notification);
+        }
+      }, 300);
     }, 5000);
   }
 
-  // Private methods
   private setupEventListeners(): void {
     // Handle online/offline events
     window.addEventListener('online', () => {
@@ -155,6 +177,9 @@ export class PWAShellModule implements IPWAShellModule {
       event.preventDefault();
       this.deferredPrompt = event;
       console.log('[PWAShellModule] Install prompt deferred');
+
+      // Show install button
+      this.showInstallButton();
     });
 
     // Handle service worker updates
@@ -164,6 +189,13 @@ export class PWAShellModule implements IPWAShellModule {
         window.location.reload();
       });
     }
+
+    // Handle app installed
+    window.addEventListener('appinstalled', () => {
+      console.log('[PWAShellModule] App was installed');
+      this.deferredPrompt = null;
+      this.showNotification('App installed successfully!', 'info');
+    });
   }
 
   private checkInstallability(): void {
@@ -179,8 +211,21 @@ export class PWAShellModule implements IPWAShellModule {
     }
   }
 
+  private handleServiceWorkerUpdate(): void {
+    if (this.serviceWorkerRegistration && this.serviceWorkerRegistration.waiting) {
+      console.log('[PWAShellModule] Service worker update available');
+      this.showNotification('App update available. Click to update.', 'info');
+    }
+  }
+
   private updateOfflineUI(): void {
-    // Update UI elements for offline state
+    // Remove existing offline indicator
+    const existingIndicator = document.getElementById('offline-indicator');
+    if (existingIndicator) {
+      existingIndicator.remove();
+    }
+
+    // Create offline indicator
     const offlineIndicator = document.createElement('div');
     offlineIndicator.id = 'offline-indicator';
     offlineIndicator.style.cssText = `
@@ -194,22 +239,63 @@ export class PWAShellModule implements IPWAShellModule {
       border-radius: 5px;
       font-family: Arial, sans-serif;
       z-index: 1000;
+      transition: opacity 0.3s ease;
     `;
     offlineIndicator.textContent = 'Offline Mode';
 
     document.body.appendChild(offlineIndicator);
+
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+      offlineIndicator.style.opacity = '0';
+      setTimeout(() => {
+        if (offlineIndicator.parentElement) {
+          offlineIndicator.parentElement.removeChild(offlineIndicator);
+        }
+      }, 300);
+    }, 3000);
+  }
+
+  private showInstallButton(): void {
+    const installButton = document.createElement('button');
+    installButton.textContent = 'Install App';
+    installButton.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-family: Arial, sans-serif;
+      cursor: pointer;
+      z-index: 1000;
+    `;
+
+    installButton.addEventListener('click', async () => {
+      const installed = await this.installApp();
+      if (installed) {
+        installButton.remove();
+      }
+    });
+
+    document.body.appendChild(installButton);
   }
 
   private async sendPushNotification(title: string, body: string): Promise<void> {
-    // STUB: Mock implementation
     console.log(`[PWAShellModule] Sending push notification: ${title} - ${body}`);
 
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification(title, {
-        body,
-        icon: '/icon-192x192.png',
-        badge: '/badge-72x72.png',
-      });
+    if (this.notificationPermission === 'granted') {
+      try {
+        new Notification(title, {
+          body,
+          icon: '/icon-192x192.png',
+          badge: '/badge-72x72.png',
+        });
+      } catch (error) {
+        console.error('[PWAShellModule] Push notification failed:', error);
+      }
     }
   }
 
@@ -223,12 +309,17 @@ export class PWAShellModule implements IPWAShellModule {
   }
 
   async getAppVersion(): Promise<string> {
-    // STUB: Mock implementation
-    return '1.0.0';
+    // Get version from manifest or package.json
+    try {
+      const response = await fetch('/manifest.json');
+      const manifest = await response.json();
+      return manifest.version || '1.0.0';
+    } catch {
+      return '1.0.0';
+    }
   }
 
   async shareContent(title: string, text: string, url: string): Promise<boolean> {
-    // STUB: Mock implementation
     console.log(`[PWAShellModule] Sharing: ${title} - ${text} - ${url}`);
 
     if (navigator.share) {
@@ -243,5 +334,29 @@ export class PWAShellModule implements IPWAShellModule {
 
     console.log('[PWAShellModule] Web Share API not supported');
     return false;
+  }
+
+  async cacheResources(resources: string[]): Promise<void> {
+    if ('caches' in window && this.serviceWorkerRegistration) {
+      try {
+        const cache = await caches.open('app-cache-v1');
+        await cache.addAll(resources);
+        console.log('[PWAShellModule] Resources cached successfully');
+      } catch (error) {
+        console.error('[PWAShellModule] Cache failed:', error);
+      }
+    }
+  }
+
+  async clearCache(): Promise<void> {
+    if ('caches' in window) {
+      try {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map(name => caches.delete(name)));
+        console.log('[PWAShellModule] Cache cleared');
+      } catch (error) {
+        console.error('[PWAShellModule] Cache clear failed:', error);
+      }
+    }
   }
 }

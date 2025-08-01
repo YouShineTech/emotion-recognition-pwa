@@ -11,82 +11,195 @@ import {
 export class MediaCaptureModule implements IMediaCaptureModule {
   private currentStream: MediaStream | null = null;
   private errorCallback: ((error: MediaCaptureError) => void) | null = null;
+  private currentConfig: CaptureConfig | null = null;
 
   async requestPermissions(): Promise<MediaCaptureResult> {
-    // STUB: Mock implementation
-    console.log('[MediaCaptureModule] Requesting permissions...');
-    console.log('[DEBUG] About to return mock permission result');
+    try {
+      console.log('[MediaCaptureModule] Requesting media permissions...');
 
-    // Add debugging variables you can inspect
-    const startTime = Date.now();
-    const deviceCount = 2;
-    const mockDevices = [
-      {
-        deviceId: 'mock-camera-1',
-        kind: 'videoinput',
-        label: 'Mock Camera 1',
-        groupId: 'group1',
-      } as MediaDeviceInfo,
-      {
-        deviceId: 'mock-mic-1',
-        kind: 'audioinput',
-        label: 'Mock Microphone 1',
-        groupId: 'group1',
-      } as MediaDeviceInfo,
-    ];
+      // Request both camera and microphone permissions
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+      });
 
-    // Mock successful permission request
-    const result = {
+      // Stop the test stream immediately
+      stream.getTracks().forEach(track => track.stop());
+
+      // Get available devices
+      const devices = await navigator.mediaDevices.enumerateDevices();
+
+      return {
       success: true,
       data: null,
       timestamp: new Date(),
-      availableDevices: mockDevices,
+        availableDevices: devices.filter(device =>
+          device.kind === 'videoinput' || device.kind === 'audioinput'
+        ),
     };
+    } catch (error) {
+      const errorType = error instanceof Error && error.name === 'NotAllowedError'
+        ? 'NotAllowedError' as const
+        : 'DeviceError' as const;
 
-    const endTime = Date.now();
-    console.log(`[DEBUG] Permission request took ${endTime - startTime}ms`);
+      const mediaError: MediaCaptureError = {
+        type: errorType,
+        message: error instanceof Error ? error.message : 'Permission denied',
+        code: error instanceof Error && 'name' in error ? (error as any).name : 'UNKNOWN',
+        timestamp: new Date(),
+        recoverable: errorType !== 'NotAllowedError',
+        module: 'MediaCaptureModule',
+      };
 
-    return result;
+      this.triggerError(mediaError);
+      throw new Error('Permission denied');
+    }
   }
 
-  async startCapture(config: CaptureConfig): Promise<any> {
-    // STUB: Mock implementation
+  async startCapture(config: CaptureConfig): Promise<MediaStream> {
+    try {
     console.log('[MediaCaptureModule] Starting capture with config:', config);
-    console.log('[DEBUG] Video config:', config.video);
-    console.log('[DEBUG] Audio config:', config.audio);
 
-    // Create mock MediaStream (use global mock from setupTests)
-    const mockStream = new MediaStream();
-    this.currentStream = mockStream;
-    console.log('[DEBUG] Created mock stream:', mockStream);
+      // Stop any existing stream
+      this.stopCapture();
 
-    return mockStream;
+      // Store current config
+      this.currentConfig = config;
+
+      // Request media stream with provided config
+      const constraints: MediaStreamConstraints = {
+        video: config.video ? {
+          width: config.video.width,
+          height: config.video.height,
+          frameRate: config.video.frameRate,
+          facingMode: config.video.facingMode,
+          ...(config.deviceId && { deviceId: { exact: config.deviceId } }),
+        } : false,
+        audio: config.audio ? {
+          sampleRate: config.audio.sampleRate,
+          channelCount: config.audio.channelCount,
+          echoCancellation: config.audio.echoCancellation,
+          noiseSuppression: config.audio.noiseSuppression,
+        } : false,
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      this.currentStream = stream;
+
+      // Handle device disconnections
+      stream.addEventListener('removetrack', this.handleTrackRemoval.bind(this));
+
+      return stream;
+    } catch (error) {
+      let errorType: MediaCaptureError['type'];
+
+      if (error instanceof Error) {
+        switch (error.name) {
+          case 'NotAllowedError':
+            errorType = 'NotAllowedError';
+            break;
+          case 'NotFoundError':
+            errorType = 'NotFoundError';
+            break;
+          case 'OverconstrainedError':
+            errorType = 'OverconstrainedError';
+            break;
+          default:
+            errorType = 'DeviceError';
+        }
+      } else {
+        errorType = 'DeviceError';
+      }
+
+      const mediaError: MediaCaptureError = {
+        type: errorType,
+        message: error instanceof Error ? error.message : 'Failed to start capture',
+        code: error instanceof Error && 'name' in error ? (error as any).name : 'UNKNOWN',
+        timestamp: new Date(),
+        recoverable: errorType !== 'NotAllowedError',
+        module: 'MediaCaptureModule',
+      };
+
+      this.triggerError(mediaError);
+
+      if (errorType === 'NotFoundError') {
+        throw new Error('Device not found');
+      }
+      throw mediaError;
+    }
   }
 
   stopCapture(): void {
-    // STUB: Mock implementation
     console.log('[MediaCaptureModule] Stopping capture...');
 
     if (this.currentStream) {
-      this.currentStream.getTracks().forEach(track => track.stop());
+      this.currentStream.getTracks().forEach(track => {
+        track.stop();
+      });
       this.currentStream = null;
+      this.currentConfig = null;
     }
   }
 
   async switchCamera(deviceId: string): Promise<void> {
-    // STUB: Mock implementation
+    try {
     console.log('[MediaCaptureModule] Switching to camera:', deviceId);
 
-    // Mock camera switch
-    await new Promise(resolve => setTimeout(resolve, 100));
+      if (!this.currentConfig) {
+        throw new Error('No active capture session');
+      }
+
+      // Update config with new device
+      const newConfig: CaptureConfig = {
+        ...this.currentConfig,
+        deviceId,
+      };
+
+      // Restart capture with new device
+      await this.startCapture(newConfig);
+    } catch (error) {
+      const mediaError: MediaCaptureError = {
+        type: 'DeviceError',
+        message: error instanceof Error ? error.message : 'Failed to switch camera',
+        code: 'DEVICE_ERROR',
+        timestamp: new Date(),
+        recoverable: true,
+        module: 'MediaCaptureModule',
+      };
+
+      this.triggerError(mediaError);
+      throw new Error('No active capture session');
+    }
   }
 
   onError(callback: (error: MediaCaptureError) => void): void {
     this.errorCallback = callback;
   }
 
-  // Mock method to trigger errors for testing
+  getCurrentStream(): MediaStream | null {
+    return this.currentStream;
+  }
+
+  getCurrentConfig(): CaptureConfig | null {
+    return this.currentConfig;
+  }
+
+  private handleTrackRemoval(event: Event): void {
+    console.log('[MediaCaptureModule] Track removed:', event);
+
+    const mediaError: MediaCaptureError = {
+      type: 'DeviceError',
+      message: 'Media device was disconnected',
+      code: 'DEVICE_DISCONNECTED',
+      timestamp: new Date(),
+      recoverable: true,
+      module: 'MediaCaptureModule',
+    };
+
+    this.triggerError(mediaError);
+  }
   private triggerError(error: MediaCaptureError): void {
+    console.error('[MediaCaptureModule] Error:', error);
     if (this.errorCallback) {
       this.errorCallback(error);
     }

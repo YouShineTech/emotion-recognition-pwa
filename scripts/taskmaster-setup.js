@@ -32,7 +32,7 @@ packageJson.scripts = {
   'taskmaster:start': 'npx @astrotask/mcp --database-path ./taskmaster.db',
   'taskmaster:reset': 'rm -f taskmaster.db && npm run taskmaster:start',
   'taskmaster:backup': 'cp taskmaster.db taskmaster-backup-$(date +%Y%m%d-%H%M%S).db',
-  'taskmaster:status': 'echo "Taskmaster AI is configured and ready to use!"',
+    'taskmaster:status': 'echo "Taskmaster AI is configured and ready to use!"'
 };
 
 fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
@@ -40,9 +40,7 @@ fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 console.log('✅ Taskmaster AI setup complete!');
 console.log('');
 console.log('📖 Usage:');
-console.log(
-  '  • MCP server is configured in ~/.config/Cursor/User/globalStorage/saoudrizwan.cline-dev/settings/cline_mcp_settings.json'
-);
+console.log('  • MCP server is configured in ~/.config/Cursor/User/globalStorage/saoudrizwan.cline-dev/settings/cline_mcp_settings.json');
 console.log('  • Database: ./taskmaster.db');
 console.log('  • Config: ./taskmaster.config.json');
 console.log('');

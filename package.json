@@ -109,9 +109,7 @@
     "taskmaster:start": "npx @astrotask/mcp --database-path ./taskmaster.db",
     "taskmaster:reset": "rm -f taskmaster.db && npm run taskmaster:start",
     "taskmaster:backup": "cp taskmaster.db taskmaster-backup-$(date +%Y%m%d-%H%M%S).db",
-    "taskmaster:status": "echo \"Taskmaster AI is configured and ready to use!\"",
-    "validate:vscode": "node scripts/validate-vscode-config.js",
-    "validate:debug": "node scripts/validate-debug-configs.js"
+    "taskmaster:status": "echo \"Taskmaster AI is configured and ready to use!\""
   },
   "devDependencies": {
     "@astrotask/mcp": "^1.3.0",
