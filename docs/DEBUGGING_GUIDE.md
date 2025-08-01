@@ -4,6 +4,20 @@
 
 This guide explains how to use the enhanced debugging setup for dynamic module debugging in your emotion recognition PWA project.
 
+## 📋 Available Debug Configurations
+
+### 🎯 **Quick Reference - What Actually Exists**
+
+| Configuration Name            | Purpose                  | Usage                   |
+| ----------------------------- | ------------------------ | ----------------------- |
+| **Debug Client (Chrome)**     | Launch PWA in Chrome     | Frontend debugging      |
+| **Debug Client (Edge)**       | Launch PWA in Edge       | Frontend debugging      |
+| **Debug Full Stack**          | Server + Chrome client   | End-to-end debugging    |
+| **Debug Current Test File**   | Debug open test file     | Module-specific testing |
+| **Debug MediaCapture Tests**  | MediaCapture module only | Specific module testing |
+| **Debug Jest Tests (Client)** | All client tests         | Client-side testing     |
+| **Debug Jest Tests (Server)** | All server tests         | Server-side testing     |
+
 ## 📋 Current Debug Configurations
 
 ### 🌐 **Frontend Debugging (Client-side)**
@@ -14,40 +28,39 @@ This guide explains how to use the enhanced debugging setup for dynamic module d
 
 ### 🧪 **Module-Specific Testing**
 
-Each module has its own debug configuration:
+Available debug configurations:
 
 #### **Client Modules:**
 
-- **Debug MediaCapture Tests**: Tests camera/microphone access
-- **Debug OverlayRenderer Tests**: Tests emotion overlay rendering
-- **Debug PWAShell Tests**: Tests PWA functionality
-- **Debug WebRTCTransport Tests**: Tests WebRTC communication
+- **Debug MediaCapture Tests**: Tests camera/microphone access (specific config available)
+- **Debug Jest Tests (Client)**: Runs all client module tests
+- **Debug Current Test File**: Debugs whatever test file you have open
 
 #### **Server Modules:**
 
-- **Debug AudioAnalysis Tests**: Tests audio emotion analysis
-- **Debug FacialAnalysis Tests**: Tests facial emotion analysis
-- **Debug FrameExtraction Tests**: Tests video frame processing
-- **Debug MediaRelay Tests**: Tests media streaming
-- **Debug ConnectionManager Tests**: Tests WebRTC connections
-- **Debug NginxServer Tests**: Tests web server functionality
-- **Debug OverlayGenerator Tests**: Tests overlay data generation
+- **Debug Jest Tests (Server)**: Runs all server module tests
+- **Debug Current Test File**: Debugs whatever test file you have open (when in server context)
+
+#### **Available Module Tests:**
+
+**Client:** MediaCapture, OverlayRenderer, PWAShell, WebRTCTransport
+**Server:** AudioAnalysis, FacialAnalysis, FrameExtraction, MediaRelay, ConnectionManager, NginxServer, OverlayGenerator
 
 ### 🔍 **Dynamic Debugging Options**
 
 - **Debug Current Test File**: Debugs whatever test file you have open
-- **Debug All Client Modules**: Runs all client module tests
-- **Debug All Server Modules**: Runs all server module tests
+- **Debug Jest Tests (Client)**: Runs all client module tests with debugging
+- **Debug Jest Tests (Server)**: Runs all server module tests with debugging
 
 ## 🎯 **Step-by-Step Dynamic Module Debugging**
 
 ### **Method 1: Individual Module Debugging**
 
-1. **Open the module file** you want to debug (e.g., `MediaCaptureModule.ts`)
-2. **Set breakpoints** by clicking left of line numbers
+1. **Open the test file** you want to debug (e.g., `MediaCaptureModule.test.ts`)
+2. **Set breakpoints** in both the test file and the module file
 3. **Press F5** or go to Run → Start Debugging
-4. **Select the specific module test** from the dropdown
-5. **Watch the execution flow** - you can step through module → test → module
+4. **Select "Debug Current Test File"** from the dropdown
+5. **Watch the execution flow** - you can step through test → module → test
 
 ### **Method 2: Test-Driven Debugging**
 
@@ -129,10 +142,15 @@ cd client && npm run dev    # Terminal 2
 ### **Debug Specific Module**
 
 ```bash
-# Find your module test file
-code client/src/modules/[module-name]/[ModuleName]Module.test.ts
+# Method 1: Open specific test file and use "Debug Current Test File"
+code client/src/modules/media-capture/MediaCaptureModule.test.ts
+# Press F5 → Select "Debug Current Test File"
 
-# Press F5 → Select "[ModuleName] Tests"
+# Method 2: Use the specific MediaCapture configuration
+# Press F5 → Select "Debug MediaCapture Tests"
+
+# Method 3: Debug all client or server tests
+# Press F5 → Select "Debug Jest Tests (Client)" or "Debug Jest Tests (Server)"
 ```
 
 ## 🐛 **Common Debugging Scenarios**
@@ -151,9 +169,10 @@ code client/src/modules/[module-name]/[ModuleName]Module.test.ts
 
 ### **"Testing individual POC functionality"**
 
-1. Open the specific module test
-2. Use module-specific debug configuration
+1. Open the specific module test file (e.g., `MediaCaptureModule.test.ts`)
+2. Use "Debug Current Test File" configuration
 3. Step through the POC implementation
+4. For MediaCapture specifically, you can also use "Debug MediaCapture Tests"
 
 ## 🎓 **Learning Path for Embedded Developers**
 

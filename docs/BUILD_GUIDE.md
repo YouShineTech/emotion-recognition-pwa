@@ -155,47 +155,18 @@ npm run test:e2e:headed
    - Docker
    - REST Client
 
-2. **Launch Configurations** (`.vscode/launch.json`):
+2. **Debug with npm scripts**:
 
-```json
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Debug Server",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/server/src/index.ts",
-      "outFiles": ["${workspaceFolder}/server/dist/**/*.js"],
-      "runtimeArgs": ["-r", "ts-node/register"],
-      "env": {
-        "NODE_ENV": "development"
-      },
-      "console": "integratedTerminal",
-      "restart": true,
-      "protocol": "inspector"
-    },
-    {
-      "name": "Debug Client",
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:3000",
-      "webRoot": "${workspaceFolder}/client/src",
-      "sourceMapPathOverrides": {
-        "webpack:///src/*": "${webRoot}/*"
-      }
-    },
-    {
-      "name": "Debug Jest Tests",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/node_modules/.bin/jest",
-      "args": ["--runInBand", "--no-cache"],
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    }
-  ]
-}
+```bash
+# Debug server with breakpoints
+npm run dev:server:debug
+
+# Debug client in browser
+npm run dev:client:debug
+
+# Debug specific modules
+npm run debug:modules
+npm run debug:webrtc
 ```
 
 ### Dynamic Testing & Module Communication
@@ -213,21 +184,24 @@ npm run monitor:modules
 #### 2. API Testing
 
 ```bash
-# Test server endpoints
-npm run test:api
-
-# Interactive API testing
-npm run test:api:interactive
-```
-
-#### 3. WebRTC Connection Testing
-
-```bash
 # Test WebRTC connectivity
 npm run test:webrtc
 
 # Debug WebRTC signaling
 npm run debug:webrtc
+```
+
+#### 3. Module Testing
+
+```bash
+# Test specific module dependencies
+npm run test:dependencies
+
+# Test module imports
+npm run test:imports
+
+# Fix import issues automatically
+npm run test:imports:fix
 ```
 
 ## Build Verification
@@ -238,8 +212,8 @@ npm run debug:webrtc
 # Verify all services are running
 npm run health:check
 
-# Detailed system status
-npm run status:full
+# Monitor module performance
+npm run monitor:perf
 ```
 
 ### Performance Testing
@@ -310,42 +284,45 @@ npm run dev
 
 ## Build Scripts Reference
 
-### Package.json Scripts
+### Key Package.json Scripts
 
-```json
-{
-  "scripts": {
-    "setup": "npm run setup:basic",
-    "setup:basic": "npm run install:all && npm run build:dev && npm run health:check:basic",
-    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\" \"npm run dev:monitor\"",
-    "dev:server": "cd server && npm run dev",
-    "dev:client": "cd client && npm run dev",
-    "dev:monitor": "node scripts/module-monitor.js",
-    "dev:trace": "DEBUG=emotion-pwa:* npm run dev",
-    "build:dev": "npm run build:client:dev && npm run build:server:dev",
-    "build:prod": "npm run build:client:prod && npm run build:server:prod",
-    "build:watch": "concurrently \"npm run build:client:watch\" \"npm run build:server:watch\"",
-    "test": "npm run test:lint && npm run test:type && npm run test:imports && npm run test:unit",
-    "test:unit": "npm run test:client && npm run test:server",
-    "test:client": "cd client && npm test",
-    "test:server": "cd server && npm test",
-    "test:coverage": "npm run test:client:coverage && npm run test:server:coverage",
-    "test:watch": "concurrently \"npm run test:client:watch\" \"npm run test:server:watch\"",
-    "test:integration": "cd server && npm run test:integration",
-    "test:e2e": "npm run test:e2e:setup && cypress run",
-    "health:check": "node scripts/health-check.js",
-    "health:check:basic": "node scripts/health-check.js --basic",
-    "monitor:modules": "node scripts/module-monitor.js",
-    "clean": "npm run clean:client && npm run clean:server && npm run clean:root",
-    "clean:install": "npm run clean && npm run install:all"
-  }
-}
-```
+#### Setup & Development
+
+- `npm run setup` - Complete environment setup
+- `npm run dev` - Start development servers with monitoring
+- `npm run dev:trace` - Development with debug logging
+- `npm run dev:docker` - Start with Docker services
+
+#### Building
+
+- `npm run build:dev` - Development build with source maps
+- `npm run build:prod` - Production optimized build
+- `npm run build:watch` - Watch mode for development
+
+#### Testing
+
+- `npm test` - Run all tests (lint, type, imports, unit)
+- `npm run test:coverage` - Run tests with coverage reports
+- `npm run test:integration` - Integration tests
+- `npm run test:e2e` - End-to-end tests with Cypress
+
+#### Utilities
+
+- `npm run health:check` - Verify system health
+- `npm run clean:install` - Clean reinstall dependencies
+- `npm run kill:ports` - Free up development ports
+- `npm run reset` - Complete environment reset
+
+#### AI Development Tools
+
+- `npm run taskmaster:start` - Start Taskmaster AI server
+- `npm run taskmaster:dev` - Taskmaster with debug logging
 
 ## IDE Configuration
 
-### VS Code Settings (`.vscode/settings.json`)
+### VS Code Setup (Optional)
+
+Create `.vscode/settings.json` for optimal development experience:
 
 ```json
 {
@@ -354,8 +331,6 @@ npm run dev
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "jest.autoRun": "watch",
-  "jest.showCoverageOnLoad": true,
   "files.exclude": {
     "**/node_modules": true,
     "**/dist": true,
@@ -366,18 +341,13 @@ npm run dev
 
 ### Recommended Extensions
 
-```json
-{
-  "recommendations": [
-    "ms-vscode.vscode-typescript-next",
-    "bradlc.vscode-tailwindcss",
-    "ms-vscode.vscode-jest",
-    "ms-azuretools.vscode-docker",
-    "humao.rest-client",
-    "esbenp.prettier-vscode"
-  ]
-}
-```
+Install these VS Code extensions for better development experience:
+
+- TypeScript Importer
+- Prettier - Code formatter
+- ESLint
+- Docker
+- Jest Runner
 
 ## Continuous Integration
 
@@ -433,4 +403,8 @@ npm run perf:report
 | `npm run clean:install` | Clean reinstall            |
 | `npm run ci:local`      | Run CI pipeline locally    |
 
-For more detailed information, see individual module documentation in `/docs/modules/`.
+For more detailed information, see:
+
+- **Architecture**: `docs/ARCHITECTURE.md`
+- **Developer Onboarding**: `docs/DEVELOPER_ONBOARDING.md`
+- **Design Specifications**: `docs/DESIGN_SPECIFICATION.md`
