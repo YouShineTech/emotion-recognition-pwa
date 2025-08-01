@@ -125,7 +125,7 @@ npm run dev
 
 ### For Detailed Setup
 
-See **[Developer Guide](docs/CONSOLIDATED_DEVELOPER_GUIDE.md)** for comprehensive setup, debugging, and contribution instructions.
+See **[Developer Onboarding Guide](docs/DEVELOPER_ONBOARDING.md)** for comprehensive setup, debugging, and contribution instructions.
 
 ## 🧪 Testing
 
@@ -210,7 +210,7 @@ Each module can be configured independently through their respective configurati
 
 ## 📚 Documentation
 
-- **[Developer Guide](docs/CONSOLIDATED_DEVELOPER_GUIDE.md)** - Setup, debugging, contributing
+- **[Developer Onboarding Guide](docs/DEVELOPER_ONBOARDING.md)** - Setup, debugging, contributing
 - **[Architecture](docs/ARCHITECTURE.md)** - System design and module relationships
 - **[Implementation Status](docs/POC_IMPLEMENTATION_SUMMARY.md)** - Current progress
 - **[Build Guide](docs/BUILD_GUIDE.md)** - Detailed build instructions
@@ -300,4 +300,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-**Ready to contribute?** Start with the **[Developer Guide](docs/CONSOLIDATED_DEVELOPER_GUIDE.md)**
+**Ready to contribute?** Start with the **[Developer Onboarding Guide](docs/DEVELOPER_ONBOARDING.md)**

@@ -2,7 +2,7 @@
 
 ## 📖 Essential Documentation
 
-### **[Developer Guide](CONSOLIDATED_DEVELOPER_GUIDE.md)**
+### **[Developer Onboarding Guide](DEVELOPER_ONBOARDING.md)**
 
 **START HERE** - Complete setup, debugging, and contribution guide
 
@@ -64,7 +64,7 @@ AI-powered task management integration
 
 ## Quick Navigation
 
-**New to the project?** → [Developer Guide](CONSOLIDATED_DEVELOPER_GUIDE.md)
+**New to the project?** → [Developer Onboarding Guide](DEVELOPER_ONBOARDING.md)
 
 **Want to contribute?** → [Implementation Status](POC_IMPLEMENTATION_SUMMARY.md)
 

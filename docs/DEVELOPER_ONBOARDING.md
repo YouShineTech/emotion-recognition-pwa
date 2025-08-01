@@ -1,4 +1,4 @@
-# Developer Guide - Emotion Recognition PWA
+# Developer Onboarding Guide - Emotion Recognition PWA
 
 ## Quick Start
 
@@ -90,6 +90,38 @@ npm run test:coverage
 - **Debug Console**: Execute code in context
 - **Call Stack**: See execution path
 - **Conditional Breakpoints**: Right-click breakpoint → Add condition
+
+### Development Tools Integration
+
+#### Taskmaster AI Integration
+
+The project includes Taskmaster AI for enhanced development workflow:
+
+```bash
+# Start Taskmaster AI server
+npm run taskmaster:start
+
+# Development mode with debug logging
+npm run taskmaster:dev
+
+# Reset database if needed
+npm run taskmaster:reset
+```
+
+#### Dependency Validation
+
+Automated dependency validation ensures module integrity:
+
+```bash
+# Validate all module dependencies
+npm run test:dependencies
+
+# Validate with coverage report
+npm run test:dependencies:coverage
+
+# Fix import issues automatically
+npm run test:imports:fix
+```
 
 ### Building for Production
 
@@ -204,34 +236,90 @@ DEBUG=emotion-pwa:media-capture npm run dev
 
 ## Next Steps
 
-### For New Contributors
+## New Developer Onboarding Path
 
-1. **Start with MediaCaptureModule** - It's fully implemented and well-documented
-2. **Debug the working implementation** - Understand the patterns
-3. **Pick a stub module** - Implement real functionality
-4. **Follow the same patterns** - Interface → Tests → Implementation
+### Week 1: Understanding the Architecture
 
-### Priority Implementation Order
+1. **Read the Documentation**:
+   - Start with this onboarding guide
+   - Review `docs/ARCHITECTURE.md` for system design
+   - Study `docs/DESIGN_SPECIFICATION.md` for implementation details
 
-1. **WebRTCTransportModule** - Core communication layer
-2. **MediaRelayModule** - Server-side WebRTC handling
-3. **FrameExtractionModule** - Video processing pipeline
-4. **AudioAnalysisModule** - Voice emotion analysis
-5. **PWAShellModule** - Progressive Web App features
+2. **Explore Working Modules**:
+   - **MediaCaptureModule** - Fully implemented camera/microphone access
+   - **OverlayRendererModule** - Canvas-based emotion overlay rendering
+   - **FacialAnalysisModule** - Mock OpenFace integration with real emotion mapping
 
-### Integration Testing
+3. **Run and Debug**:
+   - Set up the development environment
+   - Use VS Code debug configurations to step through working modules
+   - Understand the interface-first design pattern
 
-Once core modules are implemented:
+### Week 2: Contributing to Development
 
-- End-to-end emotion recognition flow
-- Cross-browser compatibility testing
-- Performance testing with multiple users
-- Real-time latency validation
+1. **Pick a Stub Module** to implement:
+   - **WebRTCTransportModule** - Core communication layer (high priority)
+   - **MediaRelayModule** - Server-side WebRTC handling (high priority)
+   - **FrameExtractionModule** - Video processing pipeline
+   - **AudioAnalysisModule** - Voice emotion analysis
+   - **PWAShellModule** - Progressive Web App features
 
-## Resources
+2. **Follow the Development Pattern**:
+   - Interface → Tests → Implementation
+   - Use existing modules as reference
+   - Maintain comprehensive error handling
 
-- **Architecture Details**: `docs/ARCHITECTURE.md`
-- **Design Specifications**: `docs/DESIGN_SPECIFICATION.md`
-- **Build Configuration**: `docs/BUILD_GUIDE.md`
-- **Interface Contracts**: `shared/interfaces/`
-- **Debug Configurations**: `.vscode/launch.json`
+### Week 3+: Advanced Integration
+
+1. **End-to-End Testing**:
+   - Complete emotion recognition flow
+   - Cross-browser compatibility testing
+   - Performance testing with multiple users
+   - Real-time latency validation
+
+2. **Production Readiness**:
+   - Load testing with Artillery
+   - Docker deployment testing
+   - Monitoring and alerting setup
+
+## Essential Resources for New Developers
+
+### Documentation
+
+- **Architecture Details**: `docs/ARCHITECTURE.md` - Complete system design and module relationships
+- **Design Specifications**: `docs/DESIGN_SPECIFICATION.md` - Implementation patterns and data models
+- **Build Configuration**: `docs/BUILD_GUIDE.md` - Deployment and production setup
+- **Requirements**: `docs/REQUIREMENTS_SPECIFICATION.md` - Business requirements and acceptance criteria
+
+### Code Structure
+
+- **Interface Contracts**: `shared/interfaces/` - All module interfaces and type definitions
+- **Client Modules**: `client/src/modules/` - Browser-side implementations
+- **Server Modules**: `server/src/modules/` - Backend processing implementations
+- **Debug Configurations**: `.vscode/launch.json` - VS Code debugging setups
+
+### Development Tools
+
+- **Package Scripts**: `package.json` - All available npm commands
+- **Test Configurations**: `client/jest.config.js`, `server/jest.config.js`
+- **Linting Rules**: `.eslintrc.js`, `.prettierrc`
+- **Docker Setup**: `docker-compose.yml` - Local development environment
+
+## Getting Help
+
+### Common Issues and Solutions
+
+**"Module not found" errors**: Run `npm run clean:install` to reset dependencies
+
+**Port conflicts**: Use `npm run kill:ports` to free up development ports
+
+**TypeScript compilation errors**: Check `npm run test:type` for type issues
+
+**Test failures**: Run `npm run test:dependencies` to validate module structure
+
+### Development Community
+
+- Follow the contributing guidelines in this document
+- Use the established patterns from working modules
+- Write comprehensive tests for new functionality
+- Document your changes and update interfaces as needed
