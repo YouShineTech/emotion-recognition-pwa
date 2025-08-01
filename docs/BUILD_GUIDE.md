@@ -78,10 +78,11 @@ npm run build:watch
 
 ### 4. Start Development Servers
 
-#### Option A: Docker Compose (Recommended)
+#### Option A: Docker Compose (Production)
 
 ```bash
-# Start all services
+# Build and start all services
+docker-compose build
 docker-compose up -d
 
 # View logs
@@ -90,6 +91,8 @@ docker-compose logs -f
 # Stop services
 docker-compose down
 ```
+
+**Note:** Current Docker setup is configured for production. Development Dockerfiles are not yet available.
 
 #### Option B: Manual Start
 
@@ -119,7 +122,7 @@ npm run test:coverage
 npm run test:watch
 
 # Run specific module tests
-npm run test:module media-capture
+npm run test:module
 ```
 
 ### Integration Testing
@@ -287,10 +290,10 @@ npm run clean:install
 
 ```bash
 # Check TypeScript configuration
-npm run type:check
+npm run test:type
 
 # Fix common issues
-npm run type:fix
+npm run lint:fix
 ```
 
 ### Debug Logs
@@ -312,16 +315,19 @@ npm run dev
 ```json
 {
   "scripts": {
-    "setup": "npm run install:all && npm run build:dev",
+    "setup": "npm run setup:basic",
+    "setup:basic": "npm run install:all && npm run build:dev && npm run health:check:basic",
     "install:all": "npm install && cd client && npm install && cd ../server && npm install",
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\" \"npm run dev:monitor\"",
     "dev:server": "cd server && npm run dev",
     "dev:client": "cd client && npm run dev",
+    "dev:monitor": "node scripts/module-monitor.js",
     "dev:trace": "DEBUG=emotion-pwa:* npm run dev",
     "build:dev": "npm run build:client:dev && npm run build:server:dev",
     "build:prod": "npm run build:client:prod && npm run build:server:prod",
     "build:watch": "concurrently \"npm run build:client:watch\" \"npm run build:server:watch\"",
-    "test": "npm run test:client && npm run test:server",
+    "test": "npm run test:lint && npm run test:type && npm run test:imports && npm run test:unit",
+    "test:unit": "npm run test:client && npm run test:server",
     "test:client": "cd client && npm test",
     "test:server": "cd server && npm test",
     "test:coverage": "npm run test:client:coverage && npm run test:server:coverage",
@@ -329,8 +335,9 @@ npm run dev
     "test:integration": "cd server && npm run test:integration",
     "test:e2e": "npm run test:e2e:setup && cypress run",
     "health:check": "node scripts/health-check.js",
+    "health:check:basic": "node scripts/health-check.js --basic",
     "monitor:modules": "node scripts/module-monitor.js",
-    "clean": "npm run clean:client && npm run clean:server",
+    "clean": "npm run clean:client && npm run clean:server && npm run clean:root",
     "clean:install": "npm run clean && npm run install:all"
   }
 }

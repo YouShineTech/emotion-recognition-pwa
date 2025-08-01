@@ -439,9 +439,97 @@ This feature involves building a Progressive Web App (PWA) that captures live vi
 
 1. WHEN running on mobile devices THEN the system will limit camera resolution to 480p and frame rate to 20fps to reduce power consumption
 2. WHEN device battery level drops below 20% THEN the system will automatically reduce processing intensity and notify user of power-saving mode
-3. WHEN app is backgrounded THEN the system will pause video processing and maintain only signaling connection
-4. WHEN device temperature increases THEN the system will reduce CPU-intensive processing and increase frame skip intervals
-5. WHEN on battery power THEN the system will optimize GPU usage for video rendering and disable non-essential visual effects
+3. WHEN app is backgrounded THEN the system will pause emotion processing and resume when app returns to foreground
+4. WHEN using hardware acceleration THEN the system will prefer GPU processing for AI models to reduce CPU power consumption
+5. WHEN battery optimization is enabled THEN the system will provide estimated remaining usage time based on current power consumption
+
+**Traceability:** Links to REQ-6 (mobile PWA optimization), REQ-4 (efficient facial processing), REQ-5 (efficient audio processing)
+
+## Deployment & Distribution Requirements
+
+### Requirement 33: Debian Package Distribution
+
+**User Story:** As a system administrator, I want to install the emotion recognition server using a single .deb package, so that I can deploy it quickly without manual dependency management.
+
+#### Acceptance Criteria
+
+1. WHEN I run `dpkg -i emotion-recognition-server.deb` THEN the system SHALL install all required dependencies automatically
+2. WHEN the package is installed THEN the system SHALL create a systemd service for the emotion recognition server
+3. WHEN the package is installed THEN the system SHALL create appropriate user accounts and file permissions
+4. WHEN the package is installed THEN the system SHALL place configuration files in standard Linux locations (/etc/emotion-recognition/)
+5. IF Node.js is not installed THEN the package SHALL install the correct Node.js version as a dependency
+
+**Traceability:** Links to REQ-7 (media relay deployment), REQ-8 (scalable deployment), REQ-4 (facial analysis deployment), REQ-5 (audio analysis deployment)
+
+### Requirement 34: Service Management Integration
+
+**User Story:** As a DevOps engineer, I want the .deb package to include proper service management, so that the server can be controlled using standard systemd commands.
+
+#### Acceptance Criteria
+
+1. WHEN the package is installed THEN the system SHALL create a systemd service file at /etc/systemd/system/emotion-recognition.service
+2. WHEN I run `systemctl start emotion-recognition` THEN the service SHALL start successfully
+3. WHEN I run `systemctl enable emotion-recognition` THEN the service SHALL be configured to start on boot
+4. WHEN the service starts THEN it SHALL run as a non-root user (emotion-recognition)
+5. WHEN the service fails THEN systemd SHALL attempt to restart it automatically
+
+**Traceability:** Links to REQ-23 (service recovery), REQ-24 (server resilience), REQ-27 (failure handling)
+
+### Requirement 35: Package Build Automation
+
+**User Story:** As a developer, I want a build script that creates the .deb package from the source code, so that I can generate deployment packages as part of the CI/CD pipeline.
+
+#### Acceptance Criteria
+
+1. WHEN I run `npm run build:deb` THEN the system SHALL create a .deb package in the dist/ directory
+2. WHEN building the package THEN the system SHALL include the compiled server application
+3. WHEN building the package THEN the system SHALL include all production dependencies
+4. WHEN building the package THEN the system SHALL generate proper package metadata (version, description, dependencies)
+5. WHEN building the package THEN the system SHALL create installation/removal scripts (postinst, prerm, postrm)
+
+**Traceability:** Links to REQ-17 (automated testing pipeline), REQ-33 (package distribution)
+
+### Requirement 36: Configuration Management
+
+**User Story:** As a system administrator, I want the package to handle configuration management properly, so that I can customize the server settings without breaking the installation.
+
+#### Acceptance Criteria
+
+1. WHEN the package is installed THEN it SHALL create a default configuration file at /etc/emotion-recognition/config.json
+2. WHEN I modify the configuration file THEN package updates SHALL preserve my custom settings
+3. WHEN the package is removed THEN it SHALL ask whether to keep configuration files
+4. WHEN environment variables are set THEN they SHALL override configuration file settings
+5. IF the configuration file is missing THEN the service SHALL start with sensible defaults
+
+**Traceability:** Links to REQ-18 (secure configuration), REQ-20 (authentication configuration), REQ-36 (deployment configuration)
+
+### Requirement 37: System Integration and Logging
+
+**User Story:** As a system administrator, I want proper logging and file management, so that the server integrates well with system monitoring and log rotation.
+
+#### Acceptance Criteria
+
+1. WHEN the service runs THEN it SHALL write logs to /var/log/emotion-recognition/
+2. WHEN the package is installed THEN it SHALL configure logrotate for automatic log rotation
+3. WHEN the service runs THEN it SHALL create PID files in /var/run/emotion-recognition/
+4. WHEN the package is installed THEN it SHALL set appropriate file permissions for security
+5. WHEN the package is removed THEN it SHALL clean up log files and runtime directories
+
+**Traceability:** Links to REQ-9 (system monitoring), REQ-18 (secure file permissions), REQ-24 (server management)
+
+### Requirement 38: Multi-Environment Deployment Support
+
+**User Story:** As a DevOps engineer, I want the package to support different deployment environments, so that I can use the same package for staging and production with different configurations.
+
+#### Acceptance Criteria
+
+1. WHEN I install the package THEN it SHALL support environment-specific configuration files
+2. WHEN I set NODE_ENV=production THEN the service SHALL use production-optimized settings
+3. WHEN I provide custom SSL certificates THEN the service SHALL use them for HTTPS
+4. WHEN Redis is available THEN the service SHALL connect to it automatically
+5. IF external dependencies are unavailable THEN the service SHALL start in degraded mode with appropriate warnings
+
+**Traceability:** Links to REQ-18 (secure deployment), REQ-23 (resilient deployment), REQ-28 (graceful degradation)nded THEN the system will pause video processing and maintain only signaling connection 4. WHEN device temperature increases THEN the system will reduce CPU-intensive processing and increase frame skip intervals 5. WHEN on battery power THEN the system will optimize GPU usage for video rendering and disable non-essential visual effects
 
 **Traceability:** Links to REQ-6 (mobile device support), REQ-1 (camera optimization), REQ-3 (overlay efficiency)
 
