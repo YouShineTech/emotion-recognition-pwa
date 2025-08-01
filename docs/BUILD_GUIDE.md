@@ -92,7 +92,7 @@ docker-compose logs -f
 docker-compose down
 ```
 
-**Note:** Current Docker setup is configured for production. Development Dockerfiles are not yet available.
+**Note:** Current Docker setup is configured for development with volume mounts and hot reloading. Production Dockerfiles are available in the respective directories.
 
 #### Option B: Manual Start
 

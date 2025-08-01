@@ -1,0 +1,90 @@
+config:
+  target: 'http://localhost:3001'
+  phases:
+    - duration: 180
+      arrivalRate: 100
+      name: 'Stress test - Ramp up to 100 users'
+    - duration: 300
+      arrivalRate: 500
+      name: 'Stress test - Ramp up to 500 users'
+    - duration: 600
+      arrivalRate: 1000
+      name: 'Stress test - 1000 concurrent users'
+    - duration: 300
+      arrivalRate: 1500
+      name: 'Stress test - Peak load 1500 users'
+    - duration: 120
+      arrivalRate: 0
+      name: 'Cool down'
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+      User-Agent: 'Artillery Stress Test'
+  processor: './load-test-functions.js'
+  ensure:
+    maxErrorRate: 5
+    p95: 2000
+
+scenarios:
+  - name: 'Basic health and status checks'
+    weight: 15
+    flow:
+      - get:
+          url: '/health'
+          expect:
+            - statusCode: 200
+      - get:
+          url: '/api/status'
+          expect:
+            - statusCode: 200
+
+  - name: 'WebRTC connection stress'
+    weight: 35
+    flow:
+      - post:
+          url: '/api/webrtc/session'
+          json:
+            sessionId: 'stress-{{ $randomString() }}'
+            userId: 'user-{{ $randomNumber(1, 10000) }}'
+            deviceInfo: 'stress-test-device'
+          expect:
+            - statusCode: [200, 201]
+      - post:
+          url: '/api/webrtc/offer'
+          json:
+            sdp: 'stress-test-sdp-{{ $randomString() }}'
+            sessionId: '{{ sessionId }}'
+            iceCandidates: []
+          expect:
+            - statusCode: [200, 201]
+
+  - name: 'Emotion analysis stress'
+    weight: 35
+    flow:
+      - post:
+          url: '/api/emotion/analyze'
+          json:
+            frameData: 'stress-test-frame-{{ $randomString() }}'
+            audioData: 'stress-test-audio-{{ $randomString() }}'
+            sessionId: '{{ $randomString() }}'
+            timestamp: '{{ $timestamp() }}'
+            quality: 'high'
+          expect:
+            - statusCode: [200, 201]
+            - contentType: json
+
+  - name: 'Concurrent session management'
+    weight: 15
+    flow:
+      - post:
+          url: '/api/session/create'
+          json:
+            userId: 'user-{{ $randomNumber(1, 10000) }}'
+            deviceId: 'device-{{ $randomNumber(1, 1000) }}'
+            sessionType: 'emotion-analysis'
+          expect:
+            - statusCode: [200, 201]
+      - get:
+          url: '/api/session/{{ sessionId }}/status'
+          expect:
+            - statusCode: 200

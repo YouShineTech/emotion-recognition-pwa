@@ -1,0 +1,49 @@
+config:
+  target: 'http://localhost:3001'
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      name: 'Small load test - 10 concurrent users'
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+      User-Agent: 'Artillery Load Test'
+  processor: './load-test-functions.js'
+
+scenarios:
+  - name: 'Basic API health check'
+    weight: 30
+    flow:
+      - get:
+          url: '/health'
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - hasProperty: 'status'
+            - equals: ['status', 'ok']
+
+  - name: 'WebRTC connection test'
+    weight: 40
+    flow:
+      - post:
+          url: '/api/webrtc/offer'
+          json:
+            sdp: 'test-sdp-offer'
+            sessionId: '{{ $randomString() }}'
+          expect:
+            - statusCode: [200, 201]
+            - contentType: json
+
+  - name: 'Emotion analysis endpoint'
+    weight: 30
+    flow:
+      - post:
+          url: '/api/emotion/analyze'
+          json:
+            frameData: 'base64-encoded-frame-data'
+            audioData: 'base64-encoded-audio-data'
+            sessionId: '{{ $randomString() }}'
+          expect:
+            - statusCode: [200, 201]
+            - contentType: json
+            - hasProperty: 'emotions'

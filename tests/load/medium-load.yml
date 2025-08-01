@@ -1,0 +1,65 @@
+config:
+  target: 'http://localhost:3001'
+  phases:
+    - duration: 120
+      arrivalRate: 50
+      name: 'Medium load test - 50 users ramp up'
+    - duration: 300
+      arrivalRate: 100
+      name: 'Medium load test - 100 concurrent users'
+    - duration: 60
+      arrivalRate: 0
+      name: 'Cool down'
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+      User-Agent: 'Artillery Load Test'
+  processor: './load-test-functions.js'
+
+scenarios:
+  - name: 'Health check and basic functionality'
+    weight: 20
+    flow:
+      - get:
+          url: '/health'
+          expect:
+            - statusCode: 200
+            - contentType: json
+      - get:
+          url: '/api/status'
+          expect:
+            - statusCode: 200
+
+  - name: 'WebRTC session management'
+    weight: 40
+    flow:
+      - post:
+          url: '/api/webrtc/session'
+          json:
+            sessionId: '{{ $randomString() }}'
+            userId: 'user-{{ $randomNumber(1, 1000) }}'
+          expect:
+            - statusCode: [200, 201]
+      - post:
+          url: '/api/webrtc/offer'
+          json:
+            sdp: 'test-sdp-offer-{{ $randomString() }}'
+            sessionId: '{{ sessionId }}'
+          expect:
+            - statusCode: [200, 201]
+
+  - name: 'Emotion analysis pipeline'
+    weight: 40
+    flow:
+      - post:
+          url: '/api/emotion/analyze'
+          json:
+            frameData: 'base64-encoded-frame-data-{{ $randomString() }}'
+            audioData: 'base64-encoded-audio-data-{{ $randomString() }}'
+            sessionId: '{{ $randomString() }}'
+            timestamp: '{{ $timestamp() }}'
+          expect:
+            - statusCode: [200, 201]
+            - contentType: json
+            - hasProperty: 'emotions'
+            - hasProperty: 'confidence'
