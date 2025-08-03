@@ -38,13 +38,9 @@ VS Code debugging setup and configurations
 
 ## 🔧 Setup & Operations
 
-### **[DevOps Quick Start](DEVOPS_QUICK_START.md)**
+### **[DevOps Onboarding Guide](DEVOPS_ONBOARDING.md)**
 
-One-command DevOps setup and monitoring
-
-### **[DevOps Training](DEVOPS_TRAINING.md)**
-
-6-week training program for operations
+Complete DevOps guide from quick start to expert level training
 
 ### **[GitHub Setup](GITHUB_SETUP.md)**
 
@@ -70,4 +66,4 @@ AI-powered task management integration
 
 **Need to debug?** → [Debug Configurations](DEBUG_CONFIGURATIONS.md)
 
-**Setting up CI/CD?** → [DevOps Quick Start](DEVOPS_QUICK_START.md)
+**Setting up CI/CD?** → [DevOps Onboarding Guide](DEVOPS_ONBOARDING.md)
