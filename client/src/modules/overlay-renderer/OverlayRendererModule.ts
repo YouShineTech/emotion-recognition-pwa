@@ -208,16 +208,18 @@ export class OverlayRendererModule implements IOverlayRendererModule {
     // Draw landmark points
     this.ctx.fillStyle = color;
     landmarks.points.forEach((point: any) => {
+      if (!this.ctx) return;
       this.ctx.beginPath();
       this.ctx.arc(point.x, point.y, 2, 0, 2 * Math.PI);
       this.ctx.fill();
     });
 
     // Draw connections between landmarks (simplified)
-    if (landmarks.connections) {
+    if (landmarks.connections && this.ctx) {
       this.ctx.strokeStyle = color;
       this.ctx.lineWidth = 1;
       landmarks.connections.forEach((connection: any) => {
+        if (!this.ctx) return;
         this.ctx.beginPath();
         this.ctx.moveTo(connection.start.x, connection.start.y);
         this.ctx.lineTo(connection.end.x, connection.end.y);

@@ -85,7 +85,7 @@ jobs:
           cd ../server && npm ci
 
       - name: Run unit tests
-        run: npm run test:coverage
+        run: npm run test:client:coverage
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3

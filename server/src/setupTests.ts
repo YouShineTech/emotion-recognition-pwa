@@ -16,7 +16,7 @@ jest.mock('redis', () => ({
   }),
 }));
 
-// Mock Mediasoup
+// Mock Mediasoup (handle missing module)
 jest.mock('mediasoup', () => ({
   createWorker: jest.fn().mockResolvedValue({
     pid: 12345,
