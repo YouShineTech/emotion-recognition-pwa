@@ -1,4 +1,10 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+echo "🔒 Running pre-commit security and quality checks..."
+
+# Run existing quality checks
 npm run hooks:test
+
+# Run security scan
+npm run security:scan

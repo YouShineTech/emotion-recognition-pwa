@@ -1,0 +1,26 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2025-08-04T12:44:58.111528456+10:00",
+  "ArtifactName": ".",
+  "ArtifactType": "filesystem",
+  "Metadata": {
+    "RepoURL": "git@github.com:YouShineTech/emotion-recognition-pwa.git",
+    "Branch": "main",
+    "Commit": "7da2fa113615c831770c96f3d5cf4983dcf66d39",
+    "CommitMsg": "Fix CI/CD for personal repository limitations\n\n- Remove CodeQL SARIF upload (requires GitHub Advanced Security)\n- Upload Trivy results as artifacts instead of SARIF\n- Remove security-events permissions (not needed for personal repos)\n- Delete CodeQL workflow (not supported on personal repositories)\n\nGitHub Advanced Security is only available for Organizations, not personal repos.",
+    "Author": "Daniel Javro \u003cdaniel.javro@gmail.com\u003e",
+    "Committer": "Daniel Javro \u003cdaniel.javro@gmail.com\u003e"
+  },
+  "Results": [
+    {
+      "Target": "client/package-lock.json",
+      "Class": "lang-pkgs",
+      "Type": "npm"
+    },
+    {
+      "Target": "server/package-lock.json",
+      "Class": "lang-pkgs",
+      "Type": "npm"
+    }
+  ]
+}

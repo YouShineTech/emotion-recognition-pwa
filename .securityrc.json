@@ -1,0 +1,39 @@
+{
+  "trivy": {
+    "severity": ["HIGH", "CRITICAL"],
+    "ignoreUnfixed": false,
+    "timeout": "5m",
+    "skipDirs": [
+      "node_modules",
+      ".git",
+      "dist",
+      "build",
+      "coverage"
+    ]
+  },
+  "npm": {
+    "auditLevel": "moderate",
+    "skipDevDependencies": false
+  },
+  "secrets": {
+    "enabled": true,
+    "patterns": [
+      "api[_-]?key",
+      "secret",
+      "password",
+      "token",
+      "sk-[a-zA-Z0-9]{48}",
+      "ghp_[a-zA-Z0-9]{36}"
+    ],
+    "excludeFiles": [
+      "*.test.js",
+      "*.spec.js",
+      "*.md",
+      ".env.example"
+    ]
+  },
+  "reports": {
+    "directory": "reports/security",
+    "formats": ["json", "table"]
+  }
+}

@@ -1,4 +1,11 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+echo "🚀 Running pre-push checks..."
+
+# Run unit tests
 npm run test:unit
+
+# Quick security audit
+echo "🔒 Running quick security audit..."
+npm audit --audit-level=high
