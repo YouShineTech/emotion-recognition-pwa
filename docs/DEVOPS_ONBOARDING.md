@@ -140,6 +140,8 @@ CORS_ORIGIN=https://yourdomain.com
 
 ### **Week 2: CI/CD Pipeline**
 
+> **📋 Prerequisite**: Ensure GitHub repository is properly configured using `docs/GITHUB_SETUP.md`
+
 #### **Understanding GitHub Actions**
 
 **Current Workflow Structure:**
@@ -450,6 +452,7 @@ docker volume prune
 
 ### **Documentation**
 
+- **GitHub Setup**: `docs/GITHUB_SETUP.md` - Repository configuration and CI/CD setup
 - **Architecture**: `docs/ARCHITECTURE.md`
 - **Build Guide**: `docs/BUILD_GUIDE.md`
 - **Debugging**: `docs/DEBUGGING_GUIDE.md`
