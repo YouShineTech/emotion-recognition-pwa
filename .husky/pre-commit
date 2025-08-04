@@ -3,6 +3,11 @@
 
 echo "🔒 Running pre-commit security and quality checks..."
 
+# Auto-format staged files only
+echo "🎨 Auto-formatting staged files..."
+npm run format:staged
+git add -u
+
 # Run existing quality checks
 npm run hooks:test
 
