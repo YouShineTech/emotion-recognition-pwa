@@ -15,7 +15,8 @@ self.addEventListener('install', event => {
   console.log('[ServiceWorker] Install event');
 
   event.waitUntil(
-    caches.open(CACHE_NAME)
+    caches
+      .open(CACHE_NAME)
       .then(cache => {
         console.log('[ServiceWorker] Caching static assets');
         return cache.addAll(STATIC_CACHE_URLS);
@@ -35,7 +36,8 @@ self.addEventListener('activate', event => {
   console.log('[ServiceWorker] Activate event');
 
   event.waitUntil(
-    caches.keys()
+    caches
+      .keys()
       .then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
@@ -61,48 +63,45 @@ self.addEventListener('fetch', event => {
   }
 
   // Skip WebSocket and API requests
-  if (event.request.url.includes('/socket.io/') ||
-      event.request.url.includes('/api/')) {
+  if (event.request.url.includes('/socket.io/') || event.request.url.includes('/api/')) {
     return;
   }
 
   event.respondWith(
-    caches.match(event.request)
-      .then(cachedResponse => {
-        if (cachedResponse) {
-          console.log('[ServiceWorker] Serving from cache:', event.request.url);
-          return cachedResponse;
-        }
+    caches.match(event.request).then(cachedResponse => {
+      if (cachedResponse) {
+        console.log('[ServiceWorker] Serving from cache:', event.request.url);
+        return cachedResponse;
+      }
 
-        console.log('[ServiceWorker] Fetching from network:', event.request.url);
-        return fetch(event.request)
-          .then(response => {
-            // Don't cache non-successful responses
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            // Clone the response for caching
-            const responseToCache = response.clone();
-
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-
+      console.log('[ServiceWorker] Fetching from network:', event.request.url);
+      return fetch(event.request)
+        .then(response => {
+          // Don't cache non-successful responses
+          if (!response || response.status !== 200 || response.type !== 'basic') {
             return response;
-          })
-          .catch(error => {
-            console.error('[ServiceWorker] Fetch failed:', error);
+          }
 
-            // Return offline page for navigation requests
-            if (event.request.mode === 'navigate') {
-              return caches.match('/index.html');
-            }
+          // Clone the response for caching
+          const responseToCache = response.clone();
 
-            throw error;
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseToCache);
           });
-      })
+
+          return response;
+        })
+        .catch(error => {
+          console.error('[ServiceWorker] Fetch failed:', error);
+
+          // Return offline page for navigation requests
+          if (event.request.mode === 'navigate') {
+            return caches.match('/index.html');
+          }
+
+          throw error;
+        });
+    })
   );
 });
 
@@ -132,19 +131,17 @@ self.addEventListener('push', event => {
         {
           action: 'open',
           title: 'Open App',
-          icon: '/icon-192x192.png'
+          icon: '/icon-192x192.png',
         },
         {
           action: 'close',
           title: 'Close',
-          icon: '/icon-192x192.png'
-        }
-      ]
+          icon: '/icon-192x192.png',
+        },
+      ],
     };
 
-    event.waitUntil(
-      self.registration.showNotification(data.title, options)
-    );
+    event.waitUntil(self.registration.showNotification(data.title, options));
   }
 });
 
@@ -155,8 +152,6 @@ self.addEventListener('notificationclick', event => {
   event.notification.close();
 
   if (event.action === 'open') {
-    event.waitUntil(
-      clients.openWindow('/')
-    );
+    event.waitUntil(clients.openWindow('/'));
   }
 });
