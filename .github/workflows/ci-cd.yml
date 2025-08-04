@@ -153,13 +153,13 @@ jobs:
           npm run build
 
       - name: Upload Client Build Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: client-build
           path: client/dist/
 
       - name: Upload Server Build Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: server-build
           path: server/dist/

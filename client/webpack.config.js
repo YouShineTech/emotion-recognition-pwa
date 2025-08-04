@@ -1,8 +1,19 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const fs = require('fs');
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
+
+  // Ensure we have the correct template path
+  const templatePath = path.resolve(__dirname, 'public', 'index.html');
+
+  // Debug: Check if template exists
+  if (!fs.existsSync(templatePath)) {
+    console.error('Template file not found at:', templatePath);
+    console.error('Current working directory:', process.cwd());
+    console.error('__dirname:', __dirname);
+  }
 
   return {
     entry: './src/index.ts',
@@ -47,9 +58,12 @@ module.exports = (env, argv) => {
 
     plugins: [
       new HtmlWebpackPlugin({
-        template: path.resolve(__dirname, 'public', 'index.html'),
+        template: templatePath,
         filename: 'index.html',
         inject: 'body',
+        templateParameters: {
+          title: 'Emotion Recognition PWA',
+        },
       }),
     ],
 
