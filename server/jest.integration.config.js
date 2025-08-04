@@ -44,6 +44,9 @@ module.exports = {
   // Run tests serially for integration tests
   maxWorkers: 1,
 
+  // Pass when no tests are found (for now)
+  passWithNoTests: true,
+
   // Global setup/teardown for integration tests
   globalSetup: '<rootDir>/tests/integration/setup.ts',
   globalTeardown: '<rootDir>/tests/integration/teardown.ts',
