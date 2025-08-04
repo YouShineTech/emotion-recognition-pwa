@@ -17,7 +17,7 @@ class PerformanceReportGenerator {
       outputFile: options.outputFile || './reports/performance-report.json',
       format: options.format || 'json', // json, html, markdown
       timeRange: options.timeRange || '24h', // 1h, 6h, 24h, 7d, 30d
-      includeCharts: options.includeCharts !== false
+      includeCharts: options.includeCharts !== false,
     };
 
     this.data = [];
@@ -27,7 +27,7 @@ class PerformanceReportGenerator {
       summary: {},
       metrics: {},
       alerts: [],
-      recommendations: []
+      recommendations: [],
     };
   }
 
@@ -63,7 +63,7 @@ class PerformanceReportGenerator {
       '6h': 6 * 60 * 60 * 1000,
       '24h': 24 * 60 * 60 * 1000,
       '7d': 7 * 24 * 60 * 60 * 1000,
-      '30d': 30 * 24 * 60 * 60 * 1000
+      '30d': 30 * 24 * 60 * 60 * 1000,
     };
 
     const range = timeRanges[this.options.timeRange] || timeRanges['24h'];
@@ -74,7 +74,9 @@ class PerformanceReportGenerator {
       return timestamp >= cutoff;
     });
 
-    console.log(chalk.blue(`Filtered to ${this.data.length} samples in last ${this.options.timeRange}`));
+    console.log(
+      chalk.blue(`Filtered to ${this.data.length} samples in last ${this.options.timeRange}`)
+    );
   }
 
   generateSummary() {
@@ -84,26 +86,28 @@ class PerformanceReportGenerator {
     }
 
     const cpuValues = this.data.map(d => d.metrics.cpu).filter(v => v !== undefined);
-    const memoryValues = this.data.map(d => d.metrics.memory.percentage).filter(v => v !== undefined);
+    const memoryValues = this.data
+      .map(d => d.metrics.memory.percentage)
+      .filter(v => v !== undefined);
     const diskValues = this.data.map(d => d.metrics.disk.percentage).filter(v => v !== undefined);
 
     this.report.summary = {
       totalSamples: this.data.length,
       timeRange: {
         start: this.data[0]?.timestamp,
-        end: this.data[this.data.length - 1]?.timestamp
+        end: this.data[this.data.length - 1]?.timestamp,
       },
       averages: {
         cpu: cpuValues.length > 0 ? this.calculateAverage(cpuValues) : 0,
         memory: memoryValues.length > 0 ? this.calculateAverage(memoryValues) : 0,
-        disk: diskValues.length > 0 ? this.calculateAverage(diskValues) : 0
+        disk: diskValues.length > 0 ? this.calculateAverage(diskValues) : 0,
       },
       peaks: {
         cpu: cpuValues.length > 0 ? Math.max(...cpuValues) : 0,
         memory: memoryValues.length > 0 ? Math.max(...memoryValues) : 0,
-        disk: diskValues.length > 0 ? Math.max(...diskValues) : 0
+        disk: diskValues.length > 0 ? Math.max(...diskValues) : 0,
       },
-      alerts: this.data.reduce((sum, entry) => sum + (entry.alerts?.length || 0), 0)
+      alerts: this.data.reduce((sum, entry) => sum + (entry.alerts?.length || 0), 0),
     };
   }
 
@@ -115,19 +119,21 @@ class PerformanceReportGenerator {
       memory: this.analyzeMetric('memory.percentage'),
       disk: this.analyzeMetric('disk.percentage'),
       webrtc: this.analyzeWebRTCMetrics(),
-      health: this.analyzeHealthMetrics()
+      health: this.analyzeHealthMetrics(),
     };
   }
 
   analyzeMetric(metricPath) {
-    const values = this.data.map(entry => {
-      const path = metricPath.split('.');
-      let value = entry.metrics;
-      for (const key of path) {
-        value = value?.[key];
-      }
-      return value;
-    }).filter(v => v !== undefined && !isNaN(v));
+    const values = this.data
+      .map(entry => {
+        const path = metricPath.split('.');
+        let value = entry.metrics;
+        for (const key of path) {
+          value = value?.[key];
+        }
+        return value;
+      })
+      .filter(v => v !== undefined && !isNaN(v));
 
     if (values.length === 0) return null;
 
@@ -142,8 +148,8 @@ class PerformanceReportGenerator {
         p50: this.calculatePercentile(values, 50),
         p90: this.calculatePercentile(values, 90),
         p95: this.calculatePercentile(values, 95),
-        p99: this.calculatePercentile(values, 99)
-      }
+        p99: this.calculatePercentile(values, 99),
+      },
     };
   }
 
@@ -162,7 +168,7 @@ class PerformanceReportGenerator {
       activeConnections: connections.length > 0 ? this.analyzeMetric('activeConnections') : null,
       averageLatency: latencies.length > 0 ? this.analyzeMetric('averageLatency') : null,
       bandwidth: bandwidths.length > 0 ? this.analyzeMetric('bandwidth') : null,
-      totalSamples: webrtcData.length
+      totalSamples: webrtcData.length,
     };
   }
 
@@ -183,7 +189,7 @@ class PerformanceReportGenerator {
       totalChecks: healthData.length,
       successRate: (healthData.filter(d => d.status === 200).length / healthData.length) * 100,
       averageResponseTime: responseTimes.length > 0 ? this.calculateAverage(responseTimes) : 0,
-      statusCodeDistribution: this.countOccurrences(statusCodes)
+      statusCodeDistribution: this.countOccurrences(statusCodes),
     };
   }
 
@@ -192,7 +198,7 @@ class PerformanceReportGenerator {
       .flatMap(entry => entry.alerts || [])
       .map(alert => ({
         message: alert,
-        timestamp: entry.timestamp
+        timestamp: entry.timestamp,
       }));
   }
 
@@ -204,8 +210,9 @@ class PerformanceReportGenerator {
       recommendations.push({
         category: 'CPU',
         severity: 'high',
-        message: 'High average CPU usage detected. Consider optimizing emotion analysis algorithms or scaling horizontally.',
-        metric: `Average CPU: ${this.report.summary.averages.cpu.toFixed(2)}%`
+        message:
+          'High average CPU usage detected. Consider optimizing emotion analysis algorithms or scaling horizontally.',
+        metric: `Average CPU: ${this.report.summary.averages.cpu.toFixed(2)}%`,
       });
     }
 
@@ -214,8 +221,9 @@ class PerformanceReportGenerator {
       recommendations.push({
         category: 'Memory',
         severity: 'high',
-        message: 'High memory usage detected. Consider implementing memory pooling or garbage collection optimization.',
-        metric: `Average Memory: ${this.report.summary.averages.memory.toFixed(2)}%`
+        message:
+          'High memory usage detected. Consider implementing memory pooling or garbage collection optimization.',
+        metric: `Average Memory: ${this.report.summary.averages.memory.toFixed(2)}%`,
       });
     }
 
@@ -224,8 +232,9 @@ class PerformanceReportGenerator {
       recommendations.push({
         category: 'WebRTC',
         severity: 'medium',
-        message: 'High WebRTC latency detected. Consider optimizing network configuration or using TURN servers.',
-        metric: `Average Latency: ${this.report.metrics.webrtc.averageLatency.average.toFixed(2)}ms`
+        message:
+          'High WebRTC latency detected. Consider optimizing network configuration or using TURN servers.',
+        metric: `Average Latency: ${this.report.metrics.webrtc.averageLatency.average.toFixed(2)}ms`,
       });
     }
 
@@ -235,7 +244,7 @@ class PerformanceReportGenerator {
         category: 'Health',
         severity: 'high',
         message: 'Low health check success rate. Investigate server stability and error handling.',
-        metric: `Success Rate: ${this.report.metrics.health.successRate.toFixed(2)}%`
+        metric: `Success Rate: ${this.report.metrics.health.successRate.toFixed(2)}%`,
       });
     }
 
@@ -249,9 +258,7 @@ class PerformanceReportGenerator {
   calculateMedian(values) {
     const sorted = values.slice().sort((a, b) => a - b);
     const mid = Math.floor(sorted.length / 2);
-    return sorted.length % 2 === 0
-      ? (sorted[mid - 1] + sorted[mid]) / 2
-      : sorted[mid];
+    return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
   }
 
   calculateStandardDeviation(values) {
@@ -317,7 +324,7 @@ class PerformanceReportGenerator {
     // Summary table
     const summaryTable = new Table({
       head: ['Metric', 'Value'],
-      colWidths: [20, 30]
+      colWidths: [20, 30],
     });
 
     summaryTable.push(

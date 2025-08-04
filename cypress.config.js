@@ -23,18 +23,18 @@ module.exports = defineConfig({
         table(message) {
           console.table(message);
           return null;
-        }
+        },
       });
     },
     env: {
       apiUrl: 'http://localhost:3001',
-      wsUrl: 'ws://localhost:3001'
-    }
+      wsUrl: 'ws://localhost:3001',
+    },
   },
   component: {
     devServer: {
       framework: 'webpack',
-      bundler: 'webpack'
-    }
-  }
+      bundler: 'webpack',
+    },
+  },
 });

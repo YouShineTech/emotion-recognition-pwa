@@ -46,25 +46,28 @@ function generateMockEmotionResponse() {
     emotions: {
       primary: generateRandomEmotion(),
       confidence: Math.random() * 0.5 + 0.5, // 0.5 to 1.0
-      secondary: emotions.filter(e => e !== generateRandomEmotion())[Math.floor(Math.random() * 6)]
+      secondary: emotions.filter(e => e !== generateRandomEmotion())[Math.floor(Math.random() * 6)],
     },
     facialFeatures: {
-      landmarks: Array.from({length: 68}, (_, i) => ({x: Math.random() * 640, y: Math.random() * 480})),
+      landmarks: Array.from({ length: 68 }, (_, i) => ({
+        x: Math.random() * 640,
+        y: Math.random() * 480,
+      })),
       boundingBox: {
         x: Math.random() * 400,
         y: Math.random() * 300,
         width: Math.random() * 200 + 100,
-        height: Math.random() * 200 + 100
-      }
+        height: Math.random() * 200 + 100,
+      },
     },
     audioFeatures: {
       emotion: generateRandomEmotion(),
       confidence: Math.random() * 0.5 + 0.5,
       pitch: Math.random() * 200 + 100,
-      volume: Math.random() * 0.5 + 0.5
+      volume: Math.random() * 0.5 + 0.5,
     },
     timestamp: Date.now(),
-    sessionId: generateSessionId()
+    sessionId: generateSessionId(),
   };
 }
 
@@ -194,5 +197,5 @@ module.exports = {
   generateMockAudioData,
   generateRandomEmotion,
   generateMockEmotionResponse,
-  generateMockSDPOffer
+  generateMockSDPOffer,
 };

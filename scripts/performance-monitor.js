@@ -22,14 +22,14 @@ class PerformanceMonitor {
         cpu: options.cpuThreshold || 80,
         memory: options.memoryThreshold || 85,
         disk: options.diskThreshold || 90,
-        responseTime: options.responseTimeThreshold || 1000
-      }
+        responseTime: options.responseTimeThreshold || 1000,
+      },
     };
 
     this.metrics = {
       startTime: Date.now(),
       samples: [],
-      alerts: []
+      alerts: [],
     };
 
     this.setupLogging();
@@ -50,22 +50,25 @@ class PerformanceMonitor {
       memory: this.getMemoryUsage(),
       disk: await this.getDiskUsage(),
       network: await this.getNetworkStats(),
-      process: this.getProcessMetrics()
+      process: this.getProcessMetrics(),
     };
 
     return metrics;
   }
 
   async getCPUUsage() {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const cpus = os.cpus();
       const totalIdle = cpus.reduce((acc, cpu) => acc + cpu.times.idle, 0);
-      const totalTick = cpus.reduce((acc, cpu) =>
-        acc + cpu.times.user + cpu.times.nice + cpu.times.sys + cpu.times.idle + cpu.times.irq, 0);
+      const totalTick = cpus.reduce(
+        (acc, cpu) =>
+          acc + cpu.times.user + cpu.times.nice + cpu.times.sys + cpu.times.idle + cpu.times.irq,
+        0
+      );
 
       const idle = totalIdle / cpus.length;
       const total = totalTick / cpus.length;
-      const usage = 100 - (100 * idle / total);
+      const usage = 100 - (100 * idle) / total;
 
       resolve(Math.round(usage * 100) / 100);
     });
@@ -80,12 +83,12 @@ class PerformanceMonitor {
       total: this.formatBytes(total),
       used: this.formatBytes(used),
       free: this.formatBytes(free),
-      percentage: Math.round((used / total) * 100)
+      percentage: Math.round((used / total) * 100),
     };
   }
 
   async getDiskUsage() {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       exec('df -h / | tail -1', (error, stdout) => {
         if (error) {
           resolve({ percentage: 0, available: 'Unknown' });
@@ -102,7 +105,7 @@ class PerformanceMonitor {
   }
 
   async getNetworkStats() {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       exec('netstat -i | grep -E "^(eth|wlan|en|wl)" | head -1', (error, stdout) => {
         if (error) {
           resolve({ rx: 0, tx: 0 });
@@ -112,7 +115,7 @@ class PerformanceMonitor {
         const parts = stdout.trim().split(/\s+/);
         resolve({
           rx: parseInt(parts[3]) || 0,
-          tx: parseInt(parts[7]) || 0
+          tx: parseInt(parts[7]) || 0,
         });
       });
     });
@@ -124,7 +127,7 @@ class PerformanceMonitor {
       rss: this.formatBytes(usage.rss),
       heapUsed: this.formatBytes(usage.heapUsed),
       heapTotal: this.formatBytes(usage.heapTotal),
-      external: this.formatBytes(usage.external)
+      external: this.formatBytes(usage.external),
     };
   }
 
@@ -143,12 +146,12 @@ class PerformanceMonitor {
       return {
         status: response.status,
         responseTime: response.headers.get('x-response-time'),
-        data
+        data,
       };
     } catch (error) {
       return {
         status: 'error',
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -160,14 +163,14 @@ class PerformanceMonitor {
       return {
         activeConnections: data.activeConnections || 0,
         averageLatency: data.averageLatency || 0,
-        bandwidth: data.bandwidth || 0
+        bandwidth: data.bandwidth || 0,
       };
     } catch (error) {
       return {
         activeConnections: 0,
         averageLatency: 0,
         bandwidth: 0,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -194,15 +197,21 @@ class PerformanceMonitor {
     const logEntry = {
       timestamp: new Date().toISOString(),
       metrics,
-      alerts
+      alerts,
     };
 
     // Console output
     console.log(chalk.blue('=== Performance Metrics ==='));
     console.log(chalk.gray(`Time: ${logEntry.timestamp}`));
     console.log(chalk.cyan(`CPU: ${metrics.cpu}%`));
-    console.log(chalk.cyan(`Memory: ${metrics.memory.percentage}% (${metrics.memory.used}/${metrics.memory.total})`));
-    console.log(chalk.cyan(`Disk: ${metrics.disk.percentage}% (${metrics.disk.available} available)`));
+    console.log(
+      chalk.cyan(
+        `Memory: ${metrics.memory.percentage}% (${metrics.memory.used}/${metrics.memory.total})`
+      )
+    );
+    console.log(
+      chalk.cyan(`Disk: ${metrics.disk.percentage}% (${metrics.disk.available} available)`)
+    );
     console.log(chalk.cyan(`Process RSS: ${metrics.process.rss}`));
 
     if (alerts.length > 0) {
@@ -248,7 +257,7 @@ class PerformanceMonitor {
         const fullMetrics = {
           ...metrics,
           health,
-          webrtc
+          webrtc,
         };
 
         const alerts = this.checkThresholds(metrics);
@@ -263,7 +272,6 @@ class PerformanceMonitor {
         if (this.metrics.samples.length > 100) {
           this.metrics.samples = this.metrics.samples.slice(-100);
         }
-
       } catch (error) {
         console.error(chalk.red('Error collecting metrics:'), error.message);
       }
@@ -288,8 +296,11 @@ class PerformanceMonitor {
     console.log(chalk.gray(`Alerts triggered: ${this.metrics.alerts.length}`));
 
     if (this.metrics.samples.length > 0) {
-      const avgCPU = this.metrics.samples.reduce((sum, s) => sum + s.cpu, 0) / this.metrics.samples.length;
-      const avgMemory = this.metrics.samples.reduce((sum, s) => sum + s.memory.percentage, 0) / this.metrics.samples.length;
+      const avgCPU =
+        this.metrics.samples.reduce((sum, s) => sum + s.cpu, 0) / this.metrics.samples.length;
+      const avgMemory =
+        this.metrics.samples.reduce((sum, s) => sum + s.memory.percentage, 0) /
+        this.metrics.samples.length;
 
       console.log(chalk.cyan(`Average CPU: ${avgCPU.toFixed(2)}%`));
       console.log(chalk.cyan(`Average Memory: ${avgMemory.toFixed(2)}%`));

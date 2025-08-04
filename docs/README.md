@@ -6,10 +6,6 @@
 
 **START HERE** - Complete setup, debugging, and contribution guide
 
-### **[Implementation Status](POC_IMPLEMENTATION_SUMMARY.md)**
-
-Current progress: 3/11 modules production-ready, 8/11 stub implementations
-
 ### **[Architecture](ARCHITECTURE.md)**
 
 System design, module relationships, and UML diagrams
@@ -58,7 +54,7 @@ AI-powered task management integration
 
 **New to the project?** → [Developer Onboarding Guide](DEVELOPER_ONBOARDING.md)
 
-**Want to contribute?** → [Implementation Status](POC_IMPLEMENTATION_SUMMARY.md)
+**Want to contribute?** → [Implementation Plan](IMPLEMENTATION_PLAN.md)
 
 **Need to debug?** → [Debug Configurations](DEBUG_CONFIGURATIONS.md)
 

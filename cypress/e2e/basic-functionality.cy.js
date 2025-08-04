@@ -47,7 +47,7 @@ describe('Emotion Recognition PWA - Basic Functionality', () => {
   });
 
   it('should handle permission denial gracefully', () => {
-    cy.window().then((win) => {
+    cy.window().then(win => {
       cy.stub(win.navigator.mediaDevices, 'getUserMedia').rejects(new Error('Permission denied'));
     });
 

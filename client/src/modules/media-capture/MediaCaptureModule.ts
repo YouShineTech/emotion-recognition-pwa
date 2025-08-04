@@ -20,7 +20,7 @@ export class MediaCaptureModule implements IMediaCaptureModule {
       // Request both camera and microphone permissions
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
-        audio: true
+        audio: true,
       });
 
       // Stop the test stream immediately
@@ -30,17 +30,18 @@ export class MediaCaptureModule implements IMediaCaptureModule {
       const devices = await navigator.mediaDevices.enumerateDevices();
 
       return {
-      success: true,
-      data: null,
-      timestamp: new Date(),
-        availableDevices: devices.filter(device =>
-          device.kind === 'videoinput' || device.kind === 'audioinput'
+        success: true,
+        data: null,
+        timestamp: new Date(),
+        availableDevices: devices.filter(
+          device => device.kind === 'videoinput' || device.kind === 'audioinput'
         ),
-    };
+      };
     } catch (error) {
-      const errorType = error instanceof Error && error.name === 'NotAllowedError'
-        ? 'NotAllowedError' as const
-        : 'DeviceError' as const;
+      const errorType =
+        error instanceof Error && error.name === 'NotAllowedError'
+          ? ('NotAllowedError' as const)
+          : ('DeviceError' as const);
 
       const mediaError: MediaCaptureError = {
         type: errorType,
@@ -58,7 +59,7 @@ export class MediaCaptureModule implements IMediaCaptureModule {
 
   async startCapture(config: CaptureConfig): Promise<MediaStream> {
     try {
-    console.log('[MediaCaptureModule] Starting capture with config:', config);
+      console.log('[MediaCaptureModule] Starting capture with config:', config);
 
       // Stop any existing stream
       this.stopCapture();
@@ -68,19 +69,23 @@ export class MediaCaptureModule implements IMediaCaptureModule {
 
       // Request media stream with provided config
       const constraints: MediaStreamConstraints = {
-        video: config.video ? {
-          width: config.video.width,
-          height: config.video.height,
-          frameRate: config.video.frameRate,
-          facingMode: config.video.facingMode,
-          ...(config.deviceId && { deviceId: { exact: config.deviceId } }),
-        } : false,
-        audio: config.audio ? {
-          sampleRate: config.audio.sampleRate,
-          channelCount: config.audio.channelCount,
-          echoCancellation: config.audio.echoCancellation,
-          noiseSuppression: config.audio.noiseSuppression,
-        } : false,
+        video: config.video
+          ? {
+              width: config.video.width,
+              height: config.video.height,
+              frameRate: config.video.frameRate,
+              facingMode: config.video.facingMode,
+              ...(config.deviceId && { deviceId: { exact: config.deviceId } }),
+            }
+          : false,
+        audio: config.audio
+          ? {
+              sampleRate: config.audio.sampleRate,
+              channelCount: config.audio.channelCount,
+              echoCancellation: config.audio.echoCancellation,
+              noiseSuppression: config.audio.noiseSuppression,
+            }
+          : false,
       };
 
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -143,7 +148,7 @@ export class MediaCaptureModule implements IMediaCaptureModule {
 
   async switchCamera(deviceId: string): Promise<void> {
     try {
-    console.log('[MediaCaptureModule] Switching to camera:', deviceId);
+      console.log('[MediaCaptureModule] Switching to camera:', deviceId);
 
       if (!this.currentConfig) {
         throw new Error('No active capture session');

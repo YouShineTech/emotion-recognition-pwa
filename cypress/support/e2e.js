@@ -45,20 +45,20 @@ beforeEach(() => {
   cy.clearCookies();
 
   // Mock camera and microphone permissions
-  cy.window().then((win) => {
+  cy.window().then(win => {
     cy.stub(win.navigator.mediaDevices, 'getUserMedia').resolves({
       getTracks: () => [
         {
           kind: 'video',
           stop: cy.stub(),
-          getSettings: () => ({ width: 640, height: 480 })
+          getSettings: () => ({ width: 640, height: 480 }),
         },
         {
           kind: 'audio',
           stop: cy.stub(),
-          getSettings: () => ({ sampleRate: 44100 })
-        }
-      ]
+          getSettings: () => ({ sampleRate: 44100 }),
+        },
+      ],
     });
   });
 });

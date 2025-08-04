@@ -193,11 +193,11 @@ export class WebRTCTransportModule implements IWebRTCTransportModule {
       console.log('[WebRTCTransportModule] Data channel closed');
     };
 
-    this.dataChannel.onerror = (error) => {
+    this.dataChannel.onerror = error => {
       console.error('[WebRTCTransportModule] Data channel error:', error);
     };
 
-    this.dataChannel.onmessage = (event) => {
+    this.dataChannel.onmessage = event => {
       try {
         const data = JSON.parse(event.data);
         if (this.dataReceivedCallback) {
@@ -212,7 +212,9 @@ export class WebRTCTransportModule implements IWebRTCTransportModule {
   private handleConnectionFailure(): void {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      console.log(`[WebRTCTransportModule] Attempting reconnection ${this.reconnectAttempts}/${this.maxReconnectAttempts}`);
+      console.log(
+        `[WebRTCTransportModule] Attempting reconnection ${this.reconnectAttempts}/${this.maxReconnectAttempts}`
+      );
 
       // Implement reconnection logic here
       // This would typically involve signaling server coordination
@@ -267,7 +269,7 @@ export class WebRTCTransportModule implements IWebRTCTransportModule {
   onIceCandidate(callback: (candidate: RTCIceCandidate) => void): void {
     if (!this.peerConnection) return;
 
-    this.peerConnection.onicecandidate = (event) => {
+    this.peerConnection.onicecandidate = event => {
       if (event.candidate) {
         callback(event.candidate);
       }

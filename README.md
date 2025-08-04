@@ -206,13 +206,13 @@ Each module can be configured independently through their respective configurati
 
 - Interface-compliant stubs with unit tests
 - Ready for real implementation
-- See [Implementation Summary](docs/POC_IMPLEMENTATION_SUMMARY.md)
+- See [Implementation Plan](docs/IMPLEMENTATION_PLAN.md)
 
 ## 📚 Documentation
 
 - **[Developer Onboarding Guide](docs/DEVELOPER_ONBOARDING.md)** - Setup, debugging, contributing
 - **[Architecture](docs/ARCHITECTURE.md)** - System design and module relationships
-- **[Implementation Status](docs/POC_IMPLEMENTATION_SUMMARY.md)** - Current progress
+- **[Implementation Plan](docs/IMPLEMENTATION_PLAN.md)** - Complete task checklist
 - **[Build Guide](docs/BUILD_GUIDE.md)** - Detailed build instructions
 
 ## 🏗️ Development Workflow

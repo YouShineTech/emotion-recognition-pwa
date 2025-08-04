@@ -115,9 +115,9 @@ export class OverlayRendererModule implements IOverlayRendererModule {
 
     // Render all active overlays
     const now = Date.now();
-    for (const [sessionId, overlay] of this.activeOverlays.entries()) {
+    for (const [, overlay] of this.activeOverlays.entries()) {
       const age = now - overlay.timestamp.getTime();
-      const opacity = Math.max(0, 1 - (age / this.maxOverlayAge));
+      const opacity = Math.max(0, 1 - age / this.maxOverlayAge);
 
       if (opacity > 0) {
         // Render facial overlays
@@ -181,7 +181,7 @@ export class OverlayRendererModule implements IOverlayRendererModule {
 
     const { emotionLabel, confidence, position } = overlay;
 
-    let x = 10;
+    const x = 10;
     let y = 30;
 
     if (position === 'bottom') {

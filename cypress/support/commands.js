@@ -10,14 +10,14 @@
 
 // Custom command to grant camera and microphone permissions
 Cypress.Commands.add('grantMediaPermissions', () => {
-  cy.window().then((win) => {
+  cy.window().then(win => {
     cy.stub(win.navigator.permissions, 'query').resolves({ state: 'granted' });
   });
 });
 
 // Custom command to mock WebRTC connection
 Cypress.Commands.add('mockWebRTCConnection', () => {
-  cy.window().then((win) => {
+  cy.window().then(win => {
     // Mock RTCPeerConnection
     cy.stub(win, 'RTCPeerConnection').returns({
       createOffer: cy.stub().resolves({ sdp: 'mock-sdp-offer' }),
@@ -29,7 +29,7 @@ Cypress.Commands.add('mockWebRTCConnection', () => {
       removeEventListener: cy.stub(),
       close: cy.stub(),
       connectionState: 'connected',
-      iceConnectionState: 'connected'
+      iceConnectionState: 'connected',
     });
   });
 });
@@ -40,7 +40,7 @@ Cypress.Commands.add('waitForEmotionAnalysis', (timeout = 10000) => {
 });
 
 // Custom command to check for specific emotion
-Cypress.Commands.add('checkEmotion', (emotion) => {
+Cypress.Commands.add('checkEmotion', emotion => {
   cy.get('[data-testid="emotion-label"]').should('contain', emotion);
 });
 
@@ -66,8 +66,8 @@ Cypress.Commands.add('waitForServerHealth', () => {
   cy.request({
     method: 'GET',
     url: `${Cypress.env('apiUrl')}/health`,
-    failOnStatusCode: false
-  }).then((response) => {
+    failOnStatusCode: false,
+  }).then(response => {
     expect(response.status).to.be.oneOf([200, 503]);
   });
 });
@@ -80,30 +80,30 @@ Cypress.Commands.add('mockEmotionResponse', (emotion = 'happy', confidence = 0.8
       emotions: {
         primary: emotion,
         confidence: confidence,
-        secondary: 'neutral'
+        secondary: 'neutral',
       },
       facialFeatures: {
         landmarks: [],
-        boundingBox: { x: 100, y: 100, width: 200, height: 200 }
+        boundingBox: { x: 100, y: 100, width: 200, height: 200 },
       },
       audioFeatures: {
         emotion: emotion,
         confidence: confidence,
         pitch: 150,
-        volume: 0.7
+        volume: 0.7,
       },
       timestamp: Date.now(),
-      sessionId: 'test-session-id'
-    }
+      sessionId: 'test-session-id',
+    },
   }).as('emotionAnalysis');
 });
 
 // Custom command to check PWA installation prompt
 Cypress.Commands.add('checkPWAInstallPrompt', () => {
-  cy.window().then((win) => {
+  cy.window().then(win => {
     cy.stub(win, 'beforeinstallprompt').returns({
       prompt: cy.stub().resolves(),
-      userChoice: Promise.resolve({ outcome: 'accepted' })
+      userChoice: Promise.resolve({ outcome: 'accepted' }),
     });
   });
 });
@@ -114,22 +114,22 @@ Cypress.Commands.add('simulateNetworkConditions', (conditions = {}) => {
     latency: 100,
     downloadThroughput: 1024 * 1024, // 1MB/s
     uploadThroughput: 512 * 1024, // 512KB/s
-    offline: false
+    offline: false,
   };
 
   const finalConditions = { ...defaultConditions, ...conditions };
 
-  cy.window().then((win) => {
+  cy.window().then(win => {
     cy.stub(win.navigator, 'connection').value({
       effectiveType: finalConditions.offline ? 'none' : '4g',
       downlink: finalConditions.downloadThroughput / (1024 * 1024),
-      rtt: finalConditions.latency
+      rtt: finalConditions.latency,
     });
   });
 });
 
 // Custom command to check for error messages
-Cypress.Commands.add('checkErrorMessage', (expectedMessage) => {
+Cypress.Commands.add('checkErrorMessage', expectedMessage => {
   cy.get('[data-testid="error-message"]').should('contain', expectedMessage);
 });
 
@@ -148,13 +148,13 @@ Cypress.Commands.add('checkAccessibility', () => {
 Cypress.Commands.overwrite('visit', (originalFn, url, options) => {
   return originalFn(url, {
     ...options,
-    onBeforeLoad: (win) => {
+    onBeforeLoad: win => {
       // Mock required APIs
       cy.stub(win.navigator.mediaDevices, 'getUserMedia').resolves({
         getTracks: () => [
           { kind: 'video', stop: cy.stub() },
-          { kind: 'audio', stop: cy.stub() }
-        ]
+          { kind: 'audio', stop: cy.stub() },
+        ],
       });
 
       cy.stub(win.navigator.permissions, 'query').resolves({ state: 'granted' });
@@ -163,6 +163,6 @@ Cypress.Commands.overwrite('visit', (originalFn, url, options) => {
       if (options && options.onBeforeLoad) {
         options.onBeforeLoad(win);
       }
-    }
+    },
   });
 });

@@ -108,10 +108,10 @@ export class FacialAnalysisModule implements IFacialAnalysisModule {
             noseRegion: [],
           },
           actionUnits: {
-            AU1: 0.5,  // Inner brow raiser
-            AU2: 0.3,  // Outer brow raiser
-            AU4: 0.7,  // Brow lowerer
-            AU6: 0.9,  // Cheek raiser
+            AU1: 0.5, // Inner brow raiser
+            AU2: 0.3, // Outer brow raiser
+            AU4: 0.7, // Brow lowerer
+            AU6: 0.9, // Cheek raiser
             AU12: 0.8, // Lip corner puller
             AU25: 0.6, // Lips part
           },
@@ -124,7 +124,7 @@ export class FacialAnalysisModule implements IFacialAnalysisModule {
     return mockResults;
   }
 
-  private generateMockLandmarks(): Array<{x: number, y: number}> {
+  private generateMockLandmarks(): Array<{ x: number; y: number }> {
     // Generate 68 facial landmarks in a face-like pattern
     const landmarks = [];
     const centerX = 420;
@@ -158,7 +158,7 @@ export class FacialAnalysisModule implements IFacialAnalysisModule {
     // Nose
     for (let i = 0; i < 9; i++) {
       landmarks.push({
-        x: centerX + (i % 3 - 1) * 5,
+        x: centerX + ((i % 3) - 1) * 5,
         y: centerY + 20 + Math.floor(i / 3) * 15,
       });
     }
@@ -181,12 +181,23 @@ export class FacialAnalysisModule implements IFacialAnalysisModule {
 
     // Calculate emotion scores based on AU combinations
     const auHappy = (actionUnits.AU6 || 0) * 0.6 + (actionUnits.AU12 || 0) * 0.4;
-    const auSad = (actionUnits.AU1 || 0) * 0.3 + (actionUnits.AU4 || 0) * 0.4 + (actionUnits.AU15 || 0) * 0.3;
-    const auAngry = (actionUnits.AU4 || 0) * 0.5 + (actionUnits.AU5 || 0) * 0.3 + (actionUnits.AU7 || 0) * 0.2;
-    const auSurprised = (actionUnits.AU1 || 0) * 0.4 + (actionUnits.AU2 || 0) * 0.3 + (actionUnits.AU5 || 0) * 0.3;
-    const auFearful = (actionUnits.AU1 || 0) * 0.3 + (actionUnits.AU2 || 0) * 0.2 + (actionUnits.AU4 || 0) * 0.3 + (actionUnits.AU5 || 0) * 0.2;
-    const auDisgusted = (actionUnits.AU9 || 0) * 0.5 + (actionUnits.AU15 || 0) * 0.3 + (actionUnits.AU17 || 0) * 0.2;
-    const auNeutral = Math.max(0, 1 - Math.max(auHappy, auSad, auAngry, auSurprised, auFearful, auDisgusted));
+    const auSad =
+      (actionUnits.AU1 || 0) * 0.3 + (actionUnits.AU4 || 0) * 0.4 + (actionUnits.AU15 || 0) * 0.3;
+    const auAngry =
+      (actionUnits.AU4 || 0) * 0.5 + (actionUnits.AU5 || 0) * 0.3 + (actionUnits.AU7 || 0) * 0.2;
+    const auSurprised =
+      (actionUnits.AU1 || 0) * 0.4 + (actionUnits.AU2 || 0) * 0.3 + (actionUnits.AU5 || 0) * 0.3;
+    const auFearful =
+      (actionUnits.AU1 || 0) * 0.3 +
+      (actionUnits.AU2 || 0) * 0.2 +
+      (actionUnits.AU4 || 0) * 0.3 +
+      (actionUnits.AU5 || 0) * 0.2;
+    const auDisgusted =
+      (actionUnits.AU9 || 0) * 0.5 + (actionUnits.AU15 || 0) * 0.3 + (actionUnits.AU17 || 0) * 0.2;
+    const auNeutral = Math.max(
+      0,
+      1 - Math.max(auHappy, auSad, auAngry, auSurprised, auFearful, auDisgusted)
+    );
 
     // Add emotions with confidence scores
     if (auHappy > 0.3) {
@@ -199,13 +210,25 @@ export class FacialAnalysisModule implements IFacialAnalysisModule {
       emotions.push({ emotion: 'angry', confidence: Math.min(auAngry, 1), intensity: auAngry });
     }
     if (auSurprised > 0.3) {
-      emotions.push({ emotion: 'surprised', confidence: Math.min(auSurprised, 1), intensity: auSurprised });
+      emotions.push({
+        emotion: 'surprised',
+        confidence: Math.min(auSurprised, 1),
+        intensity: auSurprised,
+      });
     }
     if (auFearful > 0.3) {
-      emotions.push({ emotion: 'fearful', confidence: Math.min(auFearful, 1), intensity: auFearful });
+      emotions.push({
+        emotion: 'fearful',
+        confidence: Math.min(auFearful, 1),
+        intensity: auFearful,
+      });
     }
     if (auDisgusted > 0.3) {
-      emotions.push({ emotion: 'disgusted', confidence: Math.min(auDisgusted, 1), intensity: auDisgusted });
+      emotions.push({
+        emotion: 'disgusted',
+        confidence: Math.min(auDisgusted, 1),
+        intensity: auDisgusted,
+      });
     }
     if (auNeutral > 0.5) {
       emotions.push({ emotion: 'neutral', confidence: Math.min(auNeutral, 1), intensity: 0.5 });

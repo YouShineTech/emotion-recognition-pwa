@@ -166,7 +166,9 @@ describe('MediaCaptureModule', () => {
     });
 
     it('should throw error when no active capture session', async () => {
-      await expect(mediaCaptureModule.switchCamera('device-1')).rejects.toThrow('No active capture session');
+      await expect(mediaCaptureModule.switchCamera('device-1')).rejects.toThrow(
+        'No active capture session'
+      );
     });
   });
 
@@ -185,7 +187,7 @@ describe('MediaCaptureModule', () => {
 
       try {
         await mediaCaptureModule.startCapture(config);
-      } catch (e) {
+      } catch {
         // Error is expected
       }
 

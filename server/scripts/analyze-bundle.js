@@ -17,7 +17,7 @@ class BundleAnalyzer {
       outputFile: options.outputFile || './reports/bundle-analysis.json',
       includeNodeModules: options.includeNodeModules !== false,
       maxFileSize: options.maxFileSize || 1024 * 1024, // 1MB
-      analyzeDependencies: options.analyzeDependencies !== false
+      analyzeDependencies: options.analyzeDependencies !== false,
     };
 
     this.analysis = {
@@ -25,7 +25,7 @@ class BundleAnalyzer {
       summary: {},
       files: [],
       dependencies: {},
-      recommendations: []
+      recommendations: [],
     };
   }
 
@@ -76,7 +76,7 @@ class BundleAnalyzer {
       lines: lines,
       imports: this.extractImports(content),
       dependencies: this.extractDependencies(content),
-      complexity: this.calculateComplexity(content)
+      complexity: this.calculateComplexity(content),
     };
 
     this.analysis.files.push(fileAnalysis);
@@ -89,7 +89,8 @@ class BundleAnalyzer {
 
   extractImports(content) {
     const imports = [];
-    const importRegex = /import\s+(?:(?:\{[^}]*\}|\*\s+as\s+\w+|\w+)\s+from\s+)?['"`]([^'"`]+)['"`]/g;
+    const importRegex =
+      /import\s+(?:(?:\{[^}]*\}|\*\s+as\s+\w+|\w+)\s+from\s+)?['"`]([^'"`]+)['"`]/g;
     const requireRegex = /require\s*\(\s*['"`]([^'"`]+)['"`]\s*\)/g;
 
     let match;
@@ -116,21 +117,21 @@ class BundleAnalyzer {
         dependencies.push({
           type: 'local',
           path: importPath,
-          size: 0 // Will be calculated later
+          size: 0, // Will be calculated later
         });
       } else if (!importPath.startsWith('@') && !importPath.includes('/')) {
         // Node.js built-in module
         dependencies.push({
           type: 'builtin',
           path: importPath,
-          size: 0
+          size: 0,
         });
       } else {
         // External dependency
         dependencies.push({
           type: 'external',
           path: importPath,
-          size: 0
+          size: 0,
         });
       }
     }
@@ -165,7 +166,7 @@ class BundleAnalyzer {
           path: key,
           usageCount: 0,
           usedBy: [],
-          size: 0
+          size: 0,
         };
       }
 
@@ -188,10 +189,13 @@ class BundleAnalyzer {
       averageFileSize: totalSize / this.analysis.files.length,
       averageLinesPerFile: totalLines / this.analysis.files.length,
       averageComplexity: totalComplexity / this.analysis.files.length,
-      largestFile: this.analysis.files.reduce((max, file) =>
-        file.size > max.size ? file : max, { size: 0 }),
-      mostComplexFile: this.analysis.files.reduce((max, file) =>
-        file.complexity > max.complexity ? file : max, { complexity: 0 })
+      largestFile: this.analysis.files.reduce((max, file) => (file.size > max.size ? file : max), {
+        size: 0,
+      }),
+      mostComplexFile: this.analysis.files.reduce(
+        (max, file) => (file.complexity > max.complexity ? file : max),
+        { complexity: 0 }
+      ),
     };
   }
 
@@ -203,10 +207,10 @@ class BundleAnalyzer {
       byType: {
         local: 0,
         builtin: 0,
-        external: 0
+        external: 0,
       },
       mostUsed: [],
-      largest: []
+      largest: [],
     };
 
     for (const [key, dep] of Object.entries(this.analysis.dependencies)) {
@@ -231,7 +235,7 @@ class BundleAnalyzer {
         category: 'File Size',
         severity: 'medium',
         message: `${largeFiles.length} files exceed ${this.formatBytes(this.options.maxFileSize)}. Consider code splitting or optimization.`,
-        files: largeFiles.map(f => f.path)
+        files: largeFiles.map(f => f.path),
       });
     }
 
@@ -242,21 +246,22 @@ class BundleAnalyzer {
         category: 'Complexity',
         severity: 'medium',
         message: `${complexFiles.length} files have high complexity. Consider refactoring for maintainability.`,
-        files: complexFiles.map(f => f.path)
+        files: complexFiles.map(f => f.path),
       });
     }
 
     // Duplicate dependencies
     if (this.options.analyzeDependencies) {
-      const duplicateDeps = Object.values(this.analysis.dependencies)
-        .filter(dep => dep.usageCount > 3);
+      const duplicateDeps = Object.values(this.analysis.dependencies).filter(
+        dep => dep.usageCount > 3
+      );
 
       if (duplicateDeps.length > 0) {
         recommendations.push({
           category: 'Dependencies',
           severity: 'low',
           message: `${duplicateDeps.length} dependencies are used in multiple files. Consider creating shared modules.`,
-          dependencies: duplicateDeps.map(d => d.path)
+          dependencies: duplicateDeps.map(d => d.path),
         });
       }
     }
@@ -289,7 +294,7 @@ class BundleAnalyzer {
     // Summary table
     const summaryTable = new Table({
       head: ['Metric', 'Value'],
-      colWidths: [25, 25]
+      colWidths: [25, 25],
     });
 
     summaryTable.push(
@@ -306,13 +311,11 @@ class BundleAnalyzer {
 
     // Largest files
     console.log(chalk.yellow('\n📁 Largest Files:'));
-    const largestFiles = this.analysis.files
-      .sort((a, b) => b.size - a.size)
-      .slice(0, 5);
+    const largestFiles = this.analysis.files.sort((a, b) => b.size - a.size).slice(0, 5);
 
     const fileTable = new Table({
       head: ['File', 'Size', 'Lines', 'Complexity'],
-      colWidths: [30, 15, 10, 12]
+      colWidths: [30, 15, 10, 12],
     });
 
     largestFiles.forEach(file => {
@@ -320,7 +323,7 @@ class BundleAnalyzer {
         file.path,
         file.sizeFormatted,
         file.lines.toString(),
-        file.complexity.toString()
+        file.complexity.toString(),
       ]);
     });
 
