@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <title>Emotion Recognition PWA</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/favicon.ico">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .video-container {
+            position: relative;
+            margin: 20px 0;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        #video-preview {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        #start-button {
+            background-color: #4CAF50;
+            color: white;
+        }
+        #start-button:hover:not(:disabled) {
+            background-color: #45a049;
+        }
+        #stop-button {
+            background-color: #f44336;
+            color: white;
+        }
+        #stop-button:hover:not(:disabled) {
+            background-color: #da190b;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            background-color: #e7f3ff;
+            border: 1px solid #b3d9ff;
+        }
+        .debug-info {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎭 Emotion Recognition PWA</h1>
+        <p>Real-time emotion analysis through webcam video and audio</p>
+
+        <div id="status">Ready to start emotion recognition</div>
+
+        <div class="controls">
+            <button id="start-button">Start Emotion Recognition</button>
+            <button id="stop-button" disabled>Stop</button>
+        </div>
+
+        <div class="video-container">
+            <video id="video-preview" autoplay muted playsinline>
+                <p>Your browser doesn't support video playback.</p>
+            </video>
+        </div>
+
+        <div class="debug-info">
+            <strong>Debug Info:</strong><br>
+            • Open browser DevTools (F12) to see console logs<br>
+            • Set breakpoints in the source code for debugging<br>
+            • Check Network tab for WebRTC signaling<br>
+            • Module status will appear here during operation
+        </div>
+    </div>
+
+    <!-- The webpack bundle will be injected here -->
+</body>
+</html>
