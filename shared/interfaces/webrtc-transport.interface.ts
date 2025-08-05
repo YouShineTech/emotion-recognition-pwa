@@ -1,35 +1,36 @@
-// WebRTC Transport Module Interface
-// Version 1.0
+/**
+ * WebRTC Transport Module Interfaces
+ */
 
-import { ApiResponse, ModuleError } from './common.interface';
-
-export interface WebRTCTransportModule {
-  initialize(config: WebRTCConfig): Promise<TransportResult>;
-  attachMediaStream(stream: any): Promise<void>; // MediaStream in browser, any for testing
-  sendData(data: any): Promise<void>;
-  onDataReceived(callback: (data: any) => void): void;
+export interface IWebRTCTransportModule {
+  initialize(): Promise<void>;
+  connect(sessionId: string): Promise<void>;
   disconnect(): void;
-  getConnectionState(): string; // RTCPeerConnectionState in browser, string for testing
-  onStateChange(callback: (state: string) => void): void;
+  sendData(data: any): boolean;
+  addStream(stream: MediaStream): void;
+  removeStream(stream: MediaStream): void;
+  getConnectionState(): ConnectionState;
+  getStats(): Promise<RTCStatsReport | null>;
+  on(event: string, callback: Function): void;
+  off(event: string, callback: Function): void;
 }
 
-export interface WebRTCConfig {
-  iceServers: any[]; // RTCIceServer[] in browser
-  signalingUrl: string;
+export interface ConnectionConfig {
+  iceServers?: RTCIceServer[];
+  signalingUrl?: string;
+  dataChannelName?: string;
+}
+
+export type ConnectionState =
+  | 'disconnected'
+  | 'connecting'
+  | 'connected'
+  | 'failed'
+  | 'reconnecting';
+
+export interface SignalingMessage {
   sessionId: string;
-  stunServers: string[];
-  turnServers?: {
-    urls: string;
-    username: string;
-    credential: string;
-  }[];
-}
-
-export interface TransportResult extends ApiResponse {
-  connectionId?: string;
-}
-
-export interface WebRTCError extends ModuleError {
-  connectionState: string; // RTCPeerConnectionState in browser
-  iceConnectionState: string; // RTCIceConnectionState in browser
+  offer?: RTCSessionDescriptionInit;
+  answer?: RTCSessionDescriptionInit;
+  candidate?: RTCIceCandidateInit;
 }

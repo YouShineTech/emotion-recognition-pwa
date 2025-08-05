@@ -1,33 +1,59 @@
-// Facial Analysis Module Interface
-// Version 1.0
+/**
+ * Facial Analysis Module Interfaces
+ */
 
-import { ApiResponse, BoundingBox, EmotionScore, Point2D } from './common.interface';
-import { ExtractedVideoFrame } from './frame-extraction.interface';
-
-export interface FacialAnalysisModule {
-  analyzeFrame(frame: ExtractedVideoFrame): Promise<FacialAnalysisResult>;
-  setConfidenceThreshold(threshold: number): void;
-  enableLandmarkDetection(enabled: boolean): void;
+export interface IFacialAnalysisModule {
+  initialize(): Promise<void>;
+  analyzeFrame(frameData: Buffer, sessionId: string, timestamp: number): Promise<FaceData[]>;
+  analyzeBatch(
+    frames: Array<{ data: Buffer; sessionId: string; timestamp: number }>
+  ): Promise<FaceData[][]>;
+  updateConfig(config: Partial<FacialAnalysisConfig>): void;
+  getStats(): any;
+  cleanup(): Promise<void>;
 }
 
-export interface FacialAnalysisResult extends ApiResponse {
+export interface FacialAnalysisConfig {
+  openFacePath?: string;
+  tempDir?: string;
+  numWorkers?: number;
+  confidenceThreshold?: number;
+  trackingEnabled?: boolean;
+  maxFaces?: number;
+}
+
+export interface FaceData {
   sessionId: string;
-  timestamp: Date;
-  faces: DetectedFace[];
-  processingTime: number;
-}
-
-export interface DetectedFace {
+  timestamp: number;
   faceId: string;
-  boundingBox: BoundingBox;
-  landmarks?: FacialLandmarks;
-  emotions: EmotionScore[];
-  confidence: number;
+  boundingBox: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  landmarks: Array<{ x: number; y: number }>;
+  emotion: EmotionResult;
+  actionUnits: ActionUnit[];
+  headPose: {
+    pitch: number;
+    yaw: number;
+    roll: number;
+  };
+  gaze: {
+    x: number;
+    y: number;
+  };
 }
 
-export interface FacialLandmarks {
-  points: Point2D[];
-  eyeRegions: Point2D[][];
-  mouthRegion: Point2D[];
-  noseRegion: Point2D[];
+export interface EmotionResult {
+  emotion: string;
+  confidence: number;
+  scores: { [key: string]: number };
+}
+
+export interface ActionUnit {
+  number: number;
+  intensity: number;
+  confidence: number;
 }

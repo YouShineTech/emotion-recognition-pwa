@@ -1,285 +1,446 @@
-// Overlay Renderer Module - Client Side
-// Canvas-based overlay rendering on video feed
+/**
+ * Overlay Renderer Module
+ *
+ * Renders emotion overlays on video streams using Canvas API
+ * Supports responsive rendering and multiple overlay types
+ */
 
-import { OverlayRendererModule as IOverlayRendererModule } from '@/shared/interfaces/overlay-renderer.interface';
-import { OverlayData } from '@/shared/interfaces/overlay-data.interface';
+import {
+  IOverlayRendererModule,
+  RendererConfig,
+  OverlayData,
+  RenderStats,
+} from '@/shared/interfaces/overlay-renderer.interface';
 
 export class OverlayRendererModule implements IOverlayRendererModule {
-  private videoElement: HTMLVideoElement | null = null;
-  private canvas: HTMLCanvasElement | null = null;
-  private ctx: CanvasRenderingContext2D | null = null;
-  private renderingMode: 'canvas' | 'svg' = 'canvas';
-  private maxOverlayAge: number = 2000; // 2 seconds
+  private canvas: HTMLCanvasElement;
+  private context: CanvasRenderingContext2D;
+  private config: RendererConfig;
   private activeOverlays: Map<string, OverlayData> = new Map();
   private animationFrameId: number | null = null;
-  private isRendering: boolean = false;
+  private renderStats: RenderStats = {
+    framesRendered: 0,
+    averageFPS: 0,
+    lastRenderTime: 0,
+  };
+  private fpsHistory: number[] = [];
+  private eventListeners: Map<string, Function[]> = new Map();
 
-  initialize(videoElement: HTMLVideoElement): void {
-    console.log('[OverlayRendererModule] Initializing overlay renderer...');
+  constructor(canvas: HTMLCanvasElement, config: RendererConfig = {}) {
+    this.canvas = canvas;
+    const context = canvas.getContext('2d');
 
-    this.videoElement = videoElement;
-
-    // Create canvas overlay
-    this.canvas = document.createElement('canvas');
-    this.canvas.style.position = 'absolute';
-    this.canvas.style.top = '0';
-    this.canvas.style.left = '0';
-    this.canvas.style.pointerEvents = 'none';
-    this.canvas.style.zIndex = '10';
-
-    // Set initial dimensions
-    this.updateCanvasDimensions();
-
-    this.ctx = this.canvas.getContext('2d');
-    if (!this.ctx) {
-      throw new Error('Failed to get 2D context');
+    if (!context) {
+      throw new Error('Failed to get 2D rendering context');
     }
 
-    if (this.videoElement.parentElement) {
-      this.videoElement.parentElement.style.position = 'relative';
-      this.videoElement.parentElement.appendChild(this.canvas);
-    }
+    this.context = context;
+    this.config = {
+      renderMode: 'canvas',
+      fontSize: 16,
+      fontFamily: 'Arial, sans-serif',
+      borderWidth: 2,
+      cornerRadius: 8,
+      shadowBlur: 4,
+      shadowColor: 'rgba(0, 0, 0, 0.3)',
+      animationDuration: 300,
+      maxOverlays: 20,
+      ...config,
+    };
 
-    // Start rendering loop
-    this.startRendering();
-
-    console.log('[OverlayRendererModule] Overlay renderer initialized');
+    this.setupCanvas();
+    this.startRenderLoop();
   }
 
-  renderOverlay(overlayData: OverlayData): void {
-    if (!this.ctx || !this.canvas) {
-      console.error('[OverlayRendererModule] Renderer not initialized');
-      return;
-    }
-
-    // Store overlay data with timestamp
-    this.activeOverlays.set(overlayData.sessionId, {
-      ...overlayData,
-      timestamp: new Date(),
-    });
-
-    // Trigger immediate render
-    this.renderFrame();
+  /**
+   * Add overlay to be rendered
+   */
+  addOverlay(overlay: OverlayData): void {
+    this.activeOverlays.set(overlay.id, overlay);
+    this.emit('overlayAdded', overlay);
   }
 
+  /**
+   * Remove overlay from rendering
+   */
+  removeOverlay(overlayId: string): void {
+    const overlay = this.activeOverlays.get(overlayId);
+    if (overlay) {
+      this.activeOverlays.delete(overlayId);
+      this.emit('overlayRemoved', overlay);
+    }
+  }
+
+  /**
+   * Update existing overlay
+   */
+  updateOverlay(overlay: OverlayData): void {
+    if (this.activeOverlays.has(overlay.id)) {
+      this.activeOverlays.set(overlay.id, overlay);
+      this.emit('overlayUpdated', overlay);
+    }
+  }
+
+  /**
+   * Clear all overlays
+   */
   clearOverlays(): void {
-    if (this.ctx && this.canvas) {
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
+    const count = this.activeOverlays.size;
     this.activeOverlays.clear();
+    this.emit('overlaysCleared', { count });
   }
 
-  setRenderingMode(mode: 'canvas' | 'svg'): void {
-    this.renderingMode = mode;
-    console.log(`[OverlayRendererModule] Rendering mode set to ${mode}`);
+  /**
+   * Clear overlays for specific session
+   */
+  clearSessionOverlays(sessionId: string): void {
+    const toRemove: string[] = [];
+
+    for (const [id, overlay] of this.activeOverlays) {
+      if (overlay.sessionId === sessionId) {
+        toRemove.push(id);
+      }
+    }
+
+    toRemove.forEach(id => this.activeOverlays.delete(id));
+    this.emit('sessionOverlaysCleared', { sessionId, count: toRemove.length });
   }
 
-  setMaxOverlayAge(milliseconds: number): void {
-    this.maxOverlayAge = milliseconds;
-    console.log(`[OverlayRendererModule] Max overlay age set to ${milliseconds}ms`);
+  /**
+   * Update renderer configuration
+   */
+  updateConfig(newConfig: Partial<RendererConfig>): void {
+    this.config = { ...this.config, ...newConfig };
+    this.setupCanvas();
+    this.emit('configUpdated', this.config);
   }
 
-  private startRendering(): void {
-    if (this.isRendering) return;
-
-    this.isRendering = true;
-    this.renderLoop();
+  /**
+   * Resize canvas and update rendering
+   */
+  resize(width: number, height: number): void {
+    this.canvas.width = width;
+    this.canvas.height = height;
+    this.setupCanvas();
+    this.emit('canvasResized', { width, height });
   }
 
-  private stopRendering(): void {
-    this.isRendering = false;
+  /**
+   * Get current render statistics
+   */
+  getStats(): RenderStats {
+    return { ...this.renderStats };
+  }
+
+  /**
+   * Get active overlays count
+   */
+  getActiveOverlaysCount(): number {
+    return this.activeOverlays.size;
+  }
+
+  /**
+   * Add event listener
+   */
+  on(event: string, callback: Function): void {
+    if (!this.eventListeners.has(event)) {
+      this.eventListeners.set(event, []);
+    }
+    this.eventListeners.get(event)!.push(callback);
+  }
+
+  /**
+   * Remove event listener
+   */
+  off(event: string, callback: Function): void {
+    const listeners = this.eventListeners.get(event);
+    if (listeners) {
+      const index = listeners.indexOf(callback);
+      if (index > -1) {
+        listeners.splice(index, 1);
+      }
+    }
+  }
+
+  /**
+   * Setup canvas properties
+   */
+  private setupCanvas(): void {
+    // Set canvas style for responsive rendering
+    this.canvas.style.width = '100%';
+    this.canvas.style.height = '100%';
+    this.canvas.style.objectFit = 'contain';
+
+    // Setup context properties
+    this.context.textAlign = 'center';
+    this.context.textBaseline = 'middle';
+    this.context.font = `${this.config.fontSize}px ${this.config.fontFamily}`;
+
+    // Enable anti-aliasing
+    this.context.imageSmoothingEnabled = true;
+    this.context.imageSmoothingQuality = 'high';
+  }
+
+  /**
+   * Start the render loop
+   */
+  private startRenderLoop(): void {
+    const render = (timestamp: number) => {
+      this.renderFrame(timestamp);
+      this.animationFrameId = requestAnimationFrame(render);
+    };
+
+    this.animationFrameId = requestAnimationFrame(render);
+  }
+
+  /**
+   * Render a single frame
+   */
+  private renderFrame(timestamp: number): void {
+    // Calculate FPS
+    if (this.renderStats.lastRenderTime > 0) {
+      const deltaTime = timestamp - this.renderStats.lastRenderTime;
+      const fps = 1000 / deltaTime;
+
+      this.fpsHistory.push(fps);
+      if (this.fpsHistory.length > 60) {
+        // Keep last 60 frames
+        this.fpsHistory.shift();
+      }
+
+      this.renderStats.averageFPS =
+        this.fpsHistory.reduce((a, b) => a + b, 0) / this.fpsHistory.length;
+    }
+
+    this.renderStats.lastRenderTime = timestamp;
+    this.renderStats.framesRendered++;
+
+    // Clear canvas
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    // Remove expired overlays
+    this.removeExpiredOverlays();
+
+    // Render active overlays
+    for (const overlay of this.activeOverlays.values()) {
+      this.renderOverlay(overlay, timestamp);
+    }
+  }
+
+  /**
+   * Render a single overlay
+   */
+  private renderOverlay(overlay: OverlayData, timestamp: number): void {
+    const { position, emotion, type } = overlay;
+
+    // Calculate scale factors for responsive rendering
+    const scaleX = this.canvas.width / 1920; // Assume 1920x1080 reference
+    const scaleY = this.canvas.height / 1080;
+
+    const scaledX = position.x * scaleX;
+    const scaledY = position.y * scaleY;
+    const scaledWidth = position.width * scaleX;
+    const scaledHeight = position.height * scaleY;
+
+    // Calculate animation progress
+    const age = timestamp - overlay.timestamp;
+    const animationProgress = Math.min(age / this.config.animationDuration, 1);
+    const fadeProgress = this.calculateFadeProgress(overlay, timestamp);
+
+    // Apply animation and fade effects
+    const alpha = emotion.color.alpha * fadeProgress;
+
+    this.context.save();
+
+    // Apply animation transform
+    if (animationProgress < 1) {
+      const scale = 0.8 + 0.2 * animationProgress; // Scale from 80% to 100%
+      this.context.translate(scaledX + scaledWidth / 2, scaledY + scaledHeight / 2);
+      this.context.scale(scale, scale);
+      this.context.translate(-scaledWidth / 2, -scaledHeight / 2);
+    } else {
+      this.context.translate(scaledX, scaledY);
+    }
+
+    if (type === 'emotion') {
+      this.renderEmotionOverlay(overlay, scaledWidth, scaledHeight, alpha);
+    } else if (type === 'audio-emotion') {
+      this.renderAudioEmotionOverlay(overlay, scaledWidth, scaledHeight, alpha);
+    }
+
+    this.context.restore();
+  }
+
+  /**
+   * Render emotion overlay (face-based)
+   */
+  private renderEmotionOverlay(
+    overlay: OverlayData,
+    width: number,
+    height: number,
+    alpha: number
+  ): void {
+    const { emotion } = overlay;
+    const color = `rgba(${emotion.color.r}, ${emotion.color.g}, ${emotion.color.b}, ${alpha})`;
+    const borderColor = `rgba(${emotion.color.r}, ${emotion.color.g}, ${emotion.color.b}, ${alpha * 1.2})`;
+
+    // Draw bounding box
+    this.drawRoundedRect(0, 0, width, height, this.config.cornerRadius, borderColor, color);
+
+    // Draw emotion label
+    const labelY = -this.config.fontSize - 8;
+    const labelText = `${emotion.label} (${Math.round(emotion.confidence * 100)}%)`;
+
+    this.drawLabel(labelText, width / 2, labelY, color, borderColor);
+  }
+
+  /**
+   * Render audio-only emotion overlay
+   */
+  private renderAudioEmotionOverlay(
+    overlay: OverlayData,
+    width: number,
+    height: number,
+    alpha: number
+  ): void {
+    const { emotion } = overlay;
+    const color = `rgba(${emotion.color.r}, ${emotion.color.g}, ${emotion.color.b}, ${alpha})`;
+    const borderColor = `rgba(${emotion.color.r}, ${emotion.color.g}, ${emotion.color.b}, ${alpha * 1.2})`;
+
+    // Draw background
+    this.drawRoundedRect(0, 0, width, height, this.config.cornerRadius, borderColor, color);
+
+    // Draw audio icon and label
+    const labelText = `🎤 ${emotion.label} (${Math.round(emotion.confidence * 100)}%)`;
+
+    this.context.fillStyle = 'white';
+    this.context.fillText(labelText, width / 2, height / 2);
+  }
+
+  /**
+   * Draw rounded rectangle
+   */
+  private drawRoundedRect(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    radius: number,
+    strokeColor: string,
+    fillColor?: string
+  ): void {
+    this.context.beginPath();
+    this.context.moveTo(x + radius, y);
+    this.context.lineTo(x + width - radius, y);
+    this.context.quadraticCurveTo(x + width, y, x + width, y + radius);
+    this.context.lineTo(x + width, y + height - radius);
+    this.context.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    this.context.lineTo(x + radius, y + height);
+    this.context.quadraticCurveTo(x, y + height, x, y + height - radius);
+    this.context.lineTo(x, y + radius);
+    this.context.quadraticCurveTo(x, y, x + radius, y);
+    this.context.closePath();
+
+    if (fillColor) {
+      this.context.fillStyle = fillColor;
+      this.context.fill();
+    }
+
+    this.context.strokeStyle = strokeColor;
+    this.context.lineWidth = this.config.borderWidth;
+    this.context.stroke();
+  }
+
+  /**
+   * Draw text label with background
+   */
+  private drawLabel(
+    text: string,
+    x: number,
+    y: number,
+    backgroundColor: string,
+    borderColor: string
+  ): void {
+    const metrics = this.context.measureText(text);
+    const padding = 8;
+    const labelWidth = metrics.width + padding * 2;
+    const labelHeight = this.config.fontSize + padding;
+
+    // Draw label background
+    this.drawRoundedRect(
+      x - labelWidth / 2,
+      y - labelHeight / 2,
+      labelWidth,
+      labelHeight,
+      this.config.cornerRadius / 2,
+      borderColor,
+      backgroundColor
+    );
+
+    // Draw text
+    this.context.fillStyle = 'white';
+    this.context.fillText(text, x, y);
+  }
+
+  /**
+   * Calculate fade progress for overlay aging
+   */
+  private calculateFadeProgress(overlay: OverlayData, timestamp: number): number {
+    const totalDuration = overlay.expiresAt - overlay.timestamp;
+    const remaining = overlay.expiresAt - timestamp;
+    const fadeStartRatio = 0.8; // Start fading at 80% of lifetime
+
+    if (remaining > totalDuration * fadeStartRatio) {
+      return 1.0; // Full opacity
+    }
+
+    const fadeProgress = remaining / (totalDuration * (1 - fadeStartRatio));
+    return Math.max(0, Math.min(1, fadeProgress));
+  }
+
+  /**
+   * Remove expired overlays
+   */
+  private removeExpiredOverlays(): void {
+    const now = Date.now();
+    const toRemove: string[] = [];
+
+    for (const [id, overlay] of this.activeOverlays) {
+      if (now > overlay.expiresAt) {
+        toRemove.push(id);
+      }
+    }
+
+    toRemove.forEach(id => {
+      const overlay = this.activeOverlays.get(id);
+      this.activeOverlays.delete(id);
+      this.emit('overlayExpired', overlay);
+    });
+  }
+
+  /**
+   * Emit event to listeners
+   */
+  private emit(event: string, data?: any): void {
+    const listeners = this.eventListeners.get(event);
+    if (listeners) {
+      listeners.forEach(callback => callback(data));
+    }
+  }
+
+  /**
+   * Cleanup resources
+   */
+  cleanup(): void {
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
     }
-  }
-
-  private renderLoop(): void {
-    if (!this.isRendering) return;
-
-    this.renderFrame();
-    this.animationFrameId = requestAnimationFrame(() => this.renderLoop());
-  }
-
-  private renderFrame(): void {
-    if (!this.ctx || !this.canvas || !this.videoElement) return;
-
-    // Update canvas dimensions to match video
-    this.updateCanvasDimensions();
-
-    // Clear canvas
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    // Clean up old overlays
-    this.cleanupOldOverlays();
-
-    // Render all active overlays
-    const now = Date.now();
-    for (const [, overlay] of this.activeOverlays.entries()) {
-      const age = now - overlay.timestamp.getTime();
-      const opacity = Math.max(0, 1 - age / this.maxOverlayAge);
-
-      if (opacity > 0) {
-        // Render facial overlays
-        overlay.facialOverlays.forEach(facialOverlay => {
-          this.drawFacialOverlay(facialOverlay, opacity);
-        });
-
-        // Render audio overlay
-        if (overlay.audioOverlay) {
-          this.drawAudioOverlay(overlay.audioOverlay, opacity);
-        }
-      }
-    }
-  }
-
-  private updateCanvasDimensions(): void {
-    if (!this.canvas || !this.videoElement) return;
-
-    const { videoWidth, videoHeight } = this.videoElement;
-    if (videoWidth > 0 && videoHeight > 0) {
-      this.canvas.width = videoWidth;
-      this.canvas.height = videoHeight;
-    }
-  }
-
-  private drawFacialOverlay(overlay: any, opacity: number): void {
-    if (!this.ctx) return;
-
-    const { boundingBox, color, emotionLabel, confidence } = overlay;
-
-    // Apply opacity to color
-    const rgbaColor = this.applyOpacity(color, opacity);
-
-    // Draw bounding box
-    this.ctx.strokeStyle = rgbaColor;
-    this.ctx.lineWidth = 2;
-    this.ctx.strokeRect(boundingBox.x, boundingBox.y, boundingBox.width, boundingBox.height);
-
-    // Draw label background
-    const labelText = `${emotionLabel} (${Math.round(confidence * 100)}%)`;
-    const textWidth = this.ctx.measureText(labelText).width;
-    const labelHeight = 20;
-    const labelY = boundingBox.y - labelHeight - 2;
-
-    this.ctx.fillStyle = rgbaColor;
-    this.ctx.fillRect(boundingBox.x, labelY, textWidth + 10, labelHeight);
-
-    // Draw label text
-    this.ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-    this.ctx.font = '14px Arial';
-    this.ctx.fillText(labelText, boundingBox.x + 5, labelY + 14);
-
-    // Draw facial landmarks if available
-    if (overlay.landmarks) {
-      this.drawLandmarks(overlay.landmarks, rgbaColor);
-    }
-  }
-
-  private drawAudioOverlay(overlay: any, opacity: number): void {
-    if (!this.ctx || !this.canvas) return;
-
-    const { emotionLabel, confidence, position } = overlay;
-
-    const x = 10;
-    let y = 30;
-
-    if (position === 'bottom') {
-      y = this.canvas.height - 50;
-    }
-
-    // Draw background
-    const text = `Audio: ${emotionLabel} (${Math.round(confidence * 100)}%)`;
-    const textWidth = this.ctx.measureText(text).width;
-    const padding = 10;
-
-    this.ctx.fillStyle = `rgba(0, 0, 0, ${opacity * 0.7})`;
-    this.ctx.fillRect(x, y, textWidth + padding * 2, 25);
-
-    // Draw text
-    this.ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-    this.ctx.font = '14px Arial';
-    this.ctx.fillText(text, x + padding, y + 17);
-  }
-
-  private drawLandmarks(landmarks: any, color: string): void {
-    if (!this.ctx || !landmarks.points) return;
-
-    // Draw landmark points
-    this.ctx.fillStyle = color;
-    landmarks.points.forEach((point: any) => {
-      if (!this.ctx) return;
-      this.ctx.beginPath();
-      this.ctx.arc(point.x, point.y, 2, 0, 2 * Math.PI);
-      this.ctx.fill();
-    });
-
-    // Draw connections between landmarks (simplified)
-    if (landmarks.connections && this.ctx) {
-      this.ctx.strokeStyle = color;
-      this.ctx.lineWidth = 1;
-      landmarks.connections.forEach((connection: any) => {
-        if (!this.ctx) return;
-        this.ctx.beginPath();
-        this.ctx.moveTo(connection.start.x, connection.start.y);
-        this.ctx.lineTo(connection.end.x, connection.end.y);
-        this.ctx.stroke();
-      });
-    }
-  }
-
-  private cleanupOldOverlays(): void {
-    const now = Date.now();
-    for (const [sessionId, overlay] of this.activeOverlays.entries()) {
-      const age = now - overlay.timestamp.getTime();
-      if (age > this.maxOverlayAge) {
-        this.activeOverlays.delete(sessionId);
-      }
-    }
-  }
-
-  private applyOpacity(color: string, opacity: number): string {
-    // Handle hex colors
-    if (color.startsWith('#')) {
-      const r = parseInt(color.slice(1, 3), 16);
-      const g = parseInt(color.slice(3, 5), 16);
-      const b = parseInt(color.slice(5, 7), 16);
-      return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-    }
-
-    // Handle rgb/rgba colors
-    if (color.startsWith('rgb')) {
-      return color.replace(/rgba?\(([^)]+)\)/, `rgba($1, ${opacity})`);
-    }
-
-    // Default fallback
-    return color;
-  }
-
-  // Public utility methods
-  getActiveOverlayCount(): number {
-    return this.activeOverlays.size;
-  }
-
-  resizeCanvas(width: number, height: number): void {
-    if (this.canvas) {
-      this.canvas.width = width;
-      this.canvas.height = height;
-    }
-  }
-
-  destroy(): void {
-    this.stopRendering();
-
-    if (this.canvas && this.canvas.parentElement) {
-      this.canvas.parentElement.removeChild(this.canvas);
-    }
 
     this.activeOverlays.clear();
-    this.videoElement = null;
-    this.canvas = null;
-    this.ctx = null;
-
-    console.log('[OverlayRendererModule] Destroyed');
+    this.eventListeners.clear();
+    this.fpsHistory = [];
   }
 }
+
+export default OverlayRendererModule;

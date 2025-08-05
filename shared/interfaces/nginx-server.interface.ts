@@ -1,49 +1,75 @@
-// Nginx Web Server Module Interface
-// Version 1.0
+/**
+ * Nginx Web Server Module Interfaces
+ */
 
-export interface NginxWebServerModule {
-  serveStaticAssets(path: string): Promise<StaticAssetResponse>;
-  handleHealthCheck(): Promise<HealthCheckResponse>;
-  configureCaching(config: CacheConfig): void;
-  enableCompression(types: string[]): void;
-  configureSSL(certPath: string, keyPath: string): Promise<boolean>;
-  setSecurityHeaders(headers: SecurityHeaders): void;
-  configureUpstream(servers: UpstreamServer[]): void;
-  enableStickySession(enabled: boolean): void;
+export interface INginxWebServerModule {
+  initialize(): Promise<void>;
+  start(): Promise<void>;
+  stop(): Promise<void>;
+  reload(): Promise<void>;
+  addServerBlock(name: string, serverBlock: ServerBlock): Promise<void>;
+  removeServerBlock(name: string): Promise<void>;
+  configureSSL(serverName: string, sslConfig: SSLConfig): Promise<void>;
+  configureUpstream(name: string, upstream: UpstreamConfig): Promise<void>;
+  getStatus(): any;
+  testConfiguration(): Promise<boolean>;
+  cleanup(): Promise<void>;
 }
 
-export interface StaticAssetResponse {
-  success: boolean;
-  contentType: string;
-  cacheControl: string;
-  etag?: string;
-  error?: string;
+export interface NginxConfig {
+  nginxPath?: string;
+  configDir?: string;
+  sitesDir?: string;
+  enabledDir?: string;
+  logDir?: string;
+  pidFile?: string;
+  user?: string;
+  workerProcesses?: string | number;
+  workerConnections?: number;
+  keepaliveTimeout?: number;
+  clientMaxBodySize?: string;
+  gzipEnabled?: boolean;
+  sslProtocols?: string[];
 }
 
-export interface HealthCheckResponse {
-  status: 'healthy' | 'unhealthy';
-  timestamp: Date;
-  uptime: number;
-  activeConnections: number;
+export interface ServerBlock {
+  listen: number[];
+  serverName?: string[];
+  root?: string;
+  index?: string[];
+  ssl?: SSLConfig;
+  locations?: LocationBlock[];
 }
 
-export interface CacheConfig {
-  staticAssets: { maxAge: number; etag: boolean };
-  apiResponses: { maxAge: number; vary: string[] };
-  compression: { enabled: boolean; types: string[] };
+export interface LocationBlock {
+  path: string;
+  root?: string;
+  index?: string[];
+  tryFiles?: string[];
+  proxyPass?: string;
+  proxyHttpVersion?: string;
+  proxySetHeaders?: { [key: string]: string };
+  rateLimitZone?: string;
 }
 
-export interface SecurityHeaders {
-  contentSecurityPolicy: string;
-  strictTransportSecurity: string;
-  xFrameOptions: string;
-  xContentTypeOptions: string;
+export interface SSLConfig {
+  certificatePath: string;
+  privateKeyPath: string;
+  dhParamPath?: string;
+  protocols?: string[];
+  ciphers?: string;
+}
+
+export interface UpstreamConfig {
+  servers: UpstreamServer[];
+  method?: 'round_robin' | 'least_conn' | 'ip_hash' | 'hash';
 }
 
 export interface UpstreamServer {
-  host: string;
-  port: number;
-  weight: number;
-  maxFails: number;
-  failTimeout: number;
+  address: string;
+  weight?: number;
+  maxFails?: number;
+  failTimeout?: string;
+  backup?: boolean;
+  down?: boolean;
 }

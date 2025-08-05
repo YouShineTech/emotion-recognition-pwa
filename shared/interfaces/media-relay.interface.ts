@@ -1,35 +1,48 @@
-// Media Relay Module Interface
-// Version 1.0
+/**
+ * Media Relay Module Interfaces (Mediasoup)
+ */
 
-export interface MediaRelayModule {
-  createSession(sessionId: string): Promise<RelaySession>;
-  routeStream(sessionId: string, stream: MediaStreamData): Promise<void>;
-  subscribeToStream(sessionId: string, callback: (data: MediaStreamData) => void): void;
-  closeSession(sessionId: string): void;
-  getActiveSessionCount(): number;
-  getResourceUsage(): ResourceMetrics;
+export interface IMediaRelayModule {
+  initialize(): Promise<void>;
+  createSession(sessionId: string): Promise<SessionInfo>;
+  createTransport(
+    sessionId: string,
+    participantId: string,
+    direction: 'send' | 'recv'
+  ): Promise<TransportInfo>;
+  connectTransport(transportId: string, dtlsParameters: any): Promise<void>;
+  createProducer(transportId: string, rtpParameters: any, kind: 'audio' | 'video'): Promise<string>;
+  createConsumer(transportId: string, producerId: string, rtpCapabilities: any): Promise<any>;
+  resumeConsumer(consumerId: string): Promise<void>;
+  pauseConsumer(consumerId: string): Promise<void>;
+  getRouterCapabilities(sessionId: string): any;
+  closeSession(sessionId: string): Promise<void>;
+  getSessionStats(sessionId: string): Promise<any>;
+  cleanup(): Promise<void>;
 }
 
-export interface RelaySession {
+export interface RelayConfig {
+  numWorkers?: number;
+  workerSettings?: any;
+  webRtcTransportOptions?: any;
+  redisUrl?: string;
+}
+
+export interface SessionInfo {
   sessionId: string;
-  createdAt: Date;
-  isActive: boolean;
   routerId: string;
-  transportId: string;
-  producerId?: string;
+  participants: string[];
+  createdAt: Date;
+  lastActivity: Date;
 }
 
-export interface MediaStreamData {
+export interface TransportInfo {
+  id: string;
   sessionId: string;
-  timestamp: Date;
-  videoFrame?: ArrayBuffer;
-  audioChunk?: ArrayBuffer;
-  rtpParameters?: any;
-}
-
-export interface ResourceMetrics {
-  cpuUsage: number;
-  memoryUsage: number;
-  networkBandwidth: number;
-  activeConnections: number;
+  participantId: string;
+  direction: 'send' | 'recv';
+  dtlsParameters: any;
+  iceCandidates: any[];
+  iceParameters: any;
+  sctpParameters?: any;
 }

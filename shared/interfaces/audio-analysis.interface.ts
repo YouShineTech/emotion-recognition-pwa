@@ -1,20 +1,47 @@
-// Audio Analysis Module Interface
-// Version 1.0
+/**
+ * Audio Analysis Module Interfaces
+ */
 
-import { ApiResponse, EmotionScore } from './common.interface';
-import { ExtractedAudioChunk } from './frame-extraction.interface';
-
-export interface AudioAnalysisModule {
-  analyzeAudio(chunk: ExtractedAudioChunk): Promise<AudioAnalysisResult>;
-  setModel(modelType: 'fast' | 'accurate'): void;
-  setLanguage(language: string): void;
+export interface IAudioAnalysisModule {
+  initialize(): Promise<void>;
+  analyzeAudio(
+    audioData: Buffer,
+    sessionId: string,
+    timestamp: number
+  ): Promise<AudioEmotionResult>;
+  analyzeBatch(
+    audioChunks: Array<{ data: Buffer; sessionId: string; timestamp: number }>
+  ): Promise<AudioEmotionResult[]>;
+  setVAD(enabled: boolean): void;
+  updateConfig(config: Partial<AudioAnalysisConfig>): void;
+  getStats(): any;
+  cleanup(): Promise<void>;
 }
 
-export interface AudioAnalysisResult extends ApiResponse {
+export interface AudioAnalysisConfig {
+  pythonPath?: string;
+  modelType?: 'fast' | 'accurate';
+  sampleRate?: number;
+  confidenceThreshold?: number;
+  vadThreshold?: number;
+  tempDir?: string;
+  modelPath?: string;
+}
+
+export interface AudioEmotionResult {
   sessionId: string;
-  timestamp: Date;
-  emotions: EmotionScore[];
-  speechDetected: boolean;
-  audioLevel: number;
-  processingTime: number;
+  timestamp: number;
+  emotion: string;
+  confidence: number;
+  scores: { [key: string]: number };
+  features: AudioFeatures;
+  voiceActivity: boolean;
+  duration: number;
+}
+
+export interface AudioFeatures {
+  mfcc: number[];
+  spectralCentroid: number;
+  zeroCrossingRate: number;
+  energy: number;
 }

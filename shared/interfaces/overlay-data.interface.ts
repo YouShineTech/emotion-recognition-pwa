@@ -1,43 +1,66 @@
-// Overlay Data Generator Interface
-// Version 1.0
+/**
+ * Overlay Data Generator Interfaces
+ */
 
-import { AudioAnalysisResult } from './audio-analysis.interface';
-import { BoundingBox } from './common.interface';
-import { FacialAnalysisResult } from './facial-analysis.interface';
+export interface IOverlayDataGenerator {
+  processFacialData(faceData: any[]): OverlayData[];
+  processAudioData(audioResult: any): void;
+  getActiveOverlays(sessionId: string): OverlayData[];
+  updateConfig(config: Partial<OverlayConfig>): void;
+  clearSession(sessionId: string): void;
+  getStats(): any;
+  cleanup(): void;
+}
 
-export interface OverlayDataGenerator {
-  generateOverlay(
-    facialResult: FacialAnalysisResult,
-    audioResult: AudioAnalysisResult
-  ): Promise<OverlayData>;
-  setOverlayStyle(style: OverlayStyle): void;
+export interface OverlayConfig {
+  fusionWeights?: {
+    facial: number;
+    audio: number;
+  };
+  confidenceThreshold?: number;
+  overlayDuration?: number;
+  smoothingWindow?: number;
+  maxOverlays?: number;
 }
 
 export interface OverlayData {
+  id: string;
   sessionId: string;
-  timestamp: Date;
-  facialOverlays: FacialOverlay[];
-  audioOverlay: AudioOverlay;
-  totalProcessingTime: number;
+  timestamp: number;
+  expiresAt: number;
+  type: 'emotion' | 'audio-emotion';
+  position: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  emotion: {
+    label: string;
+    confidence: number;
+    color: {
+      r: number;
+      g: number;
+      b: number;
+      alpha: number;
+    };
+  };
+  metadata?: any;
 }
 
-export interface FacialOverlay {
-  faceId: string;
-  boundingBox: BoundingBox;
-  emotionLabel: string;
+export interface EmotionFusion {
+  emotion: string;
   confidence: number;
-  color: string;
+  sources: string[];
+  fusionScore: number;
+  combinedScores?: { [key: string]: number };
 }
 
-export interface AudioOverlay {
-  emotionLabel: string;
-  confidence: number;
-  position: 'top' | 'bottom' | 'side';
-}
-
-export interface OverlayStyle {
-  colors: Record<string, string>;
-  opacity: number;
-  fontSize: number;
-  borderWidth: number;
+export interface ColorMapping {
+  [emotion: string]: {
+    r: number;
+    g: number;
+    b: number;
+    alpha: number;
+  };
 }

@@ -1,29 +1,48 @@
-// Frame Extraction Module Interface
-// Version 1.0
+/**
+ * Frame Extraction Module Interfaces
+ */
 
-import { MediaStreamData } from './media-relay.interface';
-
-export interface FrameExtractionModule {
-  extractVideoFrame(streamData: MediaStreamData): Promise<ExtractedVideoFrame>;
-  extractAudioChunk(streamData: MediaStreamData): Promise<ExtractedAudioChunk>;
-  setExtractionRate(framesPerSecond: number): void;
-  setQuality(quality: 'low' | 'medium' | 'high'): void;
+export interface IFrameExtractionModule {
+  initialize(): Promise<void>;
+  startExtraction(sessionId: string, streamUrl: string): Promise<void>;
+  stopExtraction(sessionId: string): Promise<void>;
+  updateQuality(quality: 'low' | 'medium' | 'high'): void;
+  getStats(): any;
+  cleanup(): Promise<void>;
 }
 
-export interface ExtractedVideoFrame {
-  sessionId: string;
-  timestamp: Date;
-  imageData: any; // ImageData in browser
+export interface ExtractionConfig {
+  frameRate?: number;
+  quality?: 'low' | 'medium' | 'high';
+  audioSampleRate?: number;
+  audioChannels?: number;
+  redisUrl?: string;
+  queueName?: string;
+  ffmpegPath?: string;
+}
+
+export interface QualitySettings {
   width: number;
   height: number;
-  format: 'RGBA' | 'RGB24';
+  frameRate: number;
+  videoBitrate: string;
+  audioBitrate: string;
 }
 
-export interface ExtractedAudioChunk {
+export interface FrameData {
   sessionId: string;
-  timestamp: Date;
-  audioBuffer: any; // AudioBuffer in browser
-  duration: number;
-  sampleRate: 44100 | 48000;
-  channels: 1 | 2;
+  timestamp: number;
+  width: number;
+  height: number;
+  format: string;
+  data: Buffer;
+}
+
+export interface AudioData {
+  sessionId: string;
+  timestamp: number;
+  sampleRate: number;
+  channels: number;
+  format: string;
+  data: Buffer;
 }

@@ -1,38 +1,34 @@
-// Media Capture Module Interface
-// Version 1.0
+/**
+ * Media Capture Module Interfaces
+ */
 
-import { ApiResponse, ModuleError } from './common.interface';
-
-export interface MediaCaptureModule {
-  requestPermissions(): Promise<MediaCaptureResult>;
-  startCapture(config: CaptureConfig): Promise<any>; // MediaStream in browser, any for testing
-  stopCapture(): void;
-  switchCamera(deviceId: string): Promise<void>;
-  onError(callback: (error: MediaCaptureError) => void): void;
+export interface IMediaCaptureModule {
+  initialize(): Promise<MediaStream>;
+  stop(): void;
+  switchCamera(deviceId: string): Promise<MediaStream>;
+  switchMicrophone(deviceId: string): Promise<MediaStream>;
+  enumerateDevices(): Promise<DeviceInfo[]>;
+  getCurrentStream(): MediaStream | null;
+  getDevices(): DeviceInfo[];
+  updateConfig(config: Partial<CaptureConfig>): void;
+  on(event: string, callback: Function): void;
+  off(event: string, callback: Function): void;
 }
 
 export interface CaptureConfig {
-  video: {
-    width: { min: number; ideal: number; max: number };
-    height: { min: number; ideal: number; max: number };
-    frameRate: { min: number; ideal: number; max: number };
-    facingMode: 'user' | 'environment';
-  };
-  audio: {
-    sampleRate: 44100 | 48000;
-    channelCount: 1 | 2;
-    echoCancellation: boolean;
-    noiseSuppression: boolean;
-  };
-  deviceId?: string;
+  video?: MediaTrackConstraints;
+  audio?: MediaTrackConstraints;
 }
 
-export interface MediaCaptureResult extends ApiResponse {
-  stream?: any; // MediaStream in browser
-  availableDevices: any[]; // MediaDeviceInfo[] in browser
+export interface DeviceInfo {
+  deviceId: string;
+  label: string;
+  kind: 'videoinput' | 'audioinput' | 'audiooutput';
+  groupId: string;
 }
 
-export interface MediaCaptureError extends ModuleError {
-  type: 'NotAllowedError' | 'NotFoundError' | 'OverconstrainedError' | 'DeviceError';
-  deviceId?: string;
+export interface CaptureError {
+  name: string;
+  message: string;
+  code: string;
 }

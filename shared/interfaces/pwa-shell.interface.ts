@@ -1,24 +1,48 @@
-// PWA Shell Module Interface
-// Version 1.0
+/**
+ * PWA Shell Module Interfaces
+ */
 
-export interface PWAShellModule {
-  initialize(): Promise<void>;
-  installApp(): Promise<boolean>;
-  handleOffline(): void;
-  updateApp(): Promise<boolean>;
-  requestNotificationPermission(): Promise<boolean>;
-  showNotification(message: string, type: 'info' | 'warning' | 'error'): void;
+export interface IPWAShellModule {
+  canInstall(): boolean;
+  install(): Promise<boolean>;
+  isInstalled(): boolean;
+  isOnline(): boolean;
+  requestNotificationPermission(): Promise<NotificationPermission>;
+  showNotification(title: string, options?: NotificationConfig): Promise<void>;
+  subscribeToPush(vapidPublicKey: string): Promise<PushSubscription | null>;
+  unsubscribeFromPush(): Promise<boolean>;
+  checkForUpdates(): Promise<boolean>;
+  applyUpdate(): Promise<void>;
+  getVersion(): Promise<string>;
+  clearCache(): Promise<void>;
+  getCacheInfo(): Promise<any>;
+  on(event: string, callback: Function): void;
+  off(event: string, callback: Function): void;
+  cleanup(): void;
 }
 
 export interface PWAConfig {
-  enableOfflineMode: boolean;
-  enableNotifications: boolean;
-  enableAutoUpdate: boolean;
-  cacheStrategy: 'cache-first' | 'network-first' | 'stale-while-revalidate';
+  serviceWorkerPath?: string;
+  enableNotifications?: boolean;
+  enableOfflineSupport?: boolean;
+  updateCheckInterval?: number;
+  cacheStrategy?: 'cacheFirst' | 'networkFirst' | 'staleWhileRevalidate';
 }
 
-export interface InstallationPrompt {
-  canInstall: boolean;
-  platform: 'ios' | 'android' | 'desktop';
-  installMethod: 'native' | 'manual';
+export interface InstallPromptEvent extends Event {
+  prompt(): Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
+
+export interface NotificationConfig {
+  body?: string;
+  icon?: string;
+  badge?: string;
+  image?: string;
+  data?: any;
+  tag?: string;
+  requireInteraction?: boolean;
+  silent?: boolean;
+  vibrate?: number[];
+  actions?: NotificationAction[];
 }
