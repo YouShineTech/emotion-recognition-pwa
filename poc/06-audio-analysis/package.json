@@ -1,0 +1,37 @@
+{
+  "name": "audio-analysis-poc",
+  "version": "1.0.0",
+  "description": "Audio Analysis Module POC - Python ML audio emotion recognition",
+  "main": "dist/poc.js",
+  "scripts": {
+    "build": "tsc",
+    "poc": "npm run build && node dist/poc.js",
+    "debug": "npm run build && node --inspect-brk dist/poc.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "dev": "ts-node src/poc.ts",
+    "clean": "rm -rf dist coverage"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/jest": "^29.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "ts-node": "^10.0.0",
+    "typescript": "^5.0.0"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": ["<rootDir>/src/test-setup.ts"],
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/poc.ts",
+      "!src/test-setup.ts"
+    ]
+  }
+}
