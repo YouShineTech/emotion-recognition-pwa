@@ -3,16 +3,18 @@
  */
 
 export interface IWebRTCTransportModule {
-  initialize(): Promise<void>;
+  initialize(config?: any): Promise<{ success: boolean; connectionId?: string; error?: string }>;
   connect(sessionId: string): Promise<void>;
   disconnect(): void;
   sendData(data: any): boolean;
   addStream(stream: MediaStream): void;
   removeStream(stream: MediaStream): void;
+  attachMediaStream(stream: MediaStream): Promise<void>;
+  onDataReceived(callback: (data: any) => void): void;
   getConnectionState(): ConnectionState;
   getStats(): Promise<RTCStatsReport | null>;
-  on(event: string, callback: Function): void;
-  off(event: string, callback: Function): void;
+  on(event: string, callback: (...args: any[]) => void): void;
+  off(event: string, callback: (...args: any[]) => void): void;
 }
 
 export interface ConnectionConfig {

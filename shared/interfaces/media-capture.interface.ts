@@ -4,6 +4,9 @@
 
 export interface IMediaCaptureModule {
   initialize(): Promise<MediaStream>;
+  requestPermissions(): Promise<{ success: boolean; error?: string }>;
+  startCapture(config?: CaptureConfig): Promise<MediaStream>;
+  stopCapture(): void;
   stop(): void;
   switchCamera(deviceId: string): Promise<MediaStream>;
   switchMicrophone(deviceId: string): Promise<MediaStream>;
@@ -11,8 +14,8 @@ export interface IMediaCaptureModule {
   getCurrentStream(): MediaStream | null;
   getDevices(): DeviceInfo[];
   updateConfig(config: Partial<CaptureConfig>): void;
-  on(event: string, callback: Function): void;
-  off(event: string, callback: Function): void;
+  on(event: string, callback: (...args: any[]) => void): void;
+  off(event: string, callback: (...args: any[]) => void): void;
 }
 
 export interface CaptureConfig {

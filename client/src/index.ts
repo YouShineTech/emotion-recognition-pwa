@@ -6,7 +6,7 @@ import { WebRTCTransportModule } from './modules/webrtc-transport/WebRTCTranspor
 
 // Initialize modules
 const mediaCaptureModule = new MediaCaptureModule();
-const webrtcTransportModule = new WebRTCTransportModule();
+const webrtcTransportModule = new WebRTCTransportModule({});
 
 // Application state
 interface AppState {
@@ -50,7 +50,7 @@ async function startEmotionRecognition(): Promise<void> {
     // Request media permissions
     const permissionResult = await mediaCaptureModule.requestPermissions();
     if (!permissionResult.success) {
-      throw new Error('Permission denied');
+      throw new Error(permissionResult.error || 'Permission denied');
     }
 
     updateStatus('Starting media capture...');
@@ -86,14 +86,14 @@ async function startEmotionRecognition(): Promise<void> {
     });
 
     if (!transportResult.success) {
-      throw new Error('Failed to initialize WebRTC connection');
+      throw new Error(transportResult.error || 'Failed to initialize WebRTC connection');
     }
 
     // Attach media stream to WebRTC
     await webrtcTransportModule.attachMediaStream(stream);
 
     // Set up overlay data reception
-    webrtcTransportModule.onDataReceived(overlayData => {
+    webrtcTransportModule.onDataReceived((overlayData: any) => {
       console.log('[App] Received overlay data:', overlayData);
       // TODO: Render overlays on video
     });

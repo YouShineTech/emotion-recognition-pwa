@@ -40,7 +40,55 @@ export class WebRTCTransportModule implements IWebRTCTransportModule {
   /**
    * Initialize WebRTC connection and signaling
    */
-  async initialize(): Promise<void> {
+  async initialize(
+    config?: any
+  ): Promise<{ success: boolean; connectionId?: string; error?: string }> {
+    try {
+      if (config) {
+        this.config = { ...this.config, ...config };
+      }
+      await this.setupSignaling();
+      this.setupPeerConnection();
+      this.setupDataChannel();
+      this.emit('initialized');
+      return {
+        success: true,
+        ...(this.sessionId && { connectionId: this.sessionId }),
+      };
+    } catch (error) {
+      this.emit('error', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      return { success: false, error: errorMessage };
+    }
+  }
+
+  /**
+   * Attach media stream to peer connection
+   */
+  async attachMediaStream(stream: MediaStream): Promise<void> {
+    if (!this.peerConnection) {
+      throw new Error('Peer connection not initialized');
+    }
+
+    // Add tracks to peer connection
+    stream.getTracks().forEach(track => {
+      this.peerConnection!.addTrack(track, stream);
+    });
+
+    this.emit('streamAttached', stream);
+  }
+
+  /**
+   * Set up data received handler
+   */
+  onDataReceived(callback: (data: any) => void): void {
+    this.on('dataReceived', callback);
+  }
+
+  /**
+   * Initialize WebRTC connection and signaling (internal)
+   */
+  private async initializeInternal(): Promise<void> {
     try {
       await this.setupSignaling();
       this.setupPeerConnection();
@@ -211,7 +259,7 @@ export class WebRTCTransportModule implements IWebRTCTransportModule {
    */
   private setupPeerConnection(): void {
     this.peerConnection = new RTCPeerConnection({
-      iceServers: this.config.iceServers,
+      iceServers: this.config.iceServers || [],
     });
 
     // Handle ICE candidates
@@ -262,9 +310,12 @@ export class WebRTCTransportModule implements IWebRTCTransportModule {
    */
   private setupDataChannel(): void {
     if (this.peerConnection) {
-      this.dataChannel = this.peerConnection.createDataChannel(this.config.dataChannelName, {
-        ordered: true,
-      });
+      this.dataChannel = this.peerConnection.createDataChannel(
+        this.config.dataChannelName || 'data',
+        {
+          ordered: true,
+        }
+      );
 
       this.setupDataChannelHandlers(this.dataChannel);
     }

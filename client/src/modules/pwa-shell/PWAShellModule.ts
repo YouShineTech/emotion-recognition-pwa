@@ -16,7 +16,7 @@ export class PWAShellModule implements IPWAShellModule {
   private config: PWAConfig;
   private serviceWorker: ServiceWorkerRegistration | null = null;
   private installPrompt: InstallPromptEvent | null = null;
-  private isOnline = navigator.onLine;
+  private onlineStatus = navigator.onLine;
   private eventListeners: Map<string, ((...args: any[]) => void)[]> = new Map();
 
   constructor(config: PWAConfig = {}) {
@@ -114,7 +114,7 @@ export class PWAShellModule implements IPWAShellModule {
    * Check if device is online
    */
   isOnline(): boolean {
-    return this.isOnline;
+    return this.onlineStatus;
   }
 
   /**
@@ -152,16 +152,15 @@ export class PWAShellModule implements IPWAShellModule {
     }
 
     const notificationOptions: NotificationOptions = {
-      body: options.body,
+      ...(options.body && { body: options.body }),
       icon: options.icon || '/icons/icon-192x192.png',
       badge: options.badge || '/icons/badge-72x72.png',
-      image: options.image,
-      data: options.data,
-      tag: options.tag,
+      ...(options.data && { data: options.data }),
+      ...(options.tag && { tag: options.tag }),
       requireInteraction: options.requireInteraction || false,
       silent: options.silent || false,
-      vibrate: options.vibrate,
-      actions: options.actions,
+      // vibrate: options.vibrate, // Not supported in standard NotificationOptions
+      // actions: options.actions, // Not supported in standard NotificationOptions
     };
 
     await this.serviceWorker.showNotification(title, notificationOptions);
@@ -307,7 +306,7 @@ export class PWAShellModule implements IPWAShellModule {
         totalCaches: cacheNames.length,
       };
     } catch (error) {
-      return { supported: true, error: error.message };
+      return { supported: true, error: error instanceof Error ? error.message : 'Unknown error' };
     }
   }
 
@@ -343,7 +342,9 @@ export class PWAShellModule implements IPWAShellModule {
     }
 
     try {
-      this.serviceWorker = await navigator.serviceWorker.register(this.config.serviceWorkerPath);
+      this.serviceWorker = await navigator.serviceWorker.register(
+        this.config.serviceWorkerPath || '/sw.js'
+      );
 
       // Handle service worker updates
       this.serviceWorker.addEventListener('updatefound', () => {
@@ -392,13 +393,13 @@ export class PWAShellModule implements IPWAShellModule {
    */
   private setupNetworkDetection(): void {
     const updateOnlineStatus = () => {
-      const wasOnline = this.isOnline;
-      this.isOnline = navigator.onLine;
+      const wasOnline = this.onlineStatus;
+      this.onlineStatus = navigator.onLine;
 
-      if (wasOnline !== this.isOnline) {
-        this.emit('networkStatusChanged', { isOnline: this.isOnline });
+      if (wasOnline !== this.onlineStatus) {
+        this.emit('networkStatusChanged', { isOnline: this.onlineStatus });
 
-        if (this.isOnline) {
+        if (this.onlineStatus) {
           this.emit('online');
         } else {
           this.emit('offline');
@@ -414,7 +415,7 @@ export class PWAShellModule implements IPWAShellModule {
    * Setup automatic update checking
    */
   private setupUpdateChecking(): void {
-    if (this.config.updateCheckInterval > 0) {
+    if (this.config.updateCheckInterval && this.config.updateCheckInterval > 0) {
       setInterval(() => {
         this.checkForUpdates();
       }, this.config.updateCheckInterval);

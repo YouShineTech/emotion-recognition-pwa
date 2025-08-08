@@ -244,7 +244,7 @@ export class OverlayRendererModule implements IOverlayRendererModule {
 
     // Calculate animation progress
     const age = timestamp - overlay.timestamp;
-    const animationProgress = Math.min(age / this.config.animationDuration, 1);
+    const animationProgress = Math.min(age / (this.config.animationDuration || 1000), 1);
     const fadeProgress = this.calculateFadeProgress(overlay, timestamp);
 
     // Apply animation and fade effects
@@ -285,10 +285,10 @@ export class OverlayRendererModule implements IOverlayRendererModule {
     const borderColor = `rgba(${emotion.color.r}, ${emotion.color.g}, ${emotion.color.b}, ${alpha * 1.2})`;
 
     // Draw bounding box
-    this.drawRoundedRect(0, 0, width, height, this.config.cornerRadius, borderColor, color);
+    this.drawRoundedRect(0, 0, width, height, this.config.cornerRadius || 8, borderColor, color);
 
     // Draw emotion label
-    const labelY = -this.config.fontSize - 8;
+    const labelY = -(this.config.fontSize || 16) - 8;
     const labelText = `${emotion.label} (${Math.round(emotion.confidence * 100)}%)`;
 
     this.drawLabel(labelText, width / 2, labelY, color, borderColor);
@@ -308,7 +308,7 @@ export class OverlayRendererModule implements IOverlayRendererModule {
     const borderColor = `rgba(${emotion.color.r}, ${emotion.color.g}, ${emotion.color.b}, ${alpha * 1.2})`;
 
     // Draw background
-    this.drawRoundedRect(0, 0, width, height, this.config.cornerRadius, borderColor, color);
+    this.drawRoundedRect(0, 0, width, height, this.config.cornerRadius || 8, borderColor, color);
 
     // Draw audio icon and label
     const labelText = `🎤 ${emotion.label} (${Math.round(emotion.confidence * 100)}%)`;
@@ -347,7 +347,7 @@ export class OverlayRendererModule implements IOverlayRendererModule {
     }
 
     this.context.strokeStyle = strokeColor;
-    this.context.lineWidth = this.config.borderWidth;
+    this.context.lineWidth = this.config.borderWidth || 2;
     this.context.stroke();
   }
 
@@ -364,7 +364,7 @@ export class OverlayRendererModule implements IOverlayRendererModule {
     const metrics = this.context.measureText(text);
     const padding = 8;
     const labelWidth = metrics.width + padding * 2;
-    const labelHeight = this.config.fontSize + padding;
+    const labelHeight = (this.config.fontSize || 16) + padding;
 
     // Draw label background
     this.drawRoundedRect(
@@ -372,7 +372,7 @@ export class OverlayRendererModule implements IOverlayRendererModule {
       y - labelHeight / 2,
       labelWidth,
       labelHeight,
-      this.config.cornerRadius / 2,
+      (this.config.cornerRadius || 8) / 2,
       borderColor,
       backgroundColor
     );

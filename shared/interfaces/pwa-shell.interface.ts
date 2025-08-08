@@ -44,5 +44,9 @@ export interface NotificationConfig {
   requireInteraction?: boolean;
   silent?: boolean;
   vibrate?: number[];
-  actions?: NotificationAction[];
+  actions?: Array<{
+    action: string;
+    title: string;
+    icon?: string;
+  }>;
 }

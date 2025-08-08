@@ -39,6 +39,36 @@ export class MediaCaptureModule implements IMediaCaptureModule {
   }
 
   /**
+   * Request permissions for media access
+   */
+  async requestPermissions(): Promise<{ success: boolean; error?: string }> {
+    try {
+      await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      return { success: true };
+    } catch (error) {
+      const captureError = this.handleMediaError(error as DOMException);
+      return { success: false, error: captureError.message };
+    }
+  }
+
+  /**
+   * Start media capture with given configuration
+   */
+  async startCapture(config?: CaptureConfig): Promise<MediaStream> {
+    if (config) {
+      this.updateConfig(config);
+    }
+    return this.initialize();
+  }
+
+  /**
+   * Stop media capture
+   */
+  stopCapture(): void {
+    this.stop();
+  }
+
+  /**
    * Initialize media capture and get user media stream
    */
   async initialize(): Promise<MediaStream> {
