@@ -17,7 +17,7 @@ export class PWAShellModule implements IPWAShellModule {
   private serviceWorker: ServiceWorkerRegistration | null = null;
   private installPrompt: InstallPromptEvent | null = null;
   private isOnline = navigator.onLine;
-  private eventListeners: Map<string, Function[]> = new Map();
+  private eventListeners: Map<string, ((...args: any[]) => void)[]> = new Map();
 
   constructor(config: PWAConfig = {}) {
     this.config = {
@@ -314,7 +314,7 @@ export class PWAShellModule implements IPWAShellModule {
   /**
    * Add event listener
    */
-  on(event: string, callback: Function): void {
+  on(event: string, callback: (...args: any[]) => void): void {
     if (!this.eventListeners.has(event)) {
       this.eventListeners.set(event, []);
     }
@@ -324,7 +324,7 @@ export class PWAShellModule implements IPWAShellModule {
   /**
    * Remove event listener
    */
-  off(event: string, callback: Function): void {
+  off(event: string, callback: (...args: any[]) => void): void {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
       const index = listeners.indexOf(callback);

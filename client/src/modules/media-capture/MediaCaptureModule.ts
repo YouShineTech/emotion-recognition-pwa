@@ -16,7 +16,7 @@ export class MediaCaptureModule implements IMediaCaptureModule {
   private currentStream: MediaStream | null = null;
   private devices: DeviceInfo[] = [];
   private config: CaptureConfig;
-  private eventListeners: Map<string, Function[]> = new Map();
+  private eventListeners: Map<string, ((...args: any[]) => void)[]> = new Map();
 
   constructor(config: CaptureConfig = {}) {
     this.config = {
@@ -131,7 +131,7 @@ export class MediaCaptureModule implements IMediaCaptureModule {
       }));
 
       return this.devices;
-    } catch (error) {
+    } catch {
       const captureError: CaptureError = {
         name: 'DeviceEnumerationError',
         message: 'Failed to enumerate media devices',
@@ -171,7 +171,7 @@ export class MediaCaptureModule implements IMediaCaptureModule {
   /**
    * Add event listener
    */
-  on(event: string, callback: Function): void {
+  on(event: string, callback: (...args: any[]) => void): void {
     if (!this.eventListeners.has(event)) {
       this.eventListeners.set(event, []);
     }
@@ -181,7 +181,7 @@ export class MediaCaptureModule implements IMediaCaptureModule {
   /**
    * Remove event listener
    */
-  off(event: string, callback: Function): void {
+  off(event: string, callback: (...args: any[]) => void): void {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
       const index = listeners.indexOf(callback);

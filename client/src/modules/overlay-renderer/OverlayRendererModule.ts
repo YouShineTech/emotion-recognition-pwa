@@ -24,7 +24,7 @@ export class OverlayRendererModule implements IOverlayRendererModule {
     lastRenderTime: 0,
   };
   private fpsHistory: number[] = [];
-  private eventListeners: Map<string, Function[]> = new Map();
+  private eventListeners: Map<string, ((...args: any[]) => void)[]> = new Map();
 
   constructor(canvas: HTMLCanvasElement, config: RendererConfig = {}) {
     this.canvas = canvas;
@@ -142,7 +142,7 @@ export class OverlayRendererModule implements IOverlayRendererModule {
   /**
    * Add event listener
    */
-  on(event: string, callback: Function): void {
+  on(event: string, callback: (...args: any[]) => void): void {
     if (!this.eventListeners.has(event)) {
       this.eventListeners.set(event, []);
     }
@@ -152,7 +152,7 @@ export class OverlayRendererModule implements IOverlayRendererModule {
   /**
    * Remove event listener
    */
-  off(event: string, callback: Function): void {
+  off(event: string, callback: (...args: any[]) => void): void {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
       const index = listeners.indexOf(callback);

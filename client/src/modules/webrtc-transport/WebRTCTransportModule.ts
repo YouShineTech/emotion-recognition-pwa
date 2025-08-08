@@ -22,7 +22,7 @@ export class WebRTCTransportModule implements IWebRTCTransportModule {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectTimeouts = [1000, 2000, 4000, 8000, 16000]; // Exponential backoff
-  private eventListeners: Map<string, Function[]> = new Map();
+  private eventListeners: Map<string, ((...args: any[]) => void)[]> = new Map();
   private sessionId: string | null = null;
 
   constructor(config: ConnectionConfig) {
@@ -152,7 +152,7 @@ export class WebRTCTransportModule implements IWebRTCTransportModule {
   /**
    * Add event listener
    */
-  on(event: string, callback: Function): void {
+  on(event: string, callback: (...args: any[]) => void): void {
     if (!this.eventListeners.has(event)) {
       this.eventListeners.set(event, []);
     }
@@ -162,7 +162,7 @@ export class WebRTCTransportModule implements IWebRTCTransportModule {
   /**
    * Remove event listener
    */
-  off(event: string, callback: Function): void {
+  off(event: string, callback: (...args: any[]) => void): void {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
       const index = listeners.indexOf(callback);
