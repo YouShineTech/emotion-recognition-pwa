@@ -41,10 +41,15 @@ export class MediaCaptureModule implements IMediaCaptureModule {
   /**
    * Request permissions for media access
    */
-  async requestPermissions(): Promise<{ success: boolean; error?: string }> {
+  async requestPermissions(): Promise<{
+    success: boolean;
+    error?: string;
+    availableDevices?: DeviceInfo[];
+  }> {
     try {
       await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      return { success: true };
+      const devices = await this.enumerateDevices();
+      return { success: true, availableDevices: devices };
     } catch (error) {
       const captureError = this.handleMediaError(error as DOMException);
       return { success: false, error: captureError.message };
