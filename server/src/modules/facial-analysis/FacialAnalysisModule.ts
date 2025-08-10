@@ -49,7 +49,7 @@ export class FacialAnalysisModule extends EventEmitter implements IFacialAnalysi
       ...config,
     };
 
-    this.tempDir = this.config.tempDir;
+    this.tempDir = this.config.tempDir || '/tmp/facial-analysis';
   }
 
   /**
@@ -163,7 +163,7 @@ export class FacialAnalysisModule extends EventEmitter implements IFacialAnalysi
         '-gaze', // Extract gaze direction
       ];
 
-      const openFaceProcess = spawn(this.config.openFacePath, openFaceArgs, {
+      const openFaceProcess = spawn(this.config.openFacePath || 'OpenFace', openFaceArgs, {
         stdio: ['ignore', 'pipe', 'pipe'],
       });
 
@@ -328,7 +328,7 @@ export class FacialAnalysisModule extends EventEmitter implements IFacialAnalysi
    */
   private async verifyOpenFace(): Promise<void> {
     return new Promise((resolve, reject) => {
-      const openFace = spawn(this.config.openFacePath, ['-help'], {
+      const openFace = spawn(this.config.openFacePath || 'OpenFace', ['-help'], {
         stdio: ['ignore', 'pipe', 'pipe'],
       });
 

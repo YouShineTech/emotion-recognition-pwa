@@ -46,3 +46,12 @@ export interface AudioData {
   format: string;
   data: Buffer;
 }
+
+export interface ExtractedVideoFrame {
+  sessionId: string;
+  timestamp: number;
+  width: number;
+  height: number;
+  format: string;
+  data: Buffer;
+}

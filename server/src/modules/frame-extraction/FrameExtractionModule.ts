@@ -92,7 +92,7 @@ export class FrameExtractionModule extends EventEmitter implements IFrameExtract
     }
 
     try {
-      const qualitySettings = this.qualityPresets[this.config.quality];
+      const qualitySettings = this.qualityPresets[this.config.quality || 'medium'];
 
       // Start video frame extraction
       await this.startVideoExtraction(sessionId, streamUrl, qualitySettings);
@@ -154,7 +154,7 @@ export class FrameExtractionModule extends EventEmitter implements IFrameExtract
       activeExtractions: this.ffmpegProcesses.size,
       quality: this.config.quality,
       frameRate: this.config.frameRate,
-      qualitySettings: this.qualityPresets[this.config.quality],
+      qualitySettings: this.qualityPresets[this.config.quality || 'medium'],
     };
   }
 
@@ -174,7 +174,7 @@ export class FrameExtractionModule extends EventEmitter implements IFrameExtract
       '-vf',
       `scale=${quality.width}:${quality.height}`,
       '-r',
-      this.config.frameRate.toString(),
+      (this.config.frameRate || 30).toString(),
       '-f',
       'rawvideo',
       '-pix_fmt',
@@ -369,7 +369,7 @@ export class FrameExtractionModule extends EventEmitter implements IFrameExtract
    */
   private async initializeRedis(): Promise<void> {
     try {
-      this.redis = Redis.createClient({ url: this.config.redisUrl });
+      this.redis = Redis.createClient({ url: this.config.redisUrl || 'redis://localhost:6379' });
       await this.redis.connect();
       console.log('Redis connected for frame processing queue');
     } catch (error) {

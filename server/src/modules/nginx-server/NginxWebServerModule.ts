@@ -43,7 +43,7 @@ export class NginxWebServerModule extends EventEmitter implements INginxWebServe
       ...config,
     };
 
-    this.configPath = path.join(this.config.configDir, 'nginx.conf');
+    this.configPath = path.join(this.config.configDir || '/etc/nginx', 'nginx.conf');
   }
 
   /**
@@ -82,7 +82,7 @@ export class NginxWebServerModule extends EventEmitter implements INginxWebServe
       await this.testConfiguration();
 
       // Start Nginx
-      this.nginxProcess = spawn(this.config.nginxPath, ['-c', this.configPath], {
+      this.nginxProcess = spawn(this.config.nginxPath || 'nginx', ['-c', this.configPath], {
         stdio: ['ignore', 'pipe', 'pipe'],
         detached: false,
       });

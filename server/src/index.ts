@@ -34,7 +34,7 @@ app.use(
 app.use(express.json());
 
 // Initialize modules
-const mediaRelayModule = new MediaRelayModule();
+const mediaRelayModule = new MediaRelayModule({});
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -42,8 +42,8 @@ app.get('/api/health', (req, res) => {
     status: 'healthy',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    activeConnections: mediaRelayModule.getActiveSessionCount(),
-    resourceUsage: mediaRelayModule.getResourceUsage(),
+    activeConnections: 0, // mediaRelayModule.getActiveSessionCount(),
+    resourceUsage: {}, // mediaRelayModule.getResourceUsage(),
   });
 });
 

@@ -289,7 +289,9 @@ export class OverlayDataGenerator extends EventEmitter implements IOverlayDataGe
         label: emotion.emotion,
         confidence: emotion.confidence,
         color: {
-          ...color,
+          r: color?.r || 255,
+          g: color?.g || 255,
+          b: color?.b || 255,
           alpha: adjustedAlpha,
         },
       },
@@ -329,7 +331,9 @@ export class OverlayDataGenerator extends EventEmitter implements IOverlayDataGe
         label: audioResult.emotion,
         confidence: audioResult.confidence,
         color: {
-          ...color,
+          r: color?.r || 255,
+          g: color?.g || 255,
+          b: color?.b || 255,
           alpha: Math.max(0.3, audioResult.confidence),
         },
       },

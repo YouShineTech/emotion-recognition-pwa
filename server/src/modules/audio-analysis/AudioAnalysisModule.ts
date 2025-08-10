@@ -57,8 +57,8 @@ export class AudioAnalysisModule extends EventEmitter implements IAudioAnalysisM
       ...config,
     };
 
-    this.tempDir = this.config.tempDir;
-    this.modelPath = this.config.modelPath;
+    this.tempDir = this.config.tempDir || '/tmp/audio-analysis';
+    this.modelPath = this.config.modelPath || './models/audio-emotion';
   }
 
   /**
@@ -322,7 +322,7 @@ export class AudioAnalysisModule extends EventEmitter implements IAudioAnalysisM
   private async verifyPythonEnvironment(): Promise<void> {
     return new Promise((resolve, reject) => {
       const python = spawn(
-        this.config.pythonPath,
+        this.config.pythonPath || 'python3',
         ['-c', 'import librosa, tensorflow, numpy; print("OK")'],
         {
           stdio: ['ignore', 'pipe', 'pipe'],
@@ -380,7 +380,7 @@ export class AudioAnalysisModule extends EventEmitter implements IAudioAnalysisM
       // Python script for audio emotion analysis
       const pythonScript = path.join(__dirname, 'audio_emotion_analyzer.py');
 
-      this.pythonProcess = spawn(this.config.pythonPath, [pythonScript], {
+      this.pythonProcess = spawn(this.config.pythonPath || 'python3', [pythonScript], {
         stdio: ['pipe', 'pipe', 'pipe'],
       });
 

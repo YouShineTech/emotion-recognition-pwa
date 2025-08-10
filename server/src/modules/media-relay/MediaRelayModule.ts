@@ -402,7 +402,7 @@ export class MediaRelayModule implements IMediaRelayModule {
    */
   private async initializeRedis(): Promise<void> {
     try {
-      this.redis = Redis.createClient({ url: this.config.redisUrl });
+      this.redis = Redis.createClient({ url: this.config.redisUrl || 'redis://localhost:6379' });
       await this.redis.connect();
       console.log('Redis connected for session state sharing');
     } catch (error) {
