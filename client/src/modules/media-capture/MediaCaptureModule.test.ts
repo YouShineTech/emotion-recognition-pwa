@@ -112,6 +112,11 @@ describe('MediaCaptureModule', () => {
     it('should handle device not found error', async () => {
       const error = new Error('Device not found');
       error.name = 'NotFoundError';
+
+      // Reset mocks to ensure they fail
+      mockGetUserMedia.mockReset();
+      mockEnumerateDevices.mockReset();
+
       mockGetUserMedia.mockRejectedValue(error);
       mockEnumerateDevices.mockRejectedValue(error);
 
