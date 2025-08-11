@@ -17,7 +17,7 @@ describe('Integration Test Setup', () => {
   });
 
   it('should be able to access Redis URL from environment', () => {
-    // Verify Redis connection string is available
+    // Verify Redis connection string is available (set in setup)
     expect(process.env.REDIS_URL).toBeDefined();
     expect(process.env.REDIS_URL).toContain('redis://');
   });
