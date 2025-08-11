@@ -95,10 +95,10 @@ export class FrameExtractionModule extends EventEmitter implements IFrameExtract
       const qualitySettings = this.qualityPresets[this.config.quality || 'medium'];
 
       // Start video frame extraction
-      await this.startVideoExtraction(sessionId, streamUrl, qualitySettings);
+      await this.startVideoExtraction(sessionId, streamUrl, qualitySettings!);
 
       // Start audio extraction
-      await this.startAudioExtraction(sessionId, streamUrl, qualitySettings);
+      await this.startAudioExtraction(sessionId, streamUrl, qualitySettings!);
 
       this.emit('extractionStarted', { sessionId, streamUrl });
     } catch (error) {
@@ -248,9 +248,9 @@ export class FrameExtractionModule extends EventEmitter implements IFrameExtract
       '-acodec',
       'pcm_s16le',
       '-ar',
-      this.config.audioSampleRate.toString(),
+      (this.config.audioSampleRate || 48000).toString(),
       '-ac',
-      this.config.audioChannels.toString(),
+      (this.config.audioChannels || 2).toString(),
       '-f',
       'wav',
       'pipe:1',
@@ -264,7 +264,7 @@ export class FrameExtractionModule extends EventEmitter implements IFrameExtract
 
     // Handle audio data
     let audioBuffer = Buffer.alloc(0);
-    const chunkSize = this.config.audioSampleRate * this.config.audioChannels * 2; // 1 second of 16-bit audio
+    const chunkSize = (this.config.audioSampleRate || 48000) * (this.config.audioChannels || 2) * 2; // 1 second of 16-bit audio
 
     ffmpegProcess.stdout?.on('data', (chunk: Buffer) => {
       audioBuffer = Buffer.concat([audioBuffer, chunk]);
@@ -277,8 +277,8 @@ export class FrameExtractionModule extends EventEmitter implements IFrameExtract
         const audioData: AudioData = {
           sessionId,
           timestamp: Date.now(),
-          sampleRate: this.config.audioSampleRate,
-          channels: this.config.audioChannels,
+          sampleRate: this.config.audioSampleRate || 48000,
+          channels: this.config.audioChannels || 2,
           format: 'pcm_s16le',
           data: audioChunk,
         };
@@ -323,7 +323,10 @@ export class FrameExtractionModule extends EventEmitter implements IFrameExtract
           },
         };
 
-        await this.redis.lPush(this.config.queueName, JSON.stringify(frameMessage));
+        await this.redis.lPush(
+          this.config.queueName || 'frame-processing',
+          JSON.stringify(frameMessage)
+        );
       }
 
       // Emit frame event
@@ -353,7 +356,10 @@ export class FrameExtractionModule extends EventEmitter implements IFrameExtract
           },
         };
 
-        await this.redis.lPush(this.config.queueName, JSON.stringify(audioMessage));
+        await this.redis.lPush(
+          this.config.queueName || 'frame-processing',
+          JSON.stringify(audioMessage)
+        );
       }
 
       // Emit audio event

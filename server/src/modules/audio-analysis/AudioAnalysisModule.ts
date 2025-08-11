@@ -182,11 +182,11 @@ export class AudioAnalysisModule extends EventEmitter implements IAudioAnalysisM
       let energy = 0;
 
       for (let i = 0; i < samples.length; i++) {
-        energy += samples[i] * samples[i];
+        energy += (samples[i] || 0) * (samples[i] || 0);
       }
 
       const avgEnergy = energy / samples.length;
-      const threshold = this.config.vadThreshold * 1000000; // Adjust threshold
+      const threshold = (this.config.vadThreshold || 0.01) * 1000000; // Adjust threshold
 
       return avgEnergy > threshold;
     } catch (error) {
@@ -203,7 +203,7 @@ export class AudioAnalysisModule extends EventEmitter implements IAudioAnalysisM
     const sampleRate = this.config.sampleRate;
     const numChannels = 1; // Mono
     const bitsPerSample = 16;
-    const byteRate = (sampleRate * numChannels * bitsPerSample) / 8;
+    const byteRate = ((sampleRate || 48000) * numChannels * bitsPerSample) / 8;
     const blockAlign = (numChannels * bitsPerSample) / 8;
     const dataSize = audioData.length;
     const fileSize = 36 + dataSize;
@@ -220,7 +220,7 @@ export class AudioAnalysisModule extends EventEmitter implements IAudioAnalysisM
     header.writeUInt32LE(16, 16); // fmt chunk size
     header.writeUInt16LE(1, 20); // PCM format
     header.writeUInt16LE(numChannels, 22);
-    header.writeUInt32LE(sampleRate, 24);
+    header.writeUInt32LE(sampleRate || 48000, 24);
     header.writeUInt32LE(byteRate, 28);
     header.writeUInt16LE(blockAlign, 32);
     header.writeUInt16LE(bitsPerSample, 34);

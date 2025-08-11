@@ -152,7 +152,7 @@ export class OverlayDataGenerator extends EventEmitter implements IOverlayDataGe
     return {
       activeOverlays: this.activeOverlays.size,
       maxOverlays: this.config.maxOverlays,
-      overlayDuration: this.config.overlayDuration,
+      overlayDuration: this.config.overlayDuration || 5000,
       fusionWeights: this.config.fusionWeights,
       confidenceThreshold: this.config.confidenceThreshold,
     };
@@ -162,8 +162,8 @@ export class OverlayDataGenerator extends EventEmitter implements IOverlayDataGe
    * Fuse facial and audio emotion results
    */
   private fuseEmotions(facialEmotion: any, audioData: AudioEmotionResult | null): EmotionFusion {
-    const facialWeight = this.config.fusionWeights.facial;
-    const audioWeight = this.config.fusionWeights.audio;
+    const facialWeight = this.config.fusionWeights?.facial || 0.7;
+    const audioWeight = this.config.fusionWeights?.audio || 0.3;
 
     if (!audioData || !audioData.voiceActivity) {
       // Use only facial data
@@ -194,7 +194,7 @@ export class OverlayDataGenerator extends EventEmitter implements IOverlayDataGe
 
     // Find dominant emotion
     const dominantEmotion = Object.entries(combinedScores).reduce((a, b) =>
-      combinedScores[a[0]] > combinedScores[b[0]] ? a : b
+      (combinedScores[a[0]] || 0) > (combinedScores[b[0]] || 0) ? a : b
     );
 
     // Calculate fusion confidence
@@ -229,11 +229,11 @@ export class OverlayDataGenerator extends EventEmitter implements IOverlayDataGe
     });
 
     // Keep only recent history
-    const cutoff = Date.now() - this.config.smoothingWindow * 1000;
+    const cutoff = Date.now() - (this.config.smoothingWindow || 5) * 1000;
     const recentHistory = history.filter(h => h.timestamp > cutoff);
     this.emotionHistory.set(sessionId, recentHistory);
 
-    if (recentHistory.length < this.config.smoothingWindow) {
+    if (recentHistory.length < (this.config.smoothingWindow || 5)) {
       return emotion; // Not enough history for smoothing
     }
 
@@ -248,7 +248,7 @@ export class OverlayDataGenerator extends EventEmitter implements IOverlayDataGe
 
     // Find most frequent emotion
     const mostFrequent = Object.entries(emotionCounts).reduce((a, b) =>
-      emotionCounts[a[0]] > emotionCounts[b[0]] ? a : b
+      (emotionCounts[a[0]] || 0) > (emotionCounts[b[0]] || 0) ? a : b
     );
 
     const avgConfidence = totalConfidence / recentHistory.length;
@@ -264,7 +264,7 @@ export class OverlayDataGenerator extends EventEmitter implements IOverlayDataGe
    * Generate overlay data from face data and emotion
    */
   private generateOverlay(face: FaceData, emotion: EmotionFusion): OverlayData | null {
-    if (emotion.confidence < this.config.confidenceThreshold) {
+    if (emotion.confidence < (this.config.confidenceThreshold || 0.5)) {
       return null; // Skip low confidence emotions
     }
 
@@ -277,7 +277,7 @@ export class OverlayDataGenerator extends EventEmitter implements IOverlayDataGe
       id: `overlay-${face.sessionId}-${face.timestamp}-${Date.now()}`,
       sessionId: face.sessionId,
       timestamp: Date.now(),
-      expiresAt: Date.now() + this.config.overlayDuration,
+      expiresAt: Date.now() + (this.config.overlayDuration || 5000),
       type: 'emotion',
       position: {
         x: face.boundingBox.x,
@@ -309,7 +309,7 @@ export class OverlayDataGenerator extends EventEmitter implements IOverlayDataGe
    * Generate audio-only overlay when no facial data is available
    */
   private generateAudioOnlyOverlay(audioResult: AudioEmotionResult): OverlayData | null {
-    if (audioResult.confidence < this.config.confidenceThreshold) {
+    if (audioResult.confidence < (this.config.confidenceThreshold || 0.5)) {
       return null;
     }
 
@@ -319,7 +319,7 @@ export class OverlayDataGenerator extends EventEmitter implements IOverlayDataGe
       id: `audio-overlay-${audioResult.sessionId}-${audioResult.timestamp}`,
       sessionId: audioResult.sessionId,
       timestamp: Date.now(),
-      expiresAt: Date.now() + this.config.overlayDuration,
+      expiresAt: Date.now() + (this.config.overlayDuration || 5000),
       type: 'audio-emotion',
       position: {
         x: 10, // Fixed position for audio-only overlays

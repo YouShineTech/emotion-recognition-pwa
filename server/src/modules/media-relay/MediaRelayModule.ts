@@ -415,7 +415,7 @@ export class MediaRelayModule implements IMediaRelayModule {
    * Create Mediasoup workers
    */
   private async createWorkers(): Promise<void> {
-    for (let i = 0; i < this.config.numWorkers; i++) {
+    for (let i = 0; i < (this.config.numWorkers || 4); i++) {
       const worker = await mediasoup.createWorker(this.config.workerSettings);
 
       worker.on('died', () => {
@@ -447,13 +447,13 @@ export class MediaRelayModule implements IMediaRelayModule {
    * Setup transport event handlers
    */
   private setupTransportHandlers(transport: WebRtcTransport, transportId: string): void {
-    transport.on('dtlsstatechange', dtlsState => {
+    transport.on('dtlsstatechange', (dtlsState: any) => {
       if (dtlsState === 'failed' || dtlsState === 'closed') {
         console.warn(`Transport ${transportId} DTLS state: ${dtlsState}`);
       }
     });
 
-    transport.on('icestatechange', iceState => {
+    transport.on('icestatechange', (iceState: any) => {
       if (iceState === 'failed' || iceState === 'closed') {
         console.warn(`Transport ${transportId} ICE state: ${iceState}`);
       }

@@ -186,12 +186,12 @@ export class NginxWebServerModule extends EventEmitter implements INginxWebServe
   async addServerBlock(name: string, serverBlock: ServerBlock): Promise<void> {
     try {
       const configContent = this.generateServerBlockConfig(serverBlock);
-      const configFile = path.join(this.config.sitesDir, name);
+      const configFile = path.join(this.config.sitesDir || '/etc/nginx/sites-available', name);
 
       await fs.writeFile(configFile, configContent);
 
       // Enable the site
-      const enabledFile = path.join(this.config.enabledDir, name);
+      const enabledFile = path.join(this.config.enabledDir || '/etc/nginx/sites-enabled', name);
       await fs.symlink(configFile, enabledFile).catch(() => {}); // Ignore if already exists
 
       this.emit('serverBlockAdded', { name, serverBlock });
@@ -207,8 +207,8 @@ export class NginxWebServerModule extends EventEmitter implements INginxWebServe
    */
   async removeServerBlock(name: string): Promise<void> {
     try {
-      const configFile = path.join(this.config.sitesDir, name);
-      const enabledFile = path.join(this.config.enabledDir, name);
+      const configFile = path.join(this.config.sitesDir || '/etc/nginx/sites-available', name);
+      const enabledFile = path.join(this.config.enabledDir || '/etc/nginx/sites-enabled', name);
 
       // Remove enabled symlink
       await fs.unlink(enabledFile).catch(() => {}); // Ignore if doesn't exist
@@ -266,7 +266,11 @@ export class NginxWebServerModule extends EventEmitter implements INginxWebServe
       const upstreamConfig = this.generateUpstreamConfig(name, upstream);
 
       // Write to upstream configuration file
-      const upstreamFile = path.join(this.config.configDir, 'conf.d', `${name}-upstream.conf`);
+      const upstreamFile = path.join(
+        this.config.configDir || '/etc/nginx',
+        'conf.d',
+        `${name}-upstream.conf`
+      );
       await fs.mkdir(path.dirname(upstreamFile), { recursive: true });
       await fs.writeFile(upstreamFile, upstreamConfig);
 
@@ -295,7 +299,7 @@ export class NginxWebServerModule extends EventEmitter implements INginxWebServe
    */
   async testConfiguration(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      const testProcess = spawn(this.config.nginxPath, ['-t', '-c', this.configPath], {
+      const testProcess = spawn(this.config.nginxPath || 'nginx', ['-t', '-c', this.configPath], {
         stdio: ['ignore', 'pipe', 'pipe'],
       });
 
@@ -354,7 +358,7 @@ http {
     add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' ws: wss:;" always;
 
     # SSL Settings
-    ssl_protocols ${this.config.sslProtocols.join(' ')};
+    ssl_protocols ${(this.config.sslProtocols || ['TLSv1.2', 'TLSv1.3']).join(' ')};
     ssl_prefer_server_ciphers on;
     ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384;
     ssl_session_cache shared:SSL:10m;
@@ -395,8 +399,8 @@ http {
     limit_req_zone $binary_remote_addr zone=login:10m rate=1r/s;
 
     # Include additional configurations
-    include ${this.config.configDir}/conf.d/*.conf;
-    include ${this.config.enabledDir}/*;
+    include ${this.config.configDir || '/etc/nginx'}/conf.d/*.conf;
+    include ${this.config.enabledDir || '/etc/nginx/sites-enabled'}/*;
 }
 `.trim();
 
@@ -551,7 +555,7 @@ http {
    */
   private async verifyNginx(): Promise<void> {
     return new Promise((resolve, reject) => {
-      const nginx = spawn(this.config.nginxPath, ['-v'], {
+      const nginx = spawn(this.config.nginxPath || 'nginx', ['-v'], {
         stdio: ['ignore', 'pipe', 'pipe'],
       });
 

@@ -215,21 +215,21 @@ export class FacialAnalysisModule extends EventEmitter implements IFacialAnalysi
         return [];
       }
 
-      const headers = lines[0].split(',').map(h => h.trim());
-      const values = lines[1].split(',').map(v => parseFloat(v.trim()));
+      const headers = lines[0]?.split(',').map(h => h.trim()) || [];
+      const values = lines[1]?.split(',').map(v => parseFloat(v.trim())) || [];
 
       const actionUnits: ActionUnit[] = [];
 
       // Extract Action Unit intensities (AU01_r, AU02_r, etc.)
       for (let i = 0; i < headers.length; i++) {
         const header = headers[i];
-        const match = header.match(/AU(\d+)_r/);
+        const match = header?.match(/AU(\d+)_r/);
 
-        if (match) {
+        if (match && match[1]) {
           const auNumber = parseInt(match[1]);
           const intensity = values[i];
 
-          if (!isNaN(intensity) && intensity > 0) {
+          if (intensity !== undefined && !isNaN(intensity) && intensity > 0) {
             actionUnits.push({
               number: auNumber,
               intensity: intensity,
@@ -270,7 +270,7 @@ export class FacialAnalysisModule extends EventEmitter implements IFacialAnalysi
 
       for (const auNumber of requiredAUs) {
         const au = actionUnits.find(a => a.number === auNumber);
-        if (au && au.confidence >= this.config.confidenceThreshold) {
+        if (au && au.confidence >= (this.config.confidenceThreshold || 0.5)) {
           score += au.intensity * au.confidence;
           matchCount++;
         }
@@ -286,7 +286,7 @@ export class FacialAnalysisModule extends EventEmitter implements IFacialAnalysi
 
     // Find dominant emotion
     const dominantEmotion = Object.entries(emotions).reduce((a, b) =>
-      emotions[a[0]] > emotions[b[0]] ? a : b
+      (emotions[a[0]] || 0) > (emotions[b[0]] || 0) ? a : b
     );
 
     const emotionResult: EmotionResult = {

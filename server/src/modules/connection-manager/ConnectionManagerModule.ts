@@ -88,7 +88,7 @@ export class ConnectionManagerModule extends EventEmitter implements IConnection
     if (this.redis) {
       await this.redis.setEx(
         `session:${id}`,
-        this.config.sessionTimeout / 1000,
+        (this.config.sessionTimeout || 300000) / 1000,
         JSON.stringify(session)
       );
     }
@@ -111,7 +111,7 @@ export class ConnectionManagerModule extends EventEmitter implements IConnection
       throw new Error(`Session ${sessionId} not found`);
     }
 
-    if (session.participants.length >= this.config.maxParticipantsPerSession) {
+    if (session.participants.length >= (this.config.maxParticipantsPerSession || 10)) {
       throw new Error(`Session ${sessionId} is full`);
     }
 
@@ -149,12 +149,12 @@ export class ConnectionManagerModule extends EventEmitter implements IConnection
     if (this.redis) {
       await this.redis.setEx(
         `session:${sessionId}`,
-        this.config.sessionTimeout / 1000,
+        (this.config.sessionTimeout || 300000) / 1000,
         JSON.stringify(session)
       );
       await this.redis.setEx(
         `participant:${participantId}`,
-        this.config.sessionTimeout / 1000,
+        (this.config.sessionTimeout || 300000) / 1000,
         JSON.stringify(participant)
       );
     }
@@ -195,7 +195,7 @@ export class ConnectionManagerModule extends EventEmitter implements IConnection
       if (this.redis) {
         await this.redis.setEx(
           `session:${sessionId}`,
-          this.config.sessionTimeout / 1000,
+          (this.config.sessionTimeout || 300000) / 1000,
           JSON.stringify(session)
         );
       }
@@ -398,7 +398,7 @@ export class ConnectionManagerModule extends EventEmitter implements IConnection
 
       const timeSinceLastSeen = Date.now() - participant.lastSeen.getTime();
 
-      if (timeSinceLastSeen > this.config.connectionTimeout) {
+      if (timeSinceLastSeen > (this.config.connectionTimeout || 60000)) {
         // Participant appears to be disconnected
         participant.status = 'disconnected';
         this.emit('participantTimeout', { participantId, timeSinceLastSeen });
@@ -444,7 +444,7 @@ export class ConnectionManagerModule extends EventEmitter implements IConnection
     for (const [sessionId, session] of this.sessions) {
       const timeSinceActivity = now - session.lastActivity.getTime();
 
-      if (timeSinceActivity > this.config.sessionTimeout) {
+      if (timeSinceActivity > (this.config.sessionTimeout || 300000)) {
         sessionsToClose.push(sessionId);
       }
     }
