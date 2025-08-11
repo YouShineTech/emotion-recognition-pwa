@@ -183,9 +183,9 @@ export class FrameExtractionModule extends EventEmitter implements IFrameExtract
       'pipe:1',
     ];
 
-    const ffmpegProcess = spawn(this.config.ffmpegPath, ffmpegArgs, {
+    const ffmpegProcess = spawn(this.config.ffmpegPath || 'ffmpeg', ffmpegArgs, {
       stdio: ['ignore', 'pipe', 'pipe'],
-    });
+    }) as any; // Type assertion to avoid child process intersection issues
 
     this.ffmpegProcesses.set(processKey, ffmpegProcess);
 
@@ -215,16 +215,16 @@ export class FrameExtractionModule extends EventEmitter implements IFrameExtract
     });
 
     // Handle process errors
-    ffmpegProcess.stderr?.on('data', data => {
+    ffmpegProcess.stderr?.on('data', (data: any) => {
       console.error(`FFmpeg video error (${sessionId}):`, data.toString());
     });
 
-    ffmpegProcess.on('exit', code => {
+    ffmpegProcess.on('exit', (code: any) => {
       console.log(`Video extraction process exited with code ${code} for session ${sessionId}`);
       this.ffmpegProcesses.delete(processKey);
     });
 
-    ffmpegProcess.on('error', error => {
+    ffmpegProcess.on('error', (error: any) => {
       console.error(`Video extraction process error for session ${sessionId}:`, error);
       this.ffmpegProcesses.delete(processKey);
       this.emit('error', error);
@@ -256,9 +256,9 @@ export class FrameExtractionModule extends EventEmitter implements IFrameExtract
       'pipe:1',
     ];
 
-    const ffmpegProcess = spawn(this.config.ffmpegPath, ffmpegArgs, {
+    const ffmpegProcess = spawn(this.config.ffmpegPath || 'ffmpeg', ffmpegArgs, {
       stdio: ['ignore', 'pipe', 'pipe'],
-    });
+    }) as any; // Type assertion to avoid child process intersection issues
 
     this.ffmpegProcesses.set(processKey, ffmpegProcess);
 
@@ -288,16 +288,16 @@ export class FrameExtractionModule extends EventEmitter implements IFrameExtract
     });
 
     // Handle process errors
-    ffmpegProcess.stderr?.on('data', data => {
+    ffmpegProcess.stderr?.on('data', (data: any) => {
       console.error(`FFmpeg audio error (${sessionId}):`, data.toString());
     });
 
-    ffmpegProcess.on('exit', code => {
+    ffmpegProcess.on('exit', (code: any) => {
       console.log(`Audio extraction process exited with code ${code} for session ${sessionId}`);
       this.ffmpegProcesses.delete(processKey);
     });
 
-    ffmpegProcess.on('error', error => {
+    ffmpegProcess.on('error', (error: any) => {
       console.error(`Audio extraction process error for session ${sessionId}:`, error);
       this.ffmpegProcesses.delete(processKey);
       this.emit('error', error);
@@ -389,7 +389,7 @@ export class FrameExtractionModule extends EventEmitter implements IFrameExtract
    */
   private async verifyFFmpeg(): Promise<void> {
     return new Promise((resolve, reject) => {
-      const ffmpeg = spawn(this.config.ffmpegPath, ['-version'], {
+      const ffmpeg = spawn(this.config.ffmpegPath || 'ffmpeg', ['-version'], {
         stdio: ['ignore', 'pipe', 'pipe'],
       });
 

@@ -40,11 +40,13 @@ export class MediaRelayModule implements IMediaRelayModule {
       mimeType: 'audio/opus',
       clockRate: 48000,
       channels: 2,
+      preferredPayloadType: 111,
     },
     {
       kind: 'video',
       mimeType: 'video/VP8',
       clockRate: 90000,
+      preferredPayloadType: 96,
       parameters: {
         'x-google-start-bitrate': 1000,
       },
@@ -53,6 +55,7 @@ export class MediaRelayModule implements IMediaRelayModule {
       kind: 'video',
       mimeType: 'video/H264',
       clockRate: 90000,
+      preferredPayloadType: 102,
       parameters: {
         'packetization-mode': 1,
         'profile-level-id': '42e01f',
@@ -243,7 +246,7 @@ export class MediaRelayModule implements IMediaRelayModule {
         throw new Error(`Producer ${producerId} not found`);
       }
 
-      const router = transport.router;
+      const router = (transport as any).router; // Type assertion for mediasoup transport
 
       if (!router.canConsume({ producerId, rtpCapabilities })) {
         throw new Error('Cannot consume producer');
@@ -435,8 +438,8 @@ export class MediaRelayModule implements IMediaRelayModule {
     const worker = this.workers[this.currentWorkerIndex];
     this.currentWorkerIndex = (this.currentWorkerIndex + 1) % this.workers.length;
 
-    const routerId = `router-${worker.pid}-${Date.now()}`;
-    const router = await worker.createRouter({ mediaCodecs: this.mediaCodecs });
+    const routerId = `router-${worker!.pid}-${Date.now()}`;
+    const router = await worker!.createRouter({ mediaCodecs: this.mediaCodecs });
 
     this.routers.set(routerId, router);
 
