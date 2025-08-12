@@ -23,6 +23,7 @@ export class OverlayDataGenerator extends EventEmitter implements IOverlayDataGe
     string,
     Array<{ emotion: string; confidence: number; timestamp: number }>
   > = new Map();
+  private cleanupTimer: NodeJS.Timeout | null = null;
 
   // Color mapping for emotions
   private readonly colorMapping: ColorMapping = {
@@ -384,7 +385,7 @@ export class OverlayDataGenerator extends EventEmitter implements IOverlayDataGe
    * Start cleanup timer to remove expired overlays
    */
   private startCleanupTimer(): void {
-    setInterval(() => {
+    this.cleanupTimer = setInterval(() => {
       const toRemove: string[] = [];
 
       for (const [id, overlay] of this.activeOverlays) {
@@ -405,6 +406,12 @@ export class OverlayDataGenerator extends EventEmitter implements IOverlayDataGe
    * Cleanup resources
    */
   cleanup(): void {
+    // Clear the cleanup timer
+    if (this.cleanupTimer) {
+      clearInterval(this.cleanupTimer);
+      this.cleanupTimer = null;
+    }
+
     this.activeOverlays.clear();
     this.emotionHistory.clear();
     this.removeAllListeners();

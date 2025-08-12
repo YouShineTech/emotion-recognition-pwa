@@ -47,6 +47,15 @@ module.exports = {
   // Pass when no tests are found (for now)
   passWithNoTests: true,
 
+  // Force exit after tests complete
+  forceExit: true,
+
+  // Detect open handles to help debug hanging tests
+  detectOpenHandles: true,
+
+  // Exit immediately on first test failure to prevent hanging
+  bail: false,
+
   // Global setup/teardown for integration tests
   globalSetup: '<rootDir>/tests/integration/setup.ts',
   globalTeardown: '<rootDir>/tests/integration/teardown.ts',

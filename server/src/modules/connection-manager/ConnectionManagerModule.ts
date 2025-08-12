@@ -22,6 +22,7 @@ export class ConnectionManagerModule extends EventEmitter implements IConnection
   private participants: Map<string, ParticipantInfo> = new Map();
   private healthChecks: Map<string, NodeJS.Timeout> = new Map();
   private redis: Redis.RedisClientType | null = null;
+  private cleanupTimer: NodeJS.Timeout | null = null;
   private isInitialized = false;
 
   constructor(config: ConnectionManagerConfig = {}) {
@@ -429,7 +430,7 @@ export class ConnectionManagerModule extends EventEmitter implements IConnection
    * Start cleanup timer for expired sessions
    */
   private startCleanupTimer(): void {
-    setInterval(() => {
+    this.cleanupTimer = setInterval(() => {
       this.cleanupExpiredSessions();
     }, this.config.cleanupInterval);
   }
@@ -474,6 +475,12 @@ export class ConnectionManagerModule extends EventEmitter implements IConnection
       clearInterval(healthCheck);
     }
     this.healthChecks.clear();
+
+    // Stop cleanup timer
+    if (this.cleanupTimer) {
+      clearInterval(this.cleanupTimer);
+      this.cleanupTimer = null;
+    }
 
     // Close Redis connection
     if (this.redis) {
