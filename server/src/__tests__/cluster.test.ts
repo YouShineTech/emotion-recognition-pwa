@@ -5,7 +5,6 @@
  */
 
 import cluster from 'cluster';
-import os from 'os';
 
 // Mock cluster and os modules
 jest.mock('cluster', () => ({
@@ -52,6 +51,7 @@ describe('Cluster Manager', () => {
 
     // Re-import ClusterManager after mocks are set up
     delete require.cache[require.resolve('../cluster')];
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     ClusterManager = require('../cluster').default;
   });
 
@@ -139,6 +139,7 @@ describe('Cluster Manager', () => {
     });
 
     it('should start server when running as worker', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { createServer } = require('../server');
 
       const clusterManager = new ClusterManager();
@@ -148,6 +149,7 @@ describe('Cluster Manager', () => {
     });
 
     it('should handle server startup errors', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { createServer } = require('../server');
       createServer.mockRejectedValue(new Error('Server startup failed'));
 
@@ -235,9 +237,9 @@ describe('Cluster Manager', () => {
       await clusterManager.initialize();
 
       // Mock process event listeners
-      const processListeners: { [key: string]: Function } = {};
+      const processListeners: { [key: string]: (...args: any[]) => void } = {};
       const originalOn = process.on;
-      process.on = jest.fn((event: string, handler: Function) => {
+      process.on = jest.fn((event: string, handler: (...args: any[]) => void) => {
         processListeners[event] = handler;
         return process;
       });
