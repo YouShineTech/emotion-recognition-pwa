@@ -53,6 +53,9 @@ module.exports = {
   // Detect open handles to help debug hanging tests
   detectOpenHandles: true,
 
+  // Force exit after timeout
+  testTimeout: 30000,
+
   // Exit immediately on first test failure to prevent hanging
   bail: false,
 
