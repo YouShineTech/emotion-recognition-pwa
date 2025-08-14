@@ -1,0 +1,74 @@
+# Prometheus Configuration for Emotion Recognition PWA Monitoring
+# Supports Requirement 8 (1000+ user monitoring) and Requirement 9 (Performance Monitoring)
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "rules/*.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Nginx monitoring
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:8080']
+    metrics_path: '/nginx_status'
+    scrape_interval: 10s
+
+  # Server instances monitoring
+  - job_name: 'emotion-api-server1'
+    static_configs:
+      - targets: ['server1:3001']
+    metrics_path: '/api/health'
+    scrape_interval: 10s
+
+  - job_name: 'emotion-api-server2'
+    static_configs:
+      - targets: ['server2:3001']
+    metrics_path: '/api/health'
+    scrape_interval: 10s
+
+  - job_name: 'emotion-api-server3'
+    static_configs:
+      - targets: ['server3:3001']
+    metrics_path: '/api/health'
+    scrape_interval: 10s
+
+  - job_name: 'emotion-api-server4'
+    static_configs:
+      - targets: ['server4:3001']
+    metrics_path: '/api/health'
+    scrape_interval: 10s
+
+  # Redis monitoring
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 30s
+
+  # Node.js application metrics (if using prom-client)
+  - job_name: 'node-metrics'
+    static_configs:
+      - targets:
+        - 'server1:3001'
+        - 'server2:3001'
+        - 'server3:3001'
+        - 'server4:3001'
+    metrics_path: '/api/metrics'
+    scrape_interval: 15s
+
+# Alerting rules for high load scenarios
+rule_files:
+  - "/etc/prometheus/rules/emotion-pwa-alerts.yml"

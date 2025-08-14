@@ -1,35 +1,28 @@
 version: '3.8'
 
 services:
-  # Client Development Server
-  client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile.dev
+  # Redis Cluster for session management and scaling
+  redis:
+    image: redis:7-alpine
     ports:
-      - "3000:3000"
+      - '6379:6379'
     volumes:
-      - ./client:/app
-      - ./shared:/app/shared
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
-      - REACT_APP_API_URL=http://localhost:3001
-      - REACT_APP_WS_URL=ws://localhost:3001
-    depends_on:
-      - server
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
-  # Server Application
-  server:
+  # Scalable Server Instances (4 instances for load distribution)
+  server1:
     build:
       context: ./server
       dockerfile: Dockerfile.dev
     ports:
-      - "3001:3001"
-      - "3002:3002" # Mediasoup worker ports
-      - "3003:3003"
-      - "3004:3004"
-      - "3005:3005"
+      - '3001:3001'
+      - '40000-40025:40000-40025/udp' # RTP ports for this instance
     volumes:
       - ./server:/app
       - ./shared:/app/shared
@@ -37,52 +30,227 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3001
+      - CORS_ORIGIN=https://localhost
       - REDIS_URL=redis://redis:6379
+      - MAX_CONNECTIONS_PER_WORKER=100
+      - MAX_WORKERS=2
       - MEDIASOUP_LISTEN_IP=0.0.0.0
       - MEDIASOUP_ANNOUNCED_IP=127.0.0.1
+      - MEDIASOUP_RTC_MIN_PORT=40000
+      - MEDIASOUP_RTC_MAX_PORT=40025
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3001/api/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
+
+  server2:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    ports:
+      - '3002:3001'
+      - '40026-40050:40026-40050/udp' # RTP ports for this instance
+    volumes:
+      - ./server:/app
+      - ./shared:/app/shared
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - CORS_ORIGIN=https://localhost
+      - REDIS_URL=redis://redis:6379
+      - MAX_CONNECTIONS_PER_WORKER=100
+      - MAX_WORKERS=2
+      - MEDIASOUP_LISTEN_IP=0.0.0.0
+      - MEDIASOUP_ANNOUNCED_IP=127.0.0.1
+      - MEDIASOUP_RTC_MIN_PORT=40026
+      - MEDIASOUP_RTC_MAX_PORT=40050
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3001/api/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
+
+  server3:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    ports:
+      - '3003:3001'
+      - '40051-40075:40051-40075/udp' # RTP ports for this instance
+    volumes:
+      - ./server:/app
+      - ./shared:/app/shared
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - CORS_ORIGIN=https://localhost
+      - REDIS_URL=redis://redis:6379
+      - MAX_CONNECTIONS_PER_WORKER=100
+      - MAX_WORKERS=2
+      - MEDIASOUP_LISTEN_IP=0.0.0.0
+      - MEDIASOUP_ANNOUNCED_IP=127.0.0.1
+      - MEDIASOUP_RTC_MIN_PORT=40051
+      - MEDIASOUP_RTC_MAX_PORT=40075
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3001/api/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
+
+  server4:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    ports:
+      - '3004:3001'
+      - '40076-40100:40076-40100/udp' # RTP ports for this instance
+    volumes:
+      - ./server:/app
+      - ./shared:/app/shared
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - CORS_ORIGIN=https://localhost
+      - REDIS_URL=redis://redis:6379
+      - MAX_CONNECTIONS_PER_WORKER=100
+      - MAX_WORKERS=2
+      - MEDIASOUP_LISTEN_IP=0.0.0.0
+      - MEDIASOUP_ANNOUNCED_IP=127.0.0.1
+      - MEDIASOUP_RTC_MIN_PORT=40076
+      - MEDIASOUP_RTC_MAX_PORT=40100
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3001/api/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
+
+  # Client Development Server
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./client:/app
+      - ./shared:/app/shared
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_API_URL=https://localhost
+      - REACT_APP_WS_URL=wss://localhost
+    depends_on:
       - nginx
 
-  # Redis for session state and caching
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes
-
-  # Nginx for static assets and load balancing
+  # Nginx Load Balancer and Reverse Proxy
   nginx:
     image: nginx:alpine
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
+      - '8080:8080' # Status page
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx-scalable.conf:/etc/nginx/nginx.conf
       - ./nginx/ssl:/etc/nginx/ssl
       - ./client/dist:/usr/share/nginx/html
     depends_on:
-      - server
+      - server1
+      - server2
+      - server3
+      - server4
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080/nginx_status']
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-  # Mediasoup Media Server (separate container for scaling)
-  mediasoup:
-    build:
-      context: ./server
-      dockerfile: Dockerfile.mediasoup
+  # Monitoring and Metrics (Prometheus + Grafana)
+  prometheus:
+    image: prom/prometheus:latest
     ports:
-      - "40000-40100:40000-40100/udp" # RTP ports
+      - '9090:9090'
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - '3005:3000' # Different port to avoid conflict
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
     environment:
-      - NODE_ENV=development
-      - MEDIASOUP_LISTEN_IP=0.0.0.0
-      - MEDIASOUP_ANNOUNCED_IP=127.0.0.1
-      - REDIS_URL=redis://redis:6379
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
     depends_on:
-      - redis
+      - prometheus
+
+  # Load Testing Service (for testing 1000+ connections)
+  loadtest:
+    build:
+      context: ./tests/load
+      dockerfile: Dockerfile
+    volumes:
+      - ./tests/load:/app
+      - ./reports:/app/reports
+    environment:
+      - TARGET_URL=https://nginx
+      - MAX_CONNECTIONS=1000
+      - RAMP_UP_TIME=60
+    depends_on:
+      - nginx
+    profiles:
+      - testing
 
 volumes:
   redis_data:
+  prometheus_data:
+  grafana_data:
 
 networks:
   default:

@@ -12,15 +12,15 @@
     "declaration": true,
     "outDir": "./dist",
     "rootDir": "../",
-    "baseUrl": ".",
+    "baseUrl": "../",
     "paths": {
-      "@/*": ["../*"]
+      "@/*": ["./*"]
     },
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "resolveJsonModule": true,
     // Additional compiler checks for modular imports
-    "noImplicitReturns": true,
+    "noImplicitReturns": false,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": false

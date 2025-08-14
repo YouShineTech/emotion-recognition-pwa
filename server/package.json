@@ -32,6 +32,7 @@
     "mediasoup": "^3.18.0",
     "redis": "^4.6.10",
     "socket.io": "^4.7.4",
+    "@socket.io/redis-adapter": "^8.2.1",
     "uuid": "^11.1.0",
     "winston": "^3.11.0"
   },

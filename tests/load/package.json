@@ -1,0 +1,15 @@
+{
+  "name": "emotion-pwa-load-tests",
+  "version": "1.0.0",
+  "description": "Load testing for 1000+ concurrent users",
+  "scripts": {
+    "test:load": "node load-test.js",
+    "test:stress": "node stress-test.js",
+    "test:spike": "node spike-test.js"
+  },
+  "dependencies": {
+    "artillery": "^2.0.0",
+    "socket.io-client": "^4.7.4",
+    "ws": "^8.14.2"
+  }
+}

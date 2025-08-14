@@ -1,499 +1,390 @@
 /**
  * Connection Manager Module
  *
- * Manages WebRTC connections, session lifecycle, and health monitoring
- * Handles connection state, reconnection, and resource cleanup
+ * Manages distributed session state across multiple server instances
+ * Implements Requirement 8 (1000+ concurrent users) with Redis clustering
  */
 
-import { EventEmitter } from 'events';
-import { v4 as uuidv4 } from 'uuid';
 import Redis from 'redis';
-import {
-  IConnectionManagerModule,
-  ConnectionManagerConfig,
-  SessionInfo,
-  ConnectionHealth,
-  ParticipantInfo,
-} from '@/shared/interfaces/connection-manager.interface';
+import logger from '../../utils/logger';
 
-export class ConnectionManagerModule extends EventEmitter implements IConnectionManagerModule {
-  private config: ConnectionManagerConfig;
-  private sessions: Map<string, SessionInfo> = new Map();
-  private participants: Map<string, ParticipantInfo> = new Map();
-  private healthChecks: Map<string, NodeJS.Timeout> = new Map();
-  private redis: Redis.RedisClientType | null = null;
-  private cleanupTimer: NodeJS.Timeout | null = null;
-  private isInitialized = false;
+export interface SessionData {
+  sessionId: string;
+  workerId: number;
+  clientId?: string;
+  createdAt: Date;
+  lastActivity: Date;
+  status: 'active' | 'inactive' | 'terminated';
+  metadata?: Record<string, any>;
+}
 
-  constructor(config: ConnectionManagerConfig = {}) {
-    super();
+export interface ConnectionMetrics {
+  totalSessions: number;
+  activeSessions: number;
+  inactiveSessions: number;
+  averageSessionDuration: number;
+  connectionsPerSecond: number;
+}
 
-    this.config = {
-      sessionTimeout: 300000, // 5 minutes
-      healthCheckInterval: 30000, // 30 seconds
-      maxParticipantsPerSession: 50,
-      connectionTimeout: 10000, // 10 seconds
-      redisUrl: 'redis://localhost:6379',
-      cleanupInterval: 60000, // 1 minute
-      ...config,
-    };
-  }
+export class ConnectionManagerModule {
+  private redis: Redis.RedisClientType;
+  private sessionPrefix = 'session:';
+  private metricsPrefix = 'metrics:';
+  private cleanupInterval: NodeJS.Timeout | null = null;
 
-  /**
-   * Initialize the connection manager
-   */
-  async initialize(): Promise<void> {
-    try {
-      // Initialize Redis for session state sharing
-      await this.initializeRedis();
-
-      // Start cleanup timer
-      this.startCleanupTimer();
-
-      this.isInitialized = true;
-      this.emit('initialized');
-
-      console.log('ConnectionManagerModule initialized successfully');
-    } catch (error) {
-      console.error('Failed to initialize ConnectionManagerModule:', error);
-      throw error;
-    }
+  constructor(redisClient: Redis.RedisClientType) {
+    this.redis = redisClient;
+    this.startCleanupProcess();
   }
 
   /**
    * Create a new session
    */
-  async createSession(sessionId?: string): Promise<SessionInfo> {
-    if (!this.isInitialized) {
-      throw new Error('Connection manager not initialized');
-    }
-
-    const id = sessionId || uuidv4();
-
-    if (this.sessions.has(id)) {
-      throw new Error(`Session ${id} already exists`);
-    }
-
-    const session: SessionInfo = {
-      sessionId: id,
+  async createSession(sessionId: string, sessionData: Partial<SessionData>): Promise<SessionData> {
+    const session: SessionData = {
+      sessionId,
+      workerId: process.pid,
       createdAt: new Date(),
       lastActivity: new Date(),
-      participants: [],
       status: 'active',
-      metadata: {},
+      ...sessionData,
     };
 
-    this.sessions.set(id, session);
-
-    // Store in Redis for multi-instance deployment
-    if (this.redis) {
+    try {
+      // Store session in Redis with TTL (4 hours)
       await this.redis.setEx(
-        `session:${id}`,
-        (this.config.sessionTimeout || 300000) / 1000,
+        `${this.sessionPrefix}${sessionId}`,
+        4 * 60 * 60, // 4 hours TTL
         JSON.stringify(session)
       );
-    }
 
-    this.emit('sessionCreated', session);
-    return session;
+      // Update metrics
+      await this.updateMetrics('session_created');
+
+      logger.info(`Session created: ${sessionId} on worker ${process.pid}`);
+      return session;
+    } catch (error) {
+      logger.error('Failed to create session:', error);
+      throw new Error('Session creation failed');
+    }
   }
 
   /**
-   * Join a session as a participant
+   * Get session by ID
    */
-  async joinSession(
-    sessionId: string,
-    participantId: string,
-    metadata: any = {}
-  ): Promise<ParticipantInfo> {
-    const session = await this.getSession(sessionId);
+  async getSession(sessionId: string): Promise<SessionData | null> {
+    try {
+      const sessionData = await this.redis.get(`${this.sessionPrefix}${sessionId}`);
 
-    if (!session) {
-      throw new Error(`Session ${sessionId} not found`);
-    }
+      if (!sessionData) {
+        return null;
+      }
 
-    if (session.participants.length >= (this.config.maxParticipantsPerSession || 10)) {
-      throw new Error(`Session ${sessionId} is full`);
-    }
+      const session: SessionData = JSON.parse(sessionData);
 
-    if (session.participants.includes(participantId)) {
-      throw new Error(`Participant ${participantId} already in session`);
-    }
-
-    const participant: ParticipantInfo = {
-      participantId,
-      sessionId,
-      joinedAt: new Date(),
-      lastSeen: new Date(),
-      status: 'connecting',
-      connectionHealth: {
-        latency: 0,
-        packetLoss: 0,
-        bandwidth: 0,
-        quality: 'unknown',
-      },
-      metadata,
-    };
-
-    // Update session
-    session.participants.push(participantId);
-    session.lastActivity = new Date();
-    this.sessions.set(sessionId, session);
-
-    // Store participant
-    this.participants.set(participantId, participant);
-
-    // Start health monitoring
-    this.startHealthMonitoring(participantId);
-
-    // Update Redis
-    if (this.redis) {
+      // Update last activity
+      session.lastActivity = new Date();
       await this.redis.setEx(
-        `session:${sessionId}`,
-        (this.config.sessionTimeout || 300000) / 1000,
+        `${this.sessionPrefix}${sessionId}`,
+        4 * 60 * 60,
         JSON.stringify(session)
       );
-      await this.redis.setEx(
-        `participant:${participantId}`,
-        (this.config.sessionTimeout || 300000) / 1000,
-        JSON.stringify(participant)
-      );
-    }
 
-    this.emit('participantJoined', { session, participant });
-    return participant;
-  }
-
-  /**
-   * Leave a session
-   */
-  async leaveSession(sessionId: string, participantId: string): Promise<void> {
-    const session = this.sessions.get(sessionId);
-    const participant = this.participants.get(participantId);
-
-    if (!session || !participant) {
-      return; // Already left or doesn't exist
-    }
-
-    // Remove participant from session
-    session.participants = session.participants.filter(id => id !== participantId);
-    session.lastActivity = new Date();
-
-    // Update participant status
-    participant.status = 'disconnected';
-    participant.lastSeen = new Date();
-
-    // Stop health monitoring
-    this.stopHealthMonitoring(participantId);
-
-    // Clean up if session is empty
-    if (session.participants.length === 0) {
-      await this.closeSession(sessionId);
-    } else {
-      this.sessions.set(sessionId, session);
-
-      // Update Redis
-      if (this.redis) {
-        await this.redis.setEx(
-          `session:${sessionId}`,
-          (this.config.sessionTimeout || 300000) / 1000,
-          JSON.stringify(session)
-        );
-      }
-    }
-
-    // Remove participant
-    this.participants.delete(participantId);
-
-    // Remove from Redis
-    if (this.redis) {
-      await this.redis.del(`participant:${participantId}`);
-    }
-
-    this.emit('participantLeft', { sessionId, participantId, session });
-  }
-
-  /**
-   * Close a session
-   */
-  async closeSession(sessionId: string): Promise<void> {
-    const session = this.sessions.get(sessionId);
-
-    if (!session) {
-      return; // Already closed or doesn't exist
-    }
-
-    // Disconnect all participants
-    for (const participantId of session.participants) {
-      await this.leaveSession(sessionId, participantId);
-    }
-
-    // Update session status
-    session.status = 'closed';
-    session.lastActivity = new Date();
-
-    // Remove from active sessions
-    this.sessions.delete(sessionId);
-
-    // Remove from Redis
-    if (this.redis) {
-      await this.redis.del(`session:${sessionId}`);
-    }
-
-    this.emit('sessionClosed', session);
-  }
-
-  /**
-   * Get session information
-   */
-  async getSession(sessionId: string): Promise<SessionInfo | null> {
-    let session = this.sessions.get(sessionId);
-
-    if (!session && this.redis) {
-      // Try to load from Redis
-      try {
-        const sessionData = await this.redis.get(`session:${sessionId}`);
-        if (sessionData) {
-          session = JSON.parse(sessionData);
-          this.sessions.set(sessionId, session!);
-        }
-      } catch (error) {
-        console.error('Error loading session from Redis:', error);
-      }
-    }
-
-    return session || null;
-  }
-
-  /**
-   * Get participant information
-   */
-  getParticipant(participantId: string): ParticipantInfo | null {
-    return this.participants.get(participantId) || null;
-  }
-
-  /**
-   * Update participant connection health
-   */
-  updateConnectionHealth(participantId: string, health: Partial<ConnectionHealth>): void {
-    const participant = this.participants.get(participantId);
-
-    if (participant) {
-      participant.connectionHealth = { ...participant.connectionHealth, ...health };
-      participant.lastSeen = new Date();
-
-      // Determine connection quality
-      const { latency, packetLoss } = participant.connectionHealth;
-
-      if (latency < 100 && packetLoss < 0.01) {
-        participant.connectionHealth.quality = 'excellent';
-      } else if (latency < 200 && packetLoss < 0.05) {
-        participant.connectionHealth.quality = 'good';
-      } else if (latency < 500 && packetLoss < 0.1) {
-        participant.connectionHealth.quality = 'fair';
-      } else {
-        participant.connectionHealth.quality = 'poor';
-      }
-
-      this.emit('connectionHealthUpdated', { participantId, health: participant.connectionHealth });
-    }
-  }
-
-  /**
-   * Update participant status
-   */
-  updateParticipantStatus(
-    participantId: string,
-    status: 'connecting' | 'connected' | 'disconnected' | 'reconnecting'
-  ): void {
-    const participant = this.participants.get(participantId);
-
-    if (participant) {
-      participant.status = status;
-      participant.lastSeen = new Date();
-
-      this.emit('participantStatusChanged', { participantId, status });
-    }
-  }
-
-  /**
-   * Get all active sessions
-   */
-  getActiveSessions(): SessionInfo[] {
-    return Array.from(this.sessions.values()).filter(session => session.status === 'active');
-  }
-
-  /**
-   * Get session statistics
-   */
-  getSessionStats(sessionId: string): any {
-    const session = this.sessions.get(sessionId);
-
-    if (!session) {
+      return session;
+    } catch (error) {
+      logger.error('Failed to get session:', error);
       return null;
     }
-
-    const participants = session.participants.map(id => this.participants.get(id)).filter(Boolean);
-
-    return {
-      sessionId,
-      participantCount: participants.length,
-      createdAt: session.createdAt,
-      duration: Date.now() - session.createdAt.getTime(),
-      connectionQualities: participants.map(p => ({
-        participantId: p!.participantId,
-        quality: p!.connectionHealth.quality,
-        latency: p!.connectionHealth.latency,
-      })),
-    };
   }
 
   /**
-   * Get overall statistics
+   * Update session data
    */
-  getStats(): any {
-    const activeSessions = this.getActiveSessions();
-    const totalParticipants = this.participants.size;
-
-    const connectionQualities = Array.from(this.participants.values()).reduce(
-      (acc, p) => {
-        acc[p.connectionHealth.quality] = (acc[p.connectionHealth.quality] || 0) + 1;
-        return acc;
-      },
-      {} as { [key: string]: number }
-    );
-
-    return {
-      activeSessions: activeSessions.length,
-      totalParticipants,
-      connectionQualities,
-      averageSessionSize: totalParticipants / (activeSessions.length || 1),
-    };
-  }
-
-  /**
-   * Initialize Redis connection
-   */
-  private async initializeRedis(): Promise<void> {
+  async updateSession(sessionId: string, updates: Partial<SessionData>): Promise<boolean> {
     try {
-      this.redis = Redis.createClient({ url: this.config.redisUrl || 'redis://localhost:6379' });
-      await this.redis.connect();
-      console.log('Redis connected for session state sharing');
+      const session = await this.getSession(sessionId);
+      if (!session) {
+        return false;
+      }
+
+      const updatedSession = {
+        ...session,
+        ...updates,
+        lastActivity: new Date(),
+      };
+
+      await this.redis.setEx(
+        `${this.sessionPrefix}${sessionId}`,
+        4 * 60 * 60,
+        JSON.stringify(updatedSession)
+      );
+
+      return true;
     } catch (error) {
-      console.warn('Redis connection failed, running without session sharing:', error);
-      this.redis = null;
+      logger.error('Failed to update session:', error);
+      return false;
     }
   }
 
   /**
-   * Start health monitoring for a participant
+   * Close session
    */
-  private startHealthMonitoring(participantId: string): void {
-    const healthCheck = setInterval(() => {
-      const participant = this.participants.get(participantId);
-
-      if (!participant) {
-        this.stopHealthMonitoring(participantId);
-        return;
+  async closeSession(sessionId: string): Promise<boolean> {
+    try {
+      const session = await this.getSession(sessionId);
+      if (!session) {
+        return false;
       }
 
-      const timeSinceLastSeen = Date.now() - participant.lastSeen.getTime();
+      // Mark as terminated
+      session.status = 'terminated';
+      session.lastActivity = new Date();
 
-      if (timeSinceLastSeen > (this.config.connectionTimeout || 60000)) {
-        // Participant appears to be disconnected
-        participant.status = 'disconnected';
-        this.emit('participantTimeout', { participantId, timeSinceLastSeen });
+      await this.redis.setEx(
+        `${this.sessionPrefix}${sessionId}`,
+        60, // Keep for 1 minute for cleanup
+        JSON.stringify(session)
+      );
 
-        // Auto-remove after timeout
-        setTimeout(() => {
-          this.leaveSession(participant.sessionId, participantId);
-        }, 5000);
+      // Update metrics
+      await this.updateMetrics('session_closed');
+
+      logger.info(`Session closed: ${sessionId}`);
+      return true;
+    } catch (error) {
+      logger.error('Failed to close session:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Get active session count
+   */
+  async getActiveSessionCount(): Promise<number> {
+    try {
+      const keys = await this.redis.keys(`${this.sessionPrefix}*`);
+      let activeCount = 0;
+
+      for (const key of keys) {
+        const sessionData = await this.redis.get(key);
+        if (sessionData) {
+          const session: SessionData = JSON.parse(sessionData);
+          if (session.status === 'active') {
+            activeCount++;
+          }
+        }
       }
-    }, this.config.healthCheckInterval);
 
-    this.healthChecks.set(participantId, healthCheck);
-  }
-
-  /**
-   * Stop health monitoring for a participant
-   */
-  private stopHealthMonitoring(participantId: string): void {
-    const healthCheck = this.healthChecks.get(participantId);
-
-    if (healthCheck) {
-      clearInterval(healthCheck);
-      this.healthChecks.delete(participantId);
+      return activeCount;
+    } catch (error) {
+      logger.error('Failed to get active session count:', error);
+      return 0;
     }
   }
 
   /**
-   * Start cleanup timer for expired sessions
+   * Get total session count
    */
-  private startCleanupTimer(): void {
-    this.cleanupTimer = setInterval(() => {
-      this.cleanupExpiredSessions();
-    }, this.config.cleanupInterval);
+  async getTotalSessionCount(): Promise<number> {
+    try {
+      const keys = await this.redis.keys(`${this.sessionPrefix}*`);
+      return keys.length;
+    } catch (error) {
+      logger.error('Failed to get total session count:', error);
+      return 0;
+    }
   }
 
   /**
-   * Clean up expired sessions and participants
+   * Get connection metrics
    */
-  private async cleanupExpiredSessions(): Promise<void> {
-    const now = Date.now();
-    const sessionsToClose: string[] = [];
+  async getConnectionMetrics(): Promise<ConnectionMetrics> {
+    try {
+      const keys = await this.redis.keys(`${this.sessionPrefix}*`);
+      let activeSessions = 0;
+      let inactiveSessions = 0;
+      let totalDuration = 0;
 
-    for (const [sessionId, session] of this.sessions) {
-      const timeSinceActivity = now - session.lastActivity.getTime();
+      for (const key of keys) {
+        const sessionData = await this.redis.get(key);
+        if (sessionData) {
+          const session: SessionData = JSON.parse(sessionData);
 
-      if (timeSinceActivity > (this.config.sessionTimeout || 300000)) {
-        sessionsToClose.push(sessionId);
+          if (session.status === 'active') {
+            activeSessions++;
+          } else {
+            inactiveSessions++;
+          }
+
+          // Calculate session duration
+          const duration = new Date().getTime() - new Date(session.createdAt).getTime();
+          totalDuration += duration;
+        }
       }
-    }
 
-    for (const sessionId of sessionsToClose) {
-      console.log(`Cleaning up expired session: ${sessionId}`);
-      await this.closeSession(sessionId);
-    }
+      const totalSessions = keys.length;
+      const averageSessionDuration = totalSessions > 0 ? totalDuration / totalSessions : 0;
 
-    if (sessionsToClose.length > 0) {
-      this.emit('sessionsCleanedUp', { count: sessionsToClose.length });
+      // Get connections per second from metrics
+      const connectionsPerSecond = await this.getConnectionsPerSecond();
+
+      return {
+        totalSessions,
+        activeSessions,
+        inactiveSessions,
+        averageSessionDuration: Math.round(averageSessionDuration / 1000), // Convert to seconds
+        connectionsPerSecond,
+      };
+    } catch (error) {
+      logger.error('Failed to get connection metrics:', error);
+      return {
+        totalSessions: 0,
+        activeSessions: 0,
+        inactiveSessions: 0,
+        averageSessionDuration: 0,
+        connectionsPerSecond: 0,
+      };
     }
+  }
+
+  /**
+   * Cleanup sessions for a specific client
+   */
+  async cleanupClientSessions(clientId: string): Promise<number> {
+    try {
+      const keys = await this.redis.keys(`${this.sessionPrefix}*`);
+      let cleanedCount = 0;
+
+      for (const key of keys) {
+        const sessionData = await this.redis.get(key);
+        if (sessionData) {
+          const session: SessionData = JSON.parse(sessionData);
+
+          if (session.clientId === clientId) {
+            await this.closeSession(session.sessionId);
+            cleanedCount++;
+          }
+        }
+      }
+
+      logger.info(`Cleaned up ${cleanedCount} sessions for client ${clientId}`);
+      return cleanedCount;
+    } catch (error) {
+      logger.error('Failed to cleanup client sessions:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Get sessions by worker ID
+   */
+  async getSessionsByWorker(workerId: number): Promise<SessionData[]> {
+    try {
+      const keys = await this.redis.keys(`${this.sessionPrefix}*`);
+      const workerSessions: SessionData[] = [];
+
+      for (const key of keys) {
+        const sessionData = await this.redis.get(key);
+        if (sessionData) {
+          const session: SessionData = JSON.parse(sessionData);
+
+          if (session.workerId === workerId) {
+            workerSessions.push(session);
+          }
+        }
+      }
+
+      return workerSessions;
+    } catch (error) {
+      logger.error('Failed to get sessions by worker:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Update connection metrics
+   */
+  private async updateMetrics(event: string): Promise<void> {
+    try {
+      const now = new Date();
+      const minuteKey = `${this.metricsPrefix}${event}:${now.getFullYear()}-${now.getMonth()}-${now.getDate()}-${now.getHours()}-${now.getMinutes()}`;
+
+      await this.redis.incr(minuteKey);
+      await this.redis.expire(minuteKey, 3600); // Keep for 1 hour
+    } catch (error) {
+      logger.error('Failed to update metrics:', error);
+    }
+  }
+
+  /**
+   * Get connections per second
+   */
+  private async getConnectionsPerSecond(): Promise<number> {
+    try {
+      const now = new Date();
+      const minuteKey = `${this.metricsPrefix}session_created:${now.getFullYear()}-${now.getMonth()}-${now.getDate()}-${now.getHours()}-${now.getMinutes()}`;
+
+      const connectionsThisMinute = await this.redis.get(minuteKey);
+      return connectionsThisMinute ? Math.round(parseInt(connectionsThisMinute) / 60) : 0;
+    } catch (error) {
+      logger.error('Failed to get connections per second:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Start cleanup process for expired sessions
+   */
+  private startCleanupProcess(): void {
+    this.cleanupInterval = setInterval(
+      async () => {
+        try {
+          const keys = await this.redis.keys(`${this.sessionPrefix}*`);
+          let cleanedCount = 0;
+
+          for (const key of keys) {
+            const sessionData = await this.redis.get(key);
+            if (sessionData) {
+              const session: SessionData = JSON.parse(sessionData);
+              const lastActivity = new Date(session.lastActivity);
+              const now = new Date();
+
+              // Clean up sessions inactive for more than 1 hour
+              if (now.getTime() - lastActivity.getTime() > 60 * 60 * 1000) {
+                await this.redis.del(key);
+                cleanedCount++;
+              }
+            }
+          }
+
+          if (cleanedCount > 0) {
+            logger.info(`Cleaned up ${cleanedCount} expired sessions`);
+          }
+        } catch (error) {
+          logger.error('Error during session cleanup:', error);
+        }
+      },
+      5 * 60 * 1000
+    ); // Run every 5 minutes
   }
 
   /**
    * Cleanup resources
    */
   async cleanup(): Promise<void> {
-    // Close all sessions
-    const sessionIds = Array.from(this.sessions.keys());
-    for (const sessionId of sessionIds) {
-      await this.closeSession(sessionId);
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
     }
 
-    // Stop all health checks
-    for (const healthCheck of this.healthChecks.values()) {
-      clearInterval(healthCheck);
+    // Close sessions for this worker
+    try {
+      const workerSessions = await this.getSessionsByWorker(process.pid);
+      for (const session of workerSessions) {
+        await this.closeSession(session.sessionId);
+      }
+      logger.info(`Cleaned up ${workerSessions.length} sessions for worker ${process.pid}`);
+    } catch (error) {
+      logger.error('Error during connection manager cleanup:', error);
     }
-    this.healthChecks.clear();
-
-    // Stop cleanup timer
-    if (this.cleanupTimer) {
-      clearInterval(this.cleanupTimer);
-      this.cleanupTimer = null;
-    }
-
-    // Close Redis connection
-    if (this.redis) {
-      await this.redis.quit();
-      this.redis = null;
-    }
-
-    this.sessions.clear();
-    this.participants.clear();
-    this.isInitialized = false;
-
-    this.emit('cleanup');
   }
 }
-
-export default ConnectionManagerModule;
