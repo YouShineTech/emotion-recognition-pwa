@@ -17,6 +17,7 @@ import { ConnectionManagerModule } from '../../src/modules/connection-manager/Co
 import { PWAShellModule } from '../../src/modules/pwa-shell/PWAShellModule';
 import { NginxWebServerModule } from '../../src/modules/nginx-server/NginxWebServerModule';
 import { spawn } from 'child_process';
+import { afterEach } from 'node:test';
 
 // Mock external dependencies to avoid requiring actual services
 jest.mock('child_process', () => ({
