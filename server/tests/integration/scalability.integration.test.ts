@@ -79,7 +79,7 @@ describe('Scalability Integration Tests', () => {
 
       const responses = await Promise.all(healthChecks);
 
-      responses.forEach((response, index) => {
+      responses.forEach((response: any, index: number) => {
         expect(response.body.status).toBe('healthy');
         expect(response.body.worker).toBeDefined();
         expect(response.body.memory).toBeDefined();
@@ -93,7 +93,7 @@ describe('Scalability Integration Tests', () => {
       );
 
       const responses = await Promise.all(healthChecks);
-      const workerPids = responses.map(r => r.body.worker);
+      const workerPids = responses.map((r: any) => r.body.worker);
 
       // All worker PIDs should be different (different processes)
       const uniquePids = new Set(workerPids);
@@ -112,13 +112,13 @@ describe('Scalability Integration Tests', () => {
 
       const responses = await Promise.all(sessionCreations);
 
-      responses.forEach(response => {
+      responses.forEach((response: any) => {
         expect(response.body.success).toBe(true);
         expect(response.body.data.sessionId).toBeDefined();
       });
 
       // All session IDs should be unique
-      const sessionIds = responses.map(r => r.body.data.sessionId);
+      const sessionIds = responses.map((r: any) => r.body.data.sessionId);
       const uniqueIds = new Set(sessionIds);
       expect(uniqueIds.size).toBe(sessionIds.length);
     });
@@ -145,7 +145,7 @@ describe('Scalability Integration Tests', () => {
       const responses = await Promise.all(retrievalPromises);
 
       // At least one instance should be able to retrieve the session
-      const successfulResponses = responses.filter(r => r.status === 200);
+      const successfulResponses = responses.filter((r: any) => r.status === 200);
       expect(successfulResponses.length).toBeGreaterThan(0);
     });
   });
@@ -174,7 +174,7 @@ describe('Scalability Integration Tests', () => {
 
     it('should distribute session creation load', async () => {
       const sessionsPerInstance = 10;
-      const allPromises = [];
+      const allPromises: Promise<any>[] = [];
 
       servers.forEach((_, serverIndex) => {
         for (let i = 0; i < sessionsPerInstance; i++) {
@@ -212,14 +212,14 @@ describe('Scalability Integration Tests', () => {
       const responses = await Promise.all(sessionPromises);
 
       // Some requests should succeed, some should be rejected with 503
-      const successfulRequests = responses.filter(r => r.status === 200);
-      const rejectedRequests = responses.filter(r => r.status === 503);
+      const successfulRequests = responses.filter((r: any) => r.status === 200);
+      const rejectedRequests = responses.filter((r: any) => r.status === 503);
 
       expect(successfulRequests.length).toBeLessThanOrEqual(maxConnections);
       expect(rejectedRequests.length).toBeGreaterThan(0);
 
       // Rejected requests should have proper error message
-      rejectedRequests.forEach(response => {
+      rejectedRequests.forEach((response: any) => {
         expect(response.body.error.code).toBe('CAPACITY_EXCEEDED');
       });
     });
@@ -278,7 +278,7 @@ describe('Scalability Integration Tests', () => {
 
       const responses = await Promise.all(healthChecks);
 
-      responses.forEach(response => {
+      responses.forEach((response: any) => {
         const memory = response.body.memory;
         expect(memory.heapUsed).toBeLessThan(512); // Less than 512MB
         expect(memory.heapTotal).toBeLessThan(512);
@@ -383,7 +383,7 @@ describe('Scalability Integration Tests', () => {
       const endTime = Date.now();
 
       const totalTime = endTime - startTime;
-      const successfulResponses = responses.filter(r => r.status === 200);
+      const successfulResponses = responses.filter((r: any) => r.status === 200);
 
       // Most requests should succeed
       expect(successfulResponses.length).toBeGreaterThan(burstSize * 0.8);

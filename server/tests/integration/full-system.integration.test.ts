@@ -86,10 +86,18 @@ describe('Full System Integration', () => {
       overlayDuration: 1000,
     });
 
-    connectionManager = new ConnectionManagerModule({
-      sessionTimeout: 60000,
-      maxParticipantsPerSession: 5,
-    });
+    // Mock Redis client for ConnectionManagerModule
+    const mockRedis = {
+      isReady: true,
+      setEx: jest.fn(),
+      get: jest.fn(),
+      keys: jest.fn(),
+      del: jest.fn(),
+      incr: jest.fn(),
+      expire: jest.fn(),
+    } as any;
+
+    connectionManager = new ConnectionManagerModule(mockRedis);
 
     // Initialize all modules (external dependencies are mocked)
     const initPromises = [
@@ -101,9 +109,7 @@ describe('Full System Integration', () => {
         .initialize()
         .catch(e => console.warn('FacialAnalysis init failed:', e.message)),
       audioAnalysis.initialize().catch(e => console.warn('AudioAnalysis init failed:', e.message)),
-      connectionManager
-        .initialize()
-        .catch(e => console.warn('ConnectionManager init failed:', e.message)),
+      // ConnectionManager doesn't have initialize method - it's ready on construction
     ];
 
     await Promise.allSettled(initPromises);
@@ -156,11 +162,11 @@ describe('Full System Integration', () => {
     try {
       // Clear any active sessions created during tests
       if (connectionManager) {
-        const stats = connectionManager.getStats();
+        const stats = await connectionManager.getConnectionMetrics();
         if (stats.activeSessions > 0) {
           // Force cleanup of any remaining sessions
           await connectionManager.cleanup();
-          await connectionManager.initialize();
+          // ConnectionManager is ready on construction
         }
       }
     } catch (error) {
@@ -178,7 +184,7 @@ describe('Full System Integration', () => {
       expect(connectionManager).toBeDefined();
     });
 
-    it('should have correct module statistics', () => {
+    it('should have correct module statistics', async () => {
       const frameStats = frameExtraction.getStats();
       expect(frameStats).toBeDefined();
       expect(frameStats.quality).toBe('low');
@@ -195,10 +201,10 @@ describe('Full System Integration', () => {
       expect(overlayStats).toBeDefined();
       expect(overlayStats.confidenceThreshold).toBe(0.4);
 
-      const connectionStats = connectionManager.getStats();
+      const connectionStats = await connectionManager.getConnectionMetrics();
       expect(connectionStats).toBeDefined();
       expect(typeof connectionStats.activeSessions).toBe('number');
-      expect(typeof connectionStats.totalParticipants).toBe('number');
+      expect(typeof connectionStats.totalSessions).toBe('number');
     });
   });
 
@@ -208,13 +214,13 @@ describe('Full System Integration', () => {
 
     it('should create a new session', async () => {
       try {
-        const session = await connectionManager.createSession();
+        const session = await connectionManager.createSession('test-session-id', {});
         sessionId = session.sessionId;
 
         expect(session).toBeDefined();
         expect(session.sessionId).toBeTruthy();
         expect(session.status).toBe('active');
-        expect(session.participants).toEqual([]);
+        expect(session.status).toBe('active');
       } catch (error) {
         // If createSession method doesn't exist, create a mock session
         sessionId = 'mock-session-id';
@@ -235,18 +241,22 @@ describe('Full System Integration', () => {
       }
     });
 
-    it('should join session as participant', async () => {
+    it('should update session with participant info', async () => {
       participantId = 'test-participant-1';
       try {
-        const participant = await connectionManager.joinSession(sessionId, participantId, {
-          userAgent: 'test-browser',
-          capabilities: ['video', 'audio'],
+        const updated = await connectionManager.updateSession(sessionId, {
+          clientId: participantId,
+          metadata: {
+            userAgent: 'test-browser',
+            capabilities: ['video', 'audio'],
+          },
         });
 
-        expect(participant).toBeDefined();
-        expect(participant.participantId).toBe(participantId);
-        expect(participant.sessionId).toBe(sessionId);
-        expect(participant.status).toBe('connecting');
+        expect(updated).toBe(true);
+
+        const session = await connectionManager.getSession(sessionId);
+        expect(session).toBeDefined();
+        expect(session?.clientId).toBe(participantId);
       } catch (error) {
         // In test environment, just verify the participant ID is set
         expect(participantId).toBe('test-participant-1');
@@ -285,32 +295,38 @@ describe('Full System Integration', () => {
       }
     });
 
-    it('should update participant connection health', () => {
+    it('should update session metadata', async () => {
       try {
-        connectionManager.updateConnectionHealth(participantId, {
-          latency: 50,
-          packetLoss: 0.01,
-          bandwidth: 1000000,
+        const updated = await connectionManager.updateSession(sessionId, {
+          metadata: {
+            connectionHealth: {
+              latency: 50,
+              packetLoss: 0.01,
+              bandwidth: 1000000,
+            },
+          },
         });
 
-        const participant = connectionManager.getParticipant(participantId);
-        expect(participant).toBeDefined();
-        expect(participant!.connectionHealth.latency).toBe(50);
-        expect(participant!.connectionHealth.quality).toBe('excellent');
+        expect(updated).toBe(true);
+
+        const session = await connectionManager.getSession(sessionId);
+        expect(session).toBeDefined();
+        expect(session?.metadata?.connectionHealth?.latency).toBe(50);
       } catch (error) {
         // In test environment, just verify the participant ID exists
         expect(participantId).toBeTruthy();
       }
     });
 
-    it('should leave session and cleanup', async () => {
-      await connectionManager.leaveSession(sessionId, participantId);
-
-      const participant = connectionManager.getParticipant(participantId);
-      expect(participant).toBeNull();
+    it('should close session and cleanup', async () => {
+      const closed = await connectionManager.closeSession(sessionId);
+      expect(closed).toBe(true);
 
       const session = await connectionManager.getSession(sessionId);
-      expect(session).toBeNull(); // Session should be closed when empty
+      expect(session?.status).toBe('terminated');
+
+      // Verify session is marked as terminated
+      expect(session).toBeDefined();
     });
   });
 
@@ -458,9 +474,9 @@ describe('Full System Integration', () => {
       await expect(connectionManager.getSession('invalid-session')).resolves.toBeNull();
     });
 
-    it('should handle non-existent participant gracefully', () => {
-      const participant = connectionManager.getParticipant('non-existent');
-      expect(participant).toBeNull();
+    it('should handle non-existent session gracefully', async () => {
+      const session = await connectionManager.getSession('non-existent');
+      expect(session).toBeNull();
     });
 
     it('should handle empty overlay generation', () => {
@@ -497,7 +513,7 @@ describe('Full System Integration', () => {
       const sessionPromises = [];
 
       for (let i = 0; i < 5; i++) {
-        sessionPromises.push(connectionManager.createSession(`test-session-${i}`));
+        sessionPromises.push(connectionManager.createSession(`test-session-${i}`, {}));
       }
 
       const sessions = await Promise.all(sessionPromises);
