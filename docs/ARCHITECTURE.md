@@ -855,28 +855,9 @@ emotion-recognition-pwa/
 - Enable review by non-technical stakeholders
 - Provide stable reference during development phases
 
-### Path Alias Configuration Intent
+### Path Alias Configuration
 
-The system shall use a standardized `@` path alias that resolves to the workspace root to enable consistent imports across all modules:
-
-**Client Configuration**: `@/*` shall resolve to `../` (workspace root from client perspective)
-**Server Configuration**: `@/*` shall resolve to `../` (workspace root from server perspective)
-
-**Import Pattern Intent**:
-
-```typescript
-// All modules will use consistent @ imports regardless of their location
-import { MediaCaptureModule } from '@/shared/interfaces/[media-capture-interface]';
-import { EmotionScore } from '@/shared/interfaces/[common-interface]';
-```
-
-**Path Alias Rationale**: This approach ensures:
-
-- **Location Independence**: Modules can be moved without changing import statements
-- **Consistent Imports**: All modules use the same import pattern regardless of nesting depth
-- **Refactoring Safety**: Directory restructuring doesn't break import paths
-- **Developer Experience**: Predictable import paths reduce cognitive load
-- **Build Tool Compatibility**: Standard alias pattern works across TypeScript, Webpack, and Jest
+The system uses standardized `@` path aliases for consistent imports. See `docs/CODING_STANDARDS.md` for detailed import path standards and configuration requirements.
 
 ## Interface Architecture Decision
 

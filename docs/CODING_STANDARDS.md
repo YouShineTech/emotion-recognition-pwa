@@ -27,6 +27,35 @@ project-root/
 - **Constants**: `SCREAMING_SNAKE_CASE` (e.g., `MAX_RETRY_COUNT`)
 - **Interfaces**: `PascalCase` with `I` prefix (e.g., `IUserData`)
 
+### Import Path Standards (TypeScript/JavaScript)
+
+Use standardized `@` path alias that resolves to the workspace root for consistent imports:
+
+**Configuration Requirements**:
+
+- **Client Configuration**: `@/*` resolves to `../` (workspace root from client perspective)
+- **Server Configuration**: `@/*` resolves to `../` (workspace root from server perspective)
+- **Build Tools**: Configure TypeScript, Webpack, and Jest to recognize `@` alias
+
+**Import Pattern**:
+
+```typescript
+// ✅ Correct - Use @ alias for all imports
+import { MediaCaptureModule } from '@/shared/interfaces/media-capture-interface';
+import { EmotionScore } from '@/shared/interfaces/common-interface';
+
+// ❌ Incorrect - Avoid relative paths
+import { MediaCaptureModule } from '../../../shared/interfaces/media-capture-interface';
+import { EmotionScore } from '../../shared/interfaces/common-interface';
+```
+
+**Benefits**:
+
+- Location independence - modules can be moved without changing imports
+- Consistent import patterns regardless of nesting depth
+- Refactoring safety - directory restructuring doesn't break imports
+- Improved developer experience with predictable paths
+
 ## 🔒 Security Standards
 
 ### Pre-commit Security Requirements
@@ -51,13 +80,6 @@ project-root/
 
 ## 🧪 Testing Standards
 
-### Test Coverage Requirements
-
-- **Minimum 80% code coverage** for new code
-- **100% coverage** for critical business logic
-- **Integration tests** for all API endpoints
-- **E2E tests** for critical user journeys
-
 ### Test Structure
 
 ```
@@ -67,6 +89,67 @@ tests/
 ├── e2e/           # End-to-end tests (full system)
 ├── load/          # Performance/load tests
 └── fixtures/      # Test data and mocks
+```
+
+### POC and Module Testing Requirements
+
+#### POC Testing
+
+- **Boundary Testing**: Test edge cases, limits, and invalid inputs
+- **Equivalence Testing**: Test representative values from each equivalence class
+- **Module Validation**: Verify the module works as designed in isolation
+
+#### Full System Testing
+
+- **Module Integration Tests**: Test how modules work together in the full system
+- **Integration Validation**: Verify module interactions and data flow
+- **System Boundary Tests**: Test system-level edge cases and limits
+
+#### Test Coverage Strategy
+
+```typescript
+// Example boundary and equivalence testing
+describe('ModuleService', () => {
+  describe('Boundary Tests', () => {
+    it('should handle minimum valid input', () => {
+      /* test */
+    });
+    it('should handle maximum valid input', () => {
+      /* test */
+    });
+    it('should reject input below minimum', () => {
+      /* test */
+    });
+    it('should reject input above maximum', () => {
+      /* test */
+    });
+  });
+
+  describe('Equivalence Tests', () => {
+    it('should handle typical valid inputs', () => {
+      /* test */
+    });
+    it('should handle edge valid inputs', () => {
+      /* test */
+    });
+    it('should handle typical invalid inputs', () => {
+      /* test */
+    });
+  });
+});
+
+// Example integration testing for full system
+describe('Module Integration', () => {
+  it('should integrate ModuleA with ModuleB correctly', () => {
+    /* test */
+  });
+  it('should handle data flow between modules', () => {
+    /* test */
+  });
+  it('should maintain consistency across module boundaries', () => {
+    /* test */
+  });
+});
 ```
 
 ### Test Naming
@@ -144,29 +227,84 @@ type(scope): description
 
 ### Design Principles
 
+#### SOLID Principles
+
 - **Single Responsibility** - Each module/class has one reason to change
 - **Open/Closed** - Open for extension, closed for modification
+- **Liskov Substitution** - Objects should be replaceable with instances of their subtypes
+- **Interface Segregation** - Clients should not depend on interfaces they don't use
 - **Dependency Inversion** - Depend on abstractions, not concretions
+
+#### Additional Principles
+
 - **DRY (Don't Repeat Yourself)** - Eliminate code duplication
 - **KISS (Keep It Simple, Stupid)** - Prefer simple solutions
 
 ### Module Structure
 
+#### POC-to-Module Development
+
+- **POC First**: Every new module must start as a POC to validate the approach
+- **Shared Implementation**: The POC evolves into the actual module that both POC and production use
+- **POC Persistence**: POCs remain as living examples and independent module validation
+- **Single Source**: Both POC and full system import from the same module implementation
+- **Continuous Validation**: POCs serve as ongoing test cases for module changes
+- **Dynamic Debugging**: Both POCs and full system must include runtime debugging capabilities
+- **Comprehensive Testing**: POCs test boundary/equivalence cases; full system tests module integration
+- **Risk Mitigation**: Technical risks are identified and resolved in POC phase
+- **Iterative Refinement**: Modules evolve through POC feedback and real-world usage
+
+#### Standard Module Structure
+
 ```typescript
-// Standard module structure
-export interface IModuleConfig {
+// Standard module structure with @ imports and debugging
+import { BaseConfig } from '@/shared/interfaces/common-interface';
+import { Logger } from '@/shared/utils/logger';
+import { Debugger } from '@/shared/utils/debugger';
+
+export interface IModuleConfig extends BaseConfig {
   // Configuration interface
+  debugMode?: boolean;
+  logLevel?: 'debug' | 'info' | 'warn' | 'error';
 }
 
 export interface IModuleService {
   // Service interface
+  enableDebug(enabled: boolean): void;
+  getDebugInfo(): object;
 }
 
 export class ModuleService implements IModuleService {
-  // Implementation
+  private debugger: Debugger;
+
+  constructor(config: IModuleConfig) {
+    this.debugger = new Debugger(config.debugMode);
+  }
+
+  enableDebug(enabled: boolean): void {
+    this.debugger.setEnabled(enabled);
+  }
+
+  getDebugInfo(): object {
+    return this.debugger.getState();
+  }
+
+  // Implementation with debug points
 }
 
 export default ModuleService;
+```
+
+#### POC Structure
+
+```
+poc-{module-name}/
+├── src/
+│   └── index.ts          # POC implementation using the shared module
+├── tests/
+│   └── poc.test.ts       # POC-specific tests
+├── README.md             # POC documentation and findings
+└── package.json          # POC dependencies
 ```
 
 ### Error Handling
@@ -178,19 +316,19 @@ export default ModuleService;
 
 ## 📊 Performance Standards
 
-### Performance Requirements
+### Performance Best Practices
 
-- **API response time** - < 200ms for 95th percentile
-- **Bundle size** - Monitor and optimize bundle sizes
-- **Memory usage** - No memory leaks in long-running processes
-- **Database queries** - Optimize N+1 queries
+- **Bundle optimization** - Monitor and optimize bundle sizes
+- **Memory management** - Prevent memory leaks in long-running processes
+- **Query optimization** - Avoid N+1 queries and optimize database access
+- **Lazy loading** - Load resources only when needed
 
-### Monitoring Requirements
+### Monitoring Implementation
 
-- **Health checks** - Implement health check endpoints
-- **Metrics collection** - Track key performance indicators
-- **Error tracking** - Centralized error reporting
-- **Performance monitoring** - Response time and resource usage
+- **Health checks** - Implement standardized health check endpoints
+- **Structured logging** - Use consistent logging formats and levels
+- **Error tracking** - Implement centralized error reporting
+- **Metrics collection** - Include performance monitoring in code
 
 ## 🔧 Development Environment
 
@@ -237,26 +375,19 @@ export default ModuleService;
 
 ## 🚀 CI/CD Standards
 
-### Pipeline Stages (Required)
+### Pipeline Standards
 
 1. **Lint & Format** - Code quality validation
 2. **Security Scan** - Vulnerability and secret detection
-3. **Test** - Unit, integration, and E2E tests
+3. **Test** - Automated test execution
 4. **Build** - Compile and bundle application
-5. **Deploy** - Automated deployment to environments
+5. **Deploy** - Automated deployment process
 
-### Environment Strategy
+### Environment Standards
 
-- **Development** - Feature branch deployments
-- **Staging** - Integration testing environment
-- **Production** - Stable release environment
-
-### Deployment Requirements
-
-- **Zero-downtime deployments** - Blue-green or rolling deployments
-- **Rollback capability** - Quick rollback on issues
-- **Health checks** - Verify deployment success
-- **Monitoring** - Post-deployment monitoring
+- **Environment parity** - Keep development, staging, and production similar
+- **Configuration management** - Use environment variables for configuration
+- **Deployment automation** - Standardize deployment processes
 
 ## 📚 Documentation Standards
 
@@ -278,36 +409,19 @@ export default ModuleService;
 
 ## 🔄 Maintenance Standards
 
-### Regular Tasks
+### Code Maintenance Practices
 
-- **Dependency updates** - Weekly dependency review
-- **Security patches** - Apply security updates immediately
-- **Performance review** - Monthly performance analysis
-- **Code cleanup** - Regular refactoring and cleanup
+- **Dependency management** - Keep dependencies updated and secure
+- **Code refactoring** - Regular cleanup and improvement
+- **Documentation updates** - Keep documentation current with code changes
+- **Technical debt management** - Address technical debt systematically
 
-### Monitoring & Alerts
+### Monitoring Implementation Standards
 
-- **Error rate monitoring** - Alert on error rate spikes
-- **Performance monitoring** - Track response times
-- **Security monitoring** - Monitor for security issues
-- **Dependency monitoring** - Track outdated dependencies
-
----
-
-## 📋 Project Setup Checklist
-
-When starting a new project, ensure:
-
-- [ ] Project structure follows standards
-- [ ] Git hooks configured (Husky)
-- [ ] Security scanning enabled
-- [ ] Linting and formatting configured
-- [ ] Testing framework set up
-- [ ] CI/CD pipeline configured
-- [ ] Documentation templates created
-- [ ] Environment configuration set up
-- [ ] Monitoring and logging configured
-- [ ] Security review completed
+- **Structured logging** - Use consistent log formats and levels
+- **Error handling** - Implement proper error tracking and reporting
+- **Performance instrumentation** - Add performance monitoring to critical paths
+- **Security monitoring** - Implement security event logging
 
 ---
 
