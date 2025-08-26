@@ -231,7 +231,7 @@ class WebRTCTransportPOC {
     });
 
     this.module.on('reconnectAttempt', ({ attempt, timeout }) => {
-      console.log(chalk.orange(`📡 Event: Reconnect attempt ${attempt} in ${timeout}ms`));
+      console.log(chalk.yellow(`📡 Event: Reconnect attempt ${attempt} in ${timeout}ms`));
     });
 
     this.module.on('error', error => {

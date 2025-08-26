@@ -313,7 +313,7 @@ class FrameExtractionPOC {
     });
 
     this.module.on('qualityUpdated', ({ quality }) => {
-      console.log(chalk.orange('📡 Event: Quality updated'), quality);
+      console.log(chalk.yellow('📡 Event: Quality updated'), quality);
     });
 
     this.module.on('error', error => {

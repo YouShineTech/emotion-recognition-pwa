@@ -14,15 +14,15 @@ const mockMediaDevices = {
 
 // Mock MediaStream API
 const mockMediaStream = {
-  getTracks: jest.fn(() => []),
-  getVideoTracks: jest.fn(() => []),
-  getAudioTracks: jest.fn(() => []),
+  getTracks: jest.fn(() => [] as MediaStreamTrack[]),
+  getVideoTracks: jest.fn(() => [] as MediaStreamTrack[]),
+  getAudioTracks: jest.fn(() => [] as MediaStreamTrack[]),
   addTrack: jest.fn(),
   removeTrack: jest.fn(),
   clone: jest.fn(),
   active: true,
   id: 'mock-stream-id',
-};
+} as any;
 
 // Mock MediaStreamTrack
 const mockMediaStreamTrack = {
@@ -32,7 +32,7 @@ const mockMediaStreamTrack = {
   enabled: true,
   muted: false,
   readyState: 'live' as const,
-};
+} as any;
 
 // Setup global mocks
 Object.defineProperty(global, 'navigator', {

@@ -5,7 +5,7 @@
   "main": "dist/poc.js",
   "scripts": {
     "build": "tsc",
-    "poc": "npm run build && node dist/poc.js",
+    "poc": "npm run build && node dist/poc/04-frame-extraction/src/poc.js",
     "debug": "npm run build && node --inspect-brk dist/poc.js",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -28,9 +28,7 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/test-setup.ts"
-    ],
+    "setupFilesAfterEnv": ["<rootDir>/src/test-setup.ts"],
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!src/poc.ts",
