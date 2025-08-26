@@ -10,7 +10,13 @@ describe('CircuitBreakerModule', () => {
   let circuitBreakerModule: CircuitBreakerModule;
 
   beforeEach(() => {
+    jest.useFakeTimers();
     circuitBreakerModule = new CircuitBreakerModule();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.clearAllTimers();
   });
 
   describe('Basic Circuit Breaker Functionality', () => {
@@ -92,27 +98,31 @@ describe('CircuitBreakerModule', () => {
 
   describe('Circuit Recovery Logic', () => {
     it('should transition to half-open after recovery timeout', async () => {
-      const mockFunction = jest
-        .fn()
-        .mockRejectedValueOnce(new Error('Service error'))
-        .mockResolvedValue('recovered');
+      const mockFunction = jest.fn().mockRejectedValue(new Error('Service error'));
 
       // Create circuit breaker with short recovery timeout
-      const result = await circuitBreakerModule.execute('recovery-service', mockFunction, {
-        failureThreshold: 50,
+      const config = {
+        failureThreshold: 1,
         recoveryTimeout: 100, // 100ms
         monitoringPeriod: 60000,
-      });
+      };
 
       // Force failure to open circuit
       try {
-        await circuitBreakerModule.execute('recovery-service', mockFunction);
+        await circuitBreakerModule.execute('recovery-service', mockFunction, config);
       } catch (error) {
         // Expected
       }
 
-      // Wait for recovery timeout
-      await new Promise(resolve => setTimeout(resolve, 150));
+      // Verify circuit is open
+      let status = circuitBreakerModule.getStatus();
+      expect(status['recovery-service']?.state).toBe(CircuitState.OPEN);
+
+      // Fast-forward past recovery timeout
+      jest.advanceTimersByTime(150);
+
+      // Mock function to succeed on next call
+      mockFunction.mockResolvedValueOnce('recovered');
 
       // Next call should transition to half-open and succeed
       const recoveryResult = await circuitBreakerModule.execute('recovery-service', mockFunction);
@@ -122,25 +132,33 @@ describe('CircuitBreakerModule', () => {
     it('should close circuit after successful recovery', async () => {
       const mockFunction = jest.fn().mockResolvedValue('success');
 
-      // Create and open circuit
+      // Create and open circuit with low threshold
       const failingFunction = jest.fn().mockRejectedValue(new Error('Error'));
-      for (let i = 0; i < 10; i++) {
-        try {
-          await circuitBreakerModule.execute('recovery-service', failingFunction);
-        } catch (error) {
-          // Expected
-        }
+      const config = {
+        failureThreshold: 1,
+        recoveryTimeout: 50,
+        monitoringPeriod: 60000,
+      };
+
+      try {
+        await circuitBreakerModule.execute('recovery-service', failingFunction, config);
+      } catch (error) {
+        // Expected
       }
 
-      // Wait for recovery timeout
-      await new Promise(resolve => setTimeout(resolve, 50));
+      // Verify circuit is open
+      let status = circuitBreakerModule.getStatus();
+      expect(status['recovery-service']?.state).toBe(CircuitState.OPEN);
 
-      // Execute 3 successful calls to close circuit
-      for (let i = 0; i < 3; i++) {
-        await circuitBreakerModule.execute('recovery-service', mockFunction);
-      }
+      // Fast-forward past recovery timeout
+      jest.advanceTimersByTime(100);
 
-      const status = circuitBreakerModule.getStatus();
+      // Execute successful calls to close circuit
+      await circuitBreakerModule.execute('recovery-service', mockFunction);
+      await circuitBreakerModule.execute('recovery-service', mockFunction);
+      await circuitBreakerModule.execute('recovery-service', mockFunction);
+
+      status = circuitBreakerModule.getStatus();
       expect(status['recovery-service']?.state).toBe(CircuitState.CLOSED);
     });
   });

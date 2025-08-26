@@ -90,9 +90,6 @@ class CircuitBreaker {
    * Handle failed execution
    */
   private onFailure(error: Error): void {
-    this.failures++;
-    this.lastFailureTime = new Date();
-
     // Check if error should be ignored
     if (
       this.config.expectedErrors?.some(
@@ -101,6 +98,9 @@ class CircuitBreaker {
     ) {
       return;
     }
+
+    this.failures++;
+    this.lastFailureTime = new Date();
 
     if (this.state === CircuitState.HALF_OPEN) {
       // Any failure in HALF_OPEN state opens the circuit

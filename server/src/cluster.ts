@@ -65,26 +65,30 @@ class ClusterManager {
    * Fork a new worker process
    */
   private forkWorker(): void {
-    const worker = cluster.fork();
+    try {
+      const worker = cluster.fork();
 
-    if (worker.process.pid) {
-      this.workers.set(worker.process.pid, {
-        pid: worker.process.pid,
-        connections: 0,
-        memoryUsage: 0,
-        cpuUsage: 0,
-        lastHealthCheck: new Date(),
-      });
+      if (worker.process.pid) {
+        this.workers.set(worker.process.pid, {
+          pid: worker.process.pid,
+          connections: 0,
+          memoryUsage: 0,
+          cpuUsage: 0,
+          lastHealthCheck: new Date(),
+        });
 
-      // Listen for worker metrics
-      worker.on('message', message => {
-        if (message.type === 'metrics' && worker.process.pid) {
-          const metrics = this.workers.get(worker.process.pid);
-          if (metrics) {
-            Object.assign(metrics, message.data, { lastHealthCheck: new Date() });
+        // Listen for worker metrics
+        worker.on('message', message => {
+          if (message.type === 'metrics' && worker.process.pid) {
+            const metrics = this.workers.get(worker.process.pid);
+            if (metrics) {
+              Object.assign(metrics, message.data, { lastHealthCheck: new Date() });
+            }
           }
-        }
-      });
+        });
+      }
+    } catch (error) {
+      logger.error('Failed to fork worker:', error);
     }
   }
 
@@ -165,6 +169,13 @@ class ClusterManager {
         `Cluster Health: ${this.workers.size} workers, ${totalConnections} connections, ${Math.round(totalMemory / 1024 / 1024)}MB total memory`
       );
     }, 10000); // Check every 10 seconds
+  }
+
+  /**
+   * Public shutdown method for testing
+   */
+  async shutdown(): Promise<void> {
+    return this.gracefulShutdown();
   }
 
   /**
