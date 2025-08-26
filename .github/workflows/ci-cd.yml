@@ -28,15 +28,11 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: Install dependencies - Client
+      - name: Install dependencies
         run: |
-          cd client
           npm ci
-
-      - name: Install dependencies - Server
-        run: |
-          cd server
-          npm ci
+          cd client && npm ci
+          cd ../server && npm ci
 
       - name: Run Linting
         run: npm run ci:lint
@@ -147,15 +143,11 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: Install dependencies - Client
+      - name: Install dependencies
         run: |
-          cd client
           npm ci
-
-      - name: Install dependencies - Server
-        run: |
-          cd server
-          npm ci
+          cd client && npm ci
+          cd ../server && npm ci
 
       - name: Build Applications
         run: npm run ci:build
