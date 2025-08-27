@@ -22,7 +22,6 @@
     "noEmit": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
-    // Additional compiler checks for modular imports
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,

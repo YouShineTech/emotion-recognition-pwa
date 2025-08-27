@@ -35,19 +35,7 @@
         "NODE_ENV": "test"
       }
     },
-    {
-      "name": "Debug MediaCapture Tests",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/client/node_modules/.bin/jest",
-      "args": ["--runInBand", "--no-cache", "--testPathPattern=MediaCaptureModule.test.ts"],
-      "cwd": "${workspaceFolder}/client",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "env": {
-        "NODE_ENV": "test"
-      }
-    },
+
     {
       "name": "Debug Current Test File",
       "type": "node",
@@ -72,20 +60,7 @@
       "internalConsoleOptions": "neverOpen"
     },
     {
-      "name": "Debug Server Only",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/server/node_modules/.bin/ts-node",
-      "args": ["-r", "tsconfig-paths/register", "src/index.ts"],
-      "cwd": "${workspaceFolder}/server",
-      "env": {
-        "NODE_ENV": "development",
-        "PORT": "3002"
-      },
-      "console": "integratedTerminal"
-    },
-    {
-      "name": "Debug Full Stack",
+      "name": "Debug Server",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/server/node_modules/.bin/ts-node",
@@ -94,11 +69,213 @@
       "env": {
         "NODE_ENV": "development"
       },
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Debug POC 01 - Media Capture",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/poc/01-media-capture/node_modules/.bin/ts-node",
+      "args": ["src/poc.ts"],
+      "cwd": "${workspaceFolder}/poc/01-media-capture",
       "console": "integratedTerminal",
-      "serverReadyAction": {
-        "action": "startDebugging",
-        "name": "Debug Client (Chrome)"
+      "sourceMaps": true,
+      "env": {
+        "NODE_ENV": "development"
       }
+    },
+    {
+      "name": "Debug POC 02 - WebRTC Transport",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/poc/02-webrtc-transport/node_modules/.bin/ts-node",
+      "args": ["src/poc.ts"],
+      "cwd": "${workspaceFolder}/poc/02-webrtc-transport",
+      "console": "integratedTerminal",
+      "sourceMaps": true,
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    {
+      "name": "Debug POC 03 - Media Relay",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/poc/03-media-relay/node_modules/.bin/ts-node",
+      "args": ["src/poc.ts"],
+      "cwd": "${workspaceFolder}/poc/03-media-relay",
+      "console": "integratedTerminal",
+      "sourceMaps": true,
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    {
+      "name": "Debug POC 04 - Frame Extraction",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/poc/04-frame-extraction/node_modules/.bin/ts-node",
+      "args": ["src/poc.ts"],
+      "cwd": "${workspaceFolder}/poc/04-frame-extraction",
+      "console": "integratedTerminal",
+      "sourceMaps": true,
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    {
+      "name": "Debug POC 05 - Facial Analysis",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/poc/05-facial-analysis/node_modules/.bin/ts-node",
+      "args": ["src/poc.ts"],
+      "cwd": "${workspaceFolder}/poc/05-facial-analysis",
+      "console": "integratedTerminal",
+      "sourceMaps": true,
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    {
+      "name": "Debug POC 06 - Audio Analysis",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/poc/06-audio-analysis/node_modules/.bin/ts-node",
+      "args": ["src/poc.ts"],
+      "cwd": "${workspaceFolder}/poc/06-audio-analysis",
+      "console": "integratedTerminal",
+      "sourceMaps": true,
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    {
+      "name": "Debug POC 07 - Overlay Generator",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/poc/07-overlay-generator/node_modules/.bin/ts-node",
+      "args": ["src/poc.ts"],
+      "cwd": "${workspaceFolder}/poc/07-overlay-generator",
+      "console": "integratedTerminal",
+      "sourceMaps": true,
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    {
+      "name": "Debug POC 08 - Overlay Renderer",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/poc/08-overlay-renderer/node_modules/.bin/ts-node",
+      "args": ["src/poc.ts"],
+      "cwd": "${workspaceFolder}/poc/08-overlay-renderer",
+      "console": "integratedTerminal",
+      "sourceMaps": true,
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    {
+      "name": "Debug POC 09 - Connection Manager",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/poc/09-connection-manager/node_modules/.bin/ts-node",
+      "args": ["src/poc.ts"],
+      "cwd": "${workspaceFolder}/poc/09-connection-manager",
+      "console": "integratedTerminal",
+      "sourceMaps": true,
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    {
+      "name": "Debug POC 10 - PWA Shell",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/poc/10-pwa-shell/node_modules/.bin/ts-node",
+      "args": ["src/poc.ts"],
+      "cwd": "${workspaceFolder}/poc/10-pwa-shell",
+      "console": "integratedTerminal",
+      "sourceMaps": true,
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    {
+      "name": "Debug POC 11 - Nginx Server",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/poc/11-nginx-server/node_modules/.bin/ts-node",
+      "args": ["src/poc.ts"],
+      "cwd": "${workspaceFolder}/poc/11-nginx-server",
+      "console": "integratedTerminal",
+      "sourceMaps": true,
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    {
+      "name": "Debug Integration Tests",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/server/node_modules/.bin/jest",
+      "args": ["--config", "jest.integration.config.js", "--runInBand", "--no-cache"],
+      "cwd": "${workspaceFolder}/server",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "NODE_ENV": "test"
+      }
+    },
+    {
+      "name": "Attach to Running Server",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "address": "localhost",
+      "localRoot": "${workspaceFolder}/server",
+      "remoteRoot": "${workspaceFolder}/server",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Attach to Running POC",
+      "type": "node",
+      "request": "attach",
+      "port": 9230,
+      "address": "localhost",
+      "localRoot": "${workspaceFolder}",
+      "remoteRoot": "${workspaceFolder}",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Debug E2E Tests",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/.bin/cypress",
+      "args": ["run", "--headed"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "env": {
+        "NODE_ENV": "test"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Debug Full Stack",
+      "configurations": [
+        "Debug Server",
+        "Debug Client (Chrome)"
+      ],
+      "stopAll": true
+    },
+    {
+      "name": "Debug E2E with Server",
+      "configurations": [
+        "Debug Server",
+        "Debug E2E Tests"
+      ],
+      "stopAll": true
     }
   ]
 }

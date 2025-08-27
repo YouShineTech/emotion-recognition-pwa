@@ -1,208 +1,286 @@
-# 🚀 Complete Debugging Guide for Emotion Recognition PWA
+# Dynamic Debugging Guide
 
 ## Overview
 
-This guide explains how to use the enhanced debugging setup for dynamic module debugging in your emotion recognition PWA project.
+The Emotion Recognition PWA provides comprehensive debugging capabilities for all components including POCs, production code, and tests. This guide covers how to use the debugging infrastructure to step through code line by line.
 
-## 📋 Available Debug Configurations
+## Quick Start
 
-### 🎯 **Quick Reference - What Actually Exists**
+### VS Code Debugging (Recommended)
 
-| Configuration Name            | Purpose                  | Usage                   |
-| ----------------------------- | ------------------------ | ----------------------- |
-| **Debug Client (Chrome)**     | Launch PWA in Chrome     | Frontend debugging      |
-| **Debug Client (Edge)**       | Launch PWA in Edge       | Frontend debugging      |
-| **Debug Full Stack**          | Server + Chrome client   | End-to-end debugging    |
-| **Debug Current Test File**   | Debug open test file     | Module-specific testing |
-| **Debug MediaCapture Tests**  | MediaCapture module only | Specific module testing |
-| **Debug Jest Tests (Client)** | All client tests         | Client-side testing     |
-| **Debug Jest Tests (Server)** | All server tests         | Server-side testing     |
+1. Open the project in VS Code
+2. Go to the Debug panel (Ctrl+Shift+D)
+3. Select the appropriate debug configuration from the dropdown
+4. Press F5 or click the green play button
+5. Set breakpoints by clicking in the gutter next to line numbers
 
-## 📋 Current Debug Configurations
+### Command Line Debugging
 
-### 🌐 **Frontend Debugging (Client-side)**
-
-- **Debug Client (Chrome)**: Launches Chrome with your PWA at localhost:3000
-- **Debug Client (Edge)**: Same as above but using Microsoft Edge
-- **Full Stack Debug**: Starts server + automatically launches Chrome client
-
-### 🧪 **Module-Specific Testing**
-
-Available debug configurations:
-
-#### **Client Modules:**
-
-- **Debug MediaCapture Tests**: Tests camera/microphone access (specific config available)
-- **Debug Jest Tests (Client)**: Runs all client module tests
-- **Debug Current Test File**: Debugs whatever test file you have open
-
-#### **Server Modules:**
-
-- **Debug Jest Tests (Server)**: Runs all server module tests
-- **Debug Current Test File**: Debugs whatever test file you have open (when in server context)
-
-#### **Available Module Tests:**
-
-**Client:** MediaCapture, OverlayRenderer, PWAShell, WebRTCTransport
-**Server:** AudioAnalysis, FacialAnalysis, FrameExtraction, MediaRelay, ConnectionManager, NginxServer, OverlayGenerator
-
-### 🔍 **Dynamic Debugging Options**
-
-- **Debug Current Test File**: Debugs whatever test file you have open
-- **Debug Jest Tests (Client)**: Runs all client module tests with debugging
-- **Debug Jest Tests (Server)**: Runs all server module tests with debugging
-
-## 🎯 **Step-by-Step Dynamic Module Debugging**
-
-### **Method 1: Individual Module Debugging**
-
-1. **Open the test file** you want to debug (e.g., `MediaCaptureModule.test.ts`)
-2. **Set breakpoints** in both the test file and the module file
-3. **Press F5** or go to Run → Start Debugging
-4. **Select "Debug Current Test File"** from the dropdown
-5. **Watch the execution flow** - you can step through test → module → test
-
-### **Method 2: Test-Driven Debugging**
-
-1. **Open the test file** for the module (e.g., `MediaCaptureModule.test.ts`)
-2. **Set breakpoints** in both the test AND the module
-3. **Press F5** → Select "Debug Current Test File"
-4. **Step through**: Test → Module → Test → Module
-5. **Watch variables** change as tests execute
-
-### **Method 3: Full Integration Debugging**
-
-1. **Start Full Stack Debug** (F5 → "Debug Full Stack")
-2. **Set breakpoints** in both client and server modules
-3. **Use browser** normally - breakpoints will hit when modules are called
-4. **Watch the flow**: Browser → Client Module → Server Module → Response
-
-## 🔧 **Advanced Debugging Techniques**
-
-### **Cross-Module Debugging**
-
-```typescript
-// Example: Debugging MediaCapture → WebRTCTransport flow
-// 1. Set breakpoints in both modules
-// 2. Start "Debug Full Stack"
-// 3. Trigger media capture in browser
-// 4. Watch execution move between modules
-```
-
-### **Real-time Variable Inspection**
-
-- **Variables Panel**: Shows current values
-- **Watch Panel**: Add expressions to monitor
-- **Call Stack**: See the execution path through modules
-- **Console**: Interact with running code
-
-### **Conditional Breakpoints**
-
-Right-click on breakpoint → Add condition:
-
-```typescript
-// Example conditions:
-deviceId === 'specific-camera-id';
-stream.getVideoTracks().length > 0;
-error.message.includes('permission');
-```
-
-## 📁 **Project Structure for Debugging**
-
-```
-client/src/modules/
-├── media-capture/          # Camera/microphone access
-├── overlay-renderer/       # Emotion overlay display
-├── pwa-shell/             # PWA functionality
-└── webrtc-transport/      # Client-side WebRTC
-
-server/src/modules/
-├── audio-analysis/        # Audio emotion detection
-├── facial-analysis/       # Facial emotion detection
-├── frame-extraction/      # Video frame processing
-├── media-relay/          # Media streaming
-├── connection-manager/   # WebRTC connections
-├── nginx-server/         # Web server
-└── overlay-generator/    # Overlay data creation
-```
-
-## 🎮 **Quick Start Commands**
-
-### **Start Development with Debugging**
+Use the unified npm scripts for consistent debugging across all components:
 
 ```bash
-# Method 1: Use VSCode
-F5 → Select "Debug Full Stack"
+# Debug specific POCs
+npm run debug:poc:01  # Media Capture
+npm run debug:poc:02  # WebRTC Transport
+npm run debug:poc:03  # Media Relay
+# ... (all POCs 01-11 available)
 
-# Method 2: Manual
-cd server && npm run dev    # Terminal 1
-cd client && npm run dev    # Terminal 2
+# Debug production components
+npm run debug:server  # Server with hot reload
+npm run debug:client  # Client in browser
+
+# Debug tests
+npm run debug:integration  # Integration tests
+npm run debug:e2e         # End-to-end tests
+
+# Debug full stack
+npm run dev:debug  # Both client and server
 ```
 
-### **Debug Specific Module**
+## Component-Specific Debugging
 
-```bash
-# Method 1: Open specific test file and use "Debug Current Test File"
-code client/src/modules/media-capture/MediaCaptureModule.test.ts
-# Press F5 → Select "Debug Current Test File"
+### POC Debugging
 
-# Method 2: Use the specific MediaCapture configuration
-# Press F5 → Select "Debug MediaCapture Tests"
+Each POC can be debugged independently:
 
-# Method 3: Debug all client or server tests
-# Press F5 → Select "Debug Jest Tests (Client)" or "Debug Jest Tests (Server)"
-```
+**Available POCs:**
 
-## 🐛 **Common Debugging Scenarios**
+- POC 01: Media Capture Module
+- POC 02: WebRTC Transport Module
+- POC 03: Media Relay Module
+- POC 04: Frame Extraction Module
+- POC 05: Facial Analysis Module
+- POC 06: Audio Analysis Module
+- POC 07: Overlay Generator Module
+- POC 08: Overlay Renderer Module
+- POC 09: Connection Manager Module
+- POC 10: PWA Shell Module
+- POC 11: Nginx Server Module
 
-### **"My breakpoint isn't hitting"**
+**VS Code Configuration:** Select "Debug POC XX - [Name]" from the debug dropdown
 
-1. Check if source maps are enabled
-2. Verify the correct debug configuration
-3. Ensure the file is actually being executed
+**Command Line:** `npm run debug:poc:XX` (where XX is the POC number)
 
-### **"I want to see module interactions"**
+**Features:**
 
-1. Use "Debug Full Stack"
-2. Set breakpoints in multiple modules
-3. Watch the call stack as execution flows
+- TypeScript source map support
+- Breakpoint debugging
+- Variable inspection
+- Call stack navigation
+- Step-through execution
 
-### **"Testing individual POC functionality"**
+### Server Debugging
 
-1. Open the specific module test file (e.g., `MediaCaptureModule.test.ts`)
-2. Use "Debug Current Test File" configuration
-3. Step through the POC implementation
-4. For MediaCapture specifically, you can also use "Debug MediaCapture Tests"
+**VS Code Configuration:** "Debug Server Only"
 
-## 🎓 **Learning Path for Embedded Developers**
+**Command Line:** `npm run debug:server`
 
-### **Week 1: Understanding the Architecture**
+**Features:**
 
-- Start with individual module tests
-- Use "Debug [Module] Tests" configurations
-- Focus on one module at a time
+- Hot reload with debugging maintained
+- Environment variable access
+- Module-level debugging
+- Real-time state inspection
+- Cluster worker debugging (if applicable)
 
-### **Week 2: Integration Flow**
+**Debug Ports:**
 
-- Use "Debug Full Stack"
-- Set breakpoints in client → server communication
-- Watch WebRTC negotiation process
+- Main server: 9229
+- Worker processes: 9241-9244
 
-### **Week 3: Advanced Debugging**
+### Client Debugging
 
-- Use conditional breakpoints
-- Debug race conditions in async operations
-- Profile performance across modules
+**VS Code Configuration:** "Debug Client (Chrome)" or "Debug Client (Edge)"
 
-## 🚨 **Pro Tips**
+**Command Line:** `npm run debug:client`
 
-1. **Use the Debug Console**: You can execute code in the context of your running application
-2. **Watch Expressions**: Add `module.exports` to see what's being exported
-3. **Call Stack Navigation**: Click any frame to jump to that point in execution
-4. **Restart Debugging**: Ctrl+Shift+F5 to restart with same configuration
+**Features:**
 
-## 📝 **Next Steps**
+- Browser DevTools integration
+- TypeScript source maps
+- WebRTC connection debugging
+- PWA debugging capabilities
+- Hot module replacement with debug preservation
 
-- Try debugging a simple module first (MediaCapture)
-- Then move to integration debugging
-- Finally, debug the full emotion recognition flow
+### Test Debugging
+
+#### Unit Tests
+
+**Client Tests:**
+
+- VS Code: "Debug Jest Tests (Client)"
+- Command: `cd client && npm run test:debug`
+
+**Server Tests:**
+
+- VS Code: "Debug Jest Tests (Server)"
+- Command: `cd server && npm run test:debug`
+
+#### Integration Tests
+
+**VS Code Configuration:** "Debug Integration Tests"
+
+**Command Line:** `npm run debug:integration`
+
+**Features:**
+
+- Full system context debugging
+- Test fixture and mock debugging
+- Cross-component debugging
+
+#### End-to-End Tests
+
+**VS Code Configuration:** "Debug E2E Tests"
+
+**Command Line:** `npm run debug:e2e`
+
+**Features:**
+
+- Cypress debugging with browser DevTools
+- Full user journey debugging
+- WebRTC signaling debugging
+- Database and Redis debugging during flows
+
+## Advanced Debugging
+
+### Full Stack Debugging
+
+Debug both client and server simultaneously:
+
+**VS Code Configuration:** "Debug E2E Full Stack" (compound configuration)
+
+**Command Line:** `npm run debug:e2e:server` or `npm run debug:e2e:client`
+
+### Multi-Process Debugging
+
+For debugging multiple components at once:
+
+1. Use compound configurations in VS Code
+2. Each process gets its own debug port
+3. Switch between processes in the debug console
+
+### Source Map Configuration
+
+All TypeScript files are automatically configured with source maps for debugging:
+
+- Client: Webpack generates source maps
+- Server: TypeScript compiler generates source maps
+- POCs: Individual TypeScript compilation with source maps
+
+## Troubleshooting
+
+### Common Issues
+
+#### Debugger Won't Attach
+
+**Symptoms:** Debug session starts but breakpoints don't work
+
+**Solutions:**
+
+1. Ensure TypeScript is compiled: `npm run build`
+2. Check source maps are generated
+3. Verify correct debug port (check for conflicts)
+4. Restart VS Code and try again
+
+#### Port Conflicts
+
+**Symptoms:** "Port already in use" errors
+
+**Solutions:**
+
+1. Kill existing processes: `npm run kill:ports`
+2. Use different debug ports (automatically handled)
+3. Check for other Node.js processes
+
+#### Source Maps Not Working
+
+**Symptoms:** Debugger shows compiled JavaScript instead of TypeScript
+
+**Solutions:**
+
+1. Rebuild with source maps: `npm run build:dev`
+2. Check tsconfig.json has `"sourceMap": true`
+3. Verify webpack configuration for client debugging
+
+#### Hot Reload Issues
+
+**Symptoms:** Debugging stops working after code changes
+
+**Solutions:**
+
+1. Use `debug:dev` scripts that support hot reload
+2. Restart debug session after major changes
+3. Check nodemon configuration
+
+### Debug Ports Reference
+
+| Component         | Port      | Usage                       |
+| ----------------- | --------- | --------------------------- |
+| Server Main       | 9229      | Production server debugging |
+| Server Workers    | 9241-9244 | Cluster worker debugging    |
+| POC 01-11         | 9230-9240 | Individual POC debugging    |
+| Unit Tests        | 9245      | Jest unit test debugging    |
+| Integration Tests | 9246      | Integration test debugging  |
+| E2E Tests         | 9247      | End-to-end test debugging   |
+
+### Performance Considerations
+
+- Debugging adds overhead - use only during development
+- Source maps increase memory usage
+- Hot reload with debugging may be slower
+- Disable debugging for performance testing
+
+## Best Practices
+
+### Setting Breakpoints
+
+1. **Strategic Placement:** Set breakpoints at key decision points
+2. **Conditional Breakpoints:** Use conditions to break only when needed
+3. **Logpoints:** Use for logging without stopping execution
+
+### Debugging Workflow
+
+1. **Start Small:** Debug individual components before full stack
+2. **Use Console:** Leverage console.log for quick debugging
+3. **Step Through:** Use step-over, step-into, step-out effectively
+4. **Inspect Variables:** Use the Variables panel to examine state
+
+### Code Debugging
+
+1. **Don't Modify POC Code:** Use debugging tools instead of code changes
+2. **Use Watch Expressions:** Monitor specific variables or expressions
+3. **Call Stack Navigation:** Understand the execution flow
+4. **Exception Handling:** Enable break on exceptions for error debugging
+
+## Integration with Development Workflow
+
+### Git Hooks
+
+Debugging configurations are preserved across commits and don't interfere with:
+
+- Pre-commit hooks
+- Linting and formatting
+- Test execution
+
+### CI/CD
+
+Debugging configurations are development-only and don't affect:
+
+- Build processes
+- Deployment pipelines
+- Production environments
+
+### Team Development
+
+- All debugging configurations are committed to the repository
+- Consistent debugging experience across team members
+- No additional setup required for new developers
+
+## Additional Resources
+
+- [VS Code Debugging Documentation](https://code.visualstudio.com/docs/editor/debugging)
+- [Node.js Debugging Guide](https://nodejs.org/en/docs/guides/debugging-getting-started/)
+- [Chrome DevTools Documentation](https://developers.google.com/web/tools/chrome-devtools)
+- [Jest Debugging Guide](https://jestjs.io/docs/troubleshooting)
+
+For project-specific debugging questions, refer to the component documentation in the `docs/` directory.
