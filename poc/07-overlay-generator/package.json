@@ -5,7 +5,7 @@
   "main": "dist/poc.js",
   "scripts": {
     "build": "tsc",
-    "poc": "npm run build && node dist/poc.js",
+    "poc": "npm run build && node dist/poc/07-overlay-generator/src/poc.js",
     "debug": "npm run build && node --inspect-brk dist/poc.js",
     "test": "jest",
     "test:watch": "jest --watch",

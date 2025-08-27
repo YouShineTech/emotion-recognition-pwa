@@ -5,7 +5,7 @@
   "main": "dist/poc.js",
   "scripts": {
     "build": "tsc",
-    "poc": "npm run build && node dist/poc.js",
+    "poc": "npm run build && node dist/poc/11-nginx-server/src/poc.js",
     "debug": "npm run build && node --inspect-brk dist/poc.js",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -18,7 +18,7 @@
     "helmet": "^7.0.0",
     "cors": "^2.8.5",
     "compression": "^1.7.4",
-    "rate-limiter-flexible": "^3.0.8",
+    "rate-limiter-flexible": "^2.4.1",
     "node-cache": "^5.1.2",
     "ws": "^8.14.2"
   },

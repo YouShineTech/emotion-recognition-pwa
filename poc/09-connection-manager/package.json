@@ -5,7 +5,7 @@
   "main": "dist/poc.js",
   "scripts": {
     "build": "tsc",
-    "poc": "npm run build && node dist/poc.js",
+    "poc": "npm run build && node dist/poc/09-connection-manager/src/poc.js",
     "debug": "npm run build && node --inspect-brk dist/poc.js",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -15,12 +15,13 @@
   },
   "dependencies": {
     "chalk": "^4.1.2",
-    "redis": "^4.6.0",
-    "uuid": "^9.0.0"
+    "redis": "^4.7.1",
+    "uuid": "^9.0.0",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
     "@types/jest": "^29.0.0",
+    "@types/node": "^20.0.0",
     "@types/uuid": "^9.0.0",
     "jest": "^29.0.0",
     "ts-jest": "^29.0.0",
@@ -30,7 +31,9 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "setupFilesAfterEnv": ["<rootDir>/src/test-setup.ts"],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/test-setup.ts"
+    ],
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!src/poc.ts",

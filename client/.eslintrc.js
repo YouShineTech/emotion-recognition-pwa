@@ -72,7 +72,7 @@ module.exports = {
       },
     },
   },
-  ignorePatterns: ['dist/', 'node_modules/', 'coverage/', '*.config.js', 'public/'],
+  ignorePatterns: ['dist/', 'node_modules/', 'coverage/', '*.config.js', 'public/', '**/*.d.ts'],
   overrides: [
     {
       files: ['**/*.test.ts', '**/*.test.tsx'],
