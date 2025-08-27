@@ -55,3 +55,17 @@ scripts/security-tools/
 # Cypress
 cypress/videos/
 cypress/screenshots/
+
+# Generated TypeScript files (should be built, not committed)
+client/src/**/*.js
+client/src/**/*.d.ts
+server/src/**/*.js
+server/src/**/*.d.ts
+shared/**/*.js
+shared/**/*.d.ts
+
+# Exclude test files from generated exclusion
+!**/*.test.js
+!**/*.spec.js
+!**/*.test.d.ts
+!**/*.spec.d.ts

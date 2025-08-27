@@ -8,6 +8,14 @@
 import chalk from 'chalk';
 import { OverlayRendererModule } from '../../../client/src/modules/overlay-renderer/OverlayRendererModule';
 
+// Try to import canvas, but handle gracefully if not available
+let Canvas: any = null;
+try {
+  Canvas = require('canvas');
+} catch (error) {
+  console.log(chalk.yellow('⚠️  Canvas package not available - using mock canvas for CI/testing'));
+}
+
 class OverlayRendererPOC {
   private module: OverlayRendererModule;
   private canvas: HTMLCanvasElement;

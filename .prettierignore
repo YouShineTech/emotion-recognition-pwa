@@ -1,0 +1,38 @@
+# Generated files
+**/*.d.ts
+**/*.js.map
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Generated documentation
+docs/api/
+
+# Generated reports
+reports/
+
+# Compiled JavaScript from TypeScript (when not part of build process)
+client/src/**/*.js
+server/src/**/*.js
+shared/**/*.js
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

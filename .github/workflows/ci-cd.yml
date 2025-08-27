@@ -65,6 +65,11 @@ jobs:
           cd client && npm ci
           cd ../server && npm ci
 
+      - name: Install system dependencies for Canvas
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev libpixman-1-dev
+
       - name: Install POC dependencies
         run: |
           echo "Installing POC dependencies..."
@@ -316,8 +321,6 @@ jobs:
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          base: main
-          head: HEAD
           extra_args: --debug --only-verified
 
       - name: Run Snyk security scan
