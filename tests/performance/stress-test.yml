@@ -1,0 +1,86 @@
+config:
+  target: 'http://localhost:3000'
+  phases:
+    - duration: 60
+      arrivalRate: 50
+      name: 'Initial load'
+    - duration: 120
+      arrivalRate: 100
+      name: 'Increase load'
+    - duration: 180
+      arrivalRate: 200
+      name: 'High load'
+    - duration: 300
+      arrivalRate: 500
+      name: 'Stress test'
+    - duration: 120
+      arrivalRate: 100
+      name: 'Cool down'
+  processor: './stress-test-processor.js'
+
+scenarios:
+  - name: 'Concurrent User Simulation'
+    weight: 40
+    flow:
+      - post:
+          url: '/api/session/create'
+          json:
+            userId: '{{ $randomString() }}'
+            sessionType: 'emotion-analysis'
+          capture:
+            - json: '$.sessionId'
+              as: 'sessionId'
+      - loop:
+          - post:
+              url: '/api/analyze/emotion'
+              json:
+                sessionId: '{{ sessionId }}'
+                imageData: 'data:image/jpeg;base64,{{ $randomString() }}'
+                timestamp: '{{ $timestamp }}'
+          - think: 0.5
+        count: 10
+      - delete:
+          url: '/api/session/{{ sessionId }}'
+
+  - name: 'WebRTC Stress Test'
+    weight: 35
+    flow:
+      - post:
+          url: '/api/webrtc/offer'
+          json:
+            type: 'offer'
+            sdp: '{{ $randomString() }}'
+            userId: '{{ $randomString() }}'
+          capture:
+            - json: '$.connectionId'
+              as: 'connectionId'
+      - loop:
+          - post:
+              url: '/api/webrtc/ice-candidate'
+              json:
+                connectionId: '{{ connectionId }}'
+                candidate: '{{ $randomString() }}'
+          - think: 0.1
+        count: 5
+      - delete:
+          url: '/api/webrtc/connection/{{ connectionId }}'
+
+  - name: 'High Frequency API Calls'
+    weight: 25
+    flow:
+      - loop:
+          - get:
+              url: '/api/status'
+          - get:
+              url: '/health'
+          - think: 0.1
+        count: 20
+
+# Stress test thresholds (more lenient than load test)
+expect:
+  thresholds:
+    - http.response_time.p95: 1000 # 95th percentile response time < 1000ms
+    - http.response_time.p99: 2000 # 99th percentile response time < 2000ms
+    - http.request_rate: 400 # At least 400 requests per second under stress
+    - http.codes.200: 90 # 90% success rate under stress
+    - http.codes.500: 5 # Less than 5% server errors

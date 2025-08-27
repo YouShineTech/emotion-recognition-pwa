@@ -1,0 +1,70 @@
+# ZAP Security Scanning Rules
+# Format: ID	THRESHOLD	NEW_LEVEL	NAME
+# THRESHOLD: IGNORE, INFO, LOW, MEDIUM, HIGH, FAIL
+# NEW_LEVEL: IGNORE, INFO, LOW, MEDIUM, HIGH
+
+# Ignore false positives for development
+10021	IGNORE	IGNORE	X-Content-Type-Options Header Missing
+10020	IGNORE	IGNORE	X-Frame-Options Header Not Set
+10016	IGNORE	IGNORE	Web Browser XSS Protection Not Enabled
+10017	IGNORE	IGNORE	Cross-Domain JavaScript Source File Inclusion
+
+# Security headers - set to INFO for development, HIGH for production
+10019	INFO	HIGH	Content-Type Header Missing
+10035	INFO	HIGH	Strict-Transport-Security Header Not Set
+10038	INFO	HIGH	Content Security Policy (CSP) Header Not Set
+
+# Authentication and session management
+10040	HIGH	HIGH	Secure Cookie Without Secure Flag
+10041	HIGH	HIGH	HTTP to HTTPS Insecure Transition in Form Post
+10042	HIGH	HIGH	HTTPS to HTTP Insecure Transition in Form Post
+10043	HIGH	HIGH	User Controllable JavaScript Event (XSS)
+
+# Injection vulnerabilities
+40012	HIGH	HIGH	Cross Site Scripting (Reflected)
+40013	HIGH	HIGH	Cross Site Scripting (Persistent)
+40014	HIGH	HIGH	Cross Site Scripting (Persistent) - Prime
+40016	HIGH	HIGH	Cross Site Scripting (Persistent) - Spider
+40017	HIGH	HIGH	Cross Site Scripting (Persistent) - OData
+40018	HIGH	HIGH	SQL Injection
+40019	HIGH	HIGH	SQL Injection - MySQL
+40020	HIGH	HIGH	SQL Injection - Hypersonic SQL
+40021	HIGH	HIGH	SQL Injection - Oracle
+40022	HIGH	HIGH	SQL Injection - PostgreSQL
+40023	HIGH	HIGH	Possible Username Enumeration
+40024	HIGH	HIGH	SQL Injection - SQLite
+40025	HIGH	HIGH	Proxy Disclosure
+40026	HIGH	HIGH	Cross Site Scripting (DOM Based)
+40027	HIGH	HIGH	SQL Injection - MsSQL
+40028	HIGH	HIGH	LDAP Injection
+
+# Information disclosure
+10045	MEDIUM	MEDIUM	Source Code Disclosure - /WEB-INF folder
+10046	MEDIUM	MEDIUM	Source Code Disclosure - CVE-2012-1823
+10047	MEDIUM	MEDIUM	Source Code Disclosure - Git
+10048	MEDIUM	MEDIUM	Remote Code Execution - CVE-2012-1823
+10049	MEDIUM	MEDIUM	Source Code Disclosure - SVN
+10050	LOW	LOW	Retrieved from Cache
+10051	INFO	INFO	Relative Path Confusion
+10052	INFO	INFO	X-ChromeLogger-Data (XCOLD) Header Information Leak
+10054	LOW	LOW	Cookie Without SameSite Attribute
+10055	LOW	LOW	CSP Scanner: Wildcard Directive
+10056	LOW	LOW	CSP Scanner: Missing Anti-clickjacking Directive
+
+# API specific rules
+90001	HIGH	HIGH	Insecure HTTP Method
+90002	MEDIUM	MEDIUM	Private IP Disclosure
+90003	LOW	LOW	Subdomain Takeover
+90004	INFO	INFO	Insufficient Site Isolation Against Spectre Vulnerability
+90005	LOW	LOW	Weak Authentication Method
+
+# Custom rules for emotion recognition system
+# Allow WebRTC related endpoints
+90100	IGNORE	IGNORE	WebRTC Endpoint Access
+90101	IGNORE	IGNORE	Media Stream Access
+90102	IGNORE	IGNORE	Camera Permission Request
+
+# Monitor but don't fail on performance issues during security scan
+90200	INFO	INFO	Slow HTTP Response
+90201	INFO	INFO	High Memory Usage
+90202	INFO	INFO	High CPU Usage

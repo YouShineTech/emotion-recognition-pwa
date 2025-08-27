@@ -1,0 +1,83 @@
+config:
+  target: 'http://localhost:3000'
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      name: 'Warm up'
+    - duration: 120
+      arrivalRate: 20
+      name: 'Ramp up load'
+    - duration: 300
+      arrivalRate: 50
+      name: 'Sustained load'
+  processor: './load-test-processor.js'
+
+scenarios:
+  - name: 'Health Check'
+    weight: 10
+    flow:
+      - get:
+          url: '/health'
+          expect:
+            - statusCode: 200
+            - contentType: json
+      - think: 1
+
+  - name: 'API Status Check'
+    weight: 15
+    flow:
+      - get:
+          url: '/api/status'
+          expect:
+            - statusCode: 200
+      - think: 2
+
+  - name: 'Static Asset Loading'
+    weight: 25
+    flow:
+      - get:
+          url: '/'
+          expect:
+            - statusCode: 200
+      - get:
+          url: '/static/css/main.css'
+      - get:
+          url: '/static/js/main.js'
+      - think: 3
+
+  - name: 'WebRTC Connection Simulation'
+    weight: 30
+    flow:
+      - post:
+          url: '/api/webrtc/offer'
+          json:
+            type: 'offer'
+            sdp: 'mock-sdp-data'
+          expect:
+            - statusCode: 200
+      - think: 5
+      - get:
+          url: '/api/webrtc/status'
+      - think: 2
+
+  - name: 'Emotion Analysis API'
+    weight: 20
+    flow:
+      - post:
+          url: '/api/analyze/emotion'
+          json:
+            imageData: 'data:image/jpeg;base64,mock-image-data'
+            timestamp: '{{ $timestamp }}'
+          expect:
+            - statusCode: 200
+            - hasProperty: 'emotions'
+      - think: 1
+
+# Performance thresholds
+expect:
+  thresholds:
+    - http.response_time.p95: 500 # 95th percentile response time < 500ms
+    - http.response_time.p99: 1000 # 99th percentile response time < 1000ms
+    - http.request_rate: 45 # At least 45 requests per second
+    - http.codes.200: 95 # 95% success rate
+    - http.codes.500: 0 # No server errors
