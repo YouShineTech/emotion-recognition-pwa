@@ -163,6 +163,26 @@ class POCRunner {
       return false;
     }
 
+    // Check if package.json exists and has poc script
+    const packageJsonPath = path.join(pocDir, 'package.json');
+    if (!require('fs').existsSync(packageJsonPath)) {
+      console.log(chalk.yellow(`   ⚠️  No package.json found in ${pocDir}`));
+      console.log(chalk.yellow(`   📝 This POC needs package.json with "poc" script`));
+      return false;
+    }
+
+    try {
+      const packageJson = JSON.parse(require('fs').readFileSync(packageJsonPath, 'utf8'));
+      if (!packageJson.scripts || !packageJson.scripts.poc) {
+        console.log(chalk.yellow(`   ⚠️  No "poc" script defined in ${pocDir}/package.json`));
+        console.log(chalk.yellow(`   📝 Add "poc": "node src/poc.ts" or similar to scripts`));
+        return false;
+      }
+    } catch (error) {
+      console.log(chalk.red(`   💥 Error reading package.json: ${error.message}`));
+      return false;
+    }
+
     return new Promise(resolve => {
       const child = spawn('npm', ['run', 'poc'], {
         cwd: pocDir,
