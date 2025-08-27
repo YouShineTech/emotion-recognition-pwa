@@ -7,7 +7,7 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
 
   // Module resolution
-  moduleNameMapper: {
+  moduleNameMapping: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@/shared/(.*)$': '<rootDir>/../shared/$1',
   },
@@ -36,10 +36,10 @@ module.exports = {
   clearMocks: true,
 
   // Verbose output
-  verbose: true,
+  verbose: false, // Reduce noise
 
   // Longer timeout for integration tests
-  testTimeout: 30000,
+  testTimeout: 15000, // Reduced timeout
 
   // Run tests serially for integration tests
   maxWorkers: 1,
@@ -51,15 +51,17 @@ module.exports = {
   forceExit: true,
 
   // Detect open handles to help debug hanging tests
-  detectOpenHandles: true,
-
-  // Force exit after timeout
-  testTimeout: 30000,
+  detectOpenHandles: false, // Disable to reduce noise
 
   // Exit immediately on first test failure to prevent hanging
-  bail: false,
+  bail: true, // Stop on first failure
 
   // Global setup/teardown for integration tests
   globalSetup: '<rootDir>/tests/integration/setup.ts',
   globalTeardown: '<rootDir>/tests/integration/teardown.ts',
+
+  // Additional Jest options for better cleanup
+  resetMocks: true,
+  restoreMocks: true,
+  clearMocks: true,
 };

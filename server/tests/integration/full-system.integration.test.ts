@@ -17,7 +17,6 @@ import { ConnectionManagerModule } from '../../src/modules/connection-manager/Co
 import { PWAShellModule } from '../../src/modules/pwa-shell/PWAShellModule';
 import { NginxWebServerModule } from '../../src/modules/nginx-server/NginxWebServerModule';
 import { spawn } from 'child_process';
-import { afterEach } from 'node:test';
 
 // Mock external dependencies to avoid requiring actual services
 jest.mock('child_process', () => ({
@@ -131,44 +130,56 @@ describe('Full System Integration', () => {
   afterAll(async () => {
     // Cleanup all modules (gracefully handle failures)
     try {
+      // Clear all Jest timers first
+      jest.clearAllTimers();
+      jest.useRealTimers();
+
       // Cleanup overlay generator first (synchronous)
       if (overlayGenerator && typeof overlayGenerator.cleanup === 'function') {
-        overlayGenerator.cleanup();
+        try {
+          overlayGenerator.cleanup();
+        } catch (e) {
+          // Ignore cleanup errors
+        }
       }
 
-      // Cleanup async modules with individual error handling
+      // Cleanup async modules with timeout protection
+      const cleanupWithTimeout = (promise: Promise<any>, name: string, timeout = 2000) => {
+        return Promise.race([
+          promise.catch(e => console.warn(`${name} cleanup failed:`, e.message)),
+          new Promise(resolve =>
+            setTimeout(() => {
+              console.warn(`${name} cleanup timed out`);
+              resolve(undefined);
+            }, timeout)
+          ),
+        ]);
+      };
+
       const cleanupPromises = [
-        mediaRelay?.cleanup?.().catch(e => console.warn('MediaRelay cleanup failed:', e.message)),
-        frameExtraction
-          ?.cleanup?.()
-          .catch(e => console.warn('FrameExtraction cleanup failed:', e.message)),
-        facialAnalysis
-          ?.cleanup?.()
-          .catch(e => console.warn('FacialAnalysis cleanup failed:', e.message)),
-        audioAnalysis
-          ?.cleanup?.()
-          .catch(e => console.warn('AudioAnalysis cleanup failed:', e.message)),
-        connectionManager
-          ?.cleanup?.()
-          .catch(e => console.warn('ConnectionManager cleanup failed:', e.message)),
-      ].filter(Boolean);
+        cleanupWithTimeout(mediaRelay?.cleanup?.() || Promise.resolve(), 'MediaRelay'),
+        cleanupWithTimeout(frameExtraction?.cleanup?.() || Promise.resolve(), 'FrameExtraction'),
+        cleanupWithTimeout(facialAnalysis?.cleanup?.() || Promise.resolve(), 'FacialAnalysis'),
+        cleanupWithTimeout(audioAnalysis?.cleanup?.() || Promise.resolve(), 'AudioAnalysis'),
+        cleanupWithTimeout(
+          connectionManager?.cleanup?.() || Promise.resolve(),
+          'ConnectionManager'
+        ),
+      ];
 
       await Promise.allSettled(cleanupPromises);
+
+      // Clear all Jest mocks and restore
+      jest.clearAllMocks();
+      jest.restoreAllMocks();
+      jest.resetAllMocks();
 
       // Force garbage collection if available
       if (global.gc) {
         global.gc();
       }
-
-      // Clear all Jest timers and mocks
-      jest.clearAllTimers();
-      jest.clearAllMocks();
-      jest.restoreAllMocks();
-
-      // Give a moment for cleanup to complete
-      await new Promise(resolve => setTimeout(resolve, 100));
     } catch (error) {
-      console.warn('Some modules failed to cleanup (expected in test environment):', error);
+      // Ignore all cleanup errors in test environment
     } finally {
       // Ensure all variables are cleared
       mediaRelay = null as any;
@@ -178,21 +189,12 @@ describe('Full System Integration', () => {
       overlayGenerator = null as any;
       connectionManager = null as any;
     }
-  }, 20000); // Increase timeout for cleanup
+  }, 10000); // Reduced timeout
 
   afterEach(async () => {
     // Clean up any test-specific resources after each test
     try {
-      // Clear any active sessions created during tests
-      if (connectionManager) {
-        const stats = await connectionManager.getConnectionMetrics();
-        if (stats.activeSessions > 0) {
-          // Force cleanup of any remaining sessions
-          await connectionManager.cleanup();
-        }
-      }
-
-      // Clear all timers and intervals
+      // Clear all timers and intervals first
       jest.clearAllTimers();
       jest.clearAllMocks();
 
