@@ -14,7 +14,7 @@ import {
   Consumer,
   RtpCodecCapability,
 } from 'mediasoup/node/lib/types';
-import Redis from 'redis';
+import { createClient, RedisClientType } from 'redis';
 import {
   IMediaRelayModule,
   RelayConfig,
@@ -29,7 +29,7 @@ export class MediaRelayModule implements IMediaRelayModule {
   private producers: Map<string, Producer> = new Map();
   private consumers: Map<string, Consumer> = new Map();
   private sessions: Map<string, SessionInfo> = new Map();
-  private redis: Redis.RedisClientType | null = null;
+  private redis: RedisClientType | null = null;
   private config: RelayConfig;
   private currentWorkerIndex = 0;
 
@@ -405,7 +405,7 @@ export class MediaRelayModule implements IMediaRelayModule {
    */
   private async initializeRedis(): Promise<void> {
     try {
-      this.redis = Redis.createClient({ url: this.config.redisUrl || 'redis://localhost:6379' });
+      this.redis = createClient({ url: this.config.redisUrl || 'redis://localhost:6379' });
       await this.redis.connect();
       console.log('Redis connected for session state sharing');
     } catch (error) {

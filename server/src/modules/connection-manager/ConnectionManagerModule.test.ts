@@ -5,7 +5,7 @@
  */
 
 import { ConnectionManagerModule, SessionData } from './ConnectionManagerModule';
-import Redis from 'redis';
+import { createClient, RedisClientType } from 'redis';
 
 // Mock Redis client
 const mockRedis = {

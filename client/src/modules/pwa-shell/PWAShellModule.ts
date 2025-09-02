@@ -178,7 +178,7 @@ export class PWAShellModule implements IPWAShellModule {
     try {
       const subscription = await this.serviceWorker.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(vapidPublicKey),
+        applicationServerKey: this.urlBase64ToUint8Array(vapidPublicKey) as BufferSource,
       });
 
       this.emit('pushSubscribed', subscription);

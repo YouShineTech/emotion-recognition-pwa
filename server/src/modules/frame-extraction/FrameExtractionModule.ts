@@ -7,7 +7,7 @@
 
 import { spawn, ChildProcess } from 'child_process';
 import { EventEmitter } from 'events';
-import Redis from 'redis';
+import { createClient, RedisClientType } from 'redis';
 import {
   IFrameExtractionModule,
   ExtractionConfig,
@@ -18,7 +18,7 @@ import {
 
 export class FrameExtractionModule extends EventEmitter implements IFrameExtractionModule {
   private config: ExtractionConfig;
-  private redis: Redis.RedisClientType | null = null;
+  private redis: RedisClientType | null = null;
   private ffmpegProcesses: Map<string, ChildProcess> = new Map();
   private isInitialized = false;
 
@@ -375,7 +375,7 @@ export class FrameExtractionModule extends EventEmitter implements IFrameExtract
    */
   private async initializeRedis(): Promise<void> {
     try {
-      this.redis = Redis.createClient({ url: this.config.redisUrl || 'redis://localhost:6379' });
+      this.redis = createClient({ url: this.config.redisUrl || 'redis://localhost:6379' });
       await this.redis.connect();
       console.log('Redis connected for frame processing queue');
     } catch (error) {

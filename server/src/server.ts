@@ -11,7 +11,7 @@ import express from 'express';
 import helmet from 'helmet';
 import { createServer as createHttpServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
-import Redis from 'redis';
+import { createClient } from 'redis';
 
 // Import modules
 import { MediaRelayModule } from './modules/media-relay/MediaRelayModule';
@@ -30,7 +30,7 @@ export async function createServer() {
   const server = createHttpServer(app);
 
   // Initialize Redis for session sharing across workers
-  const redis = Redis.createClient({
+  const redis = createClient({
     url: process.env.REDIS_URL || 'redis://localhost:6379',
   });
 

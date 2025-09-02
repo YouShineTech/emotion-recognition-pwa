@@ -5,7 +5,7 @@
  * Implements Requirement 8 (1000+ concurrent users) with Redis clustering
  */
 
-import Redis from 'redis';
+import { createClient, RedisClientType } from 'redis';
 import logger from '../../utils/logger';
 
 export interface SessionData {
@@ -27,12 +27,12 @@ export interface ConnectionMetrics {
 }
 
 export class ConnectionManagerModule {
-  private redis: Redis.RedisClientType;
+  private redis: RedisClientType;
   private sessionPrefix = 'session:';
   private metricsPrefix = 'metrics:';
   private cleanupInterval: NodeJS.Timeout | null = null;
 
-  constructor(redisClient: Redis.RedisClientType) {
+  constructor(redisClient: RedisClientType) {
     this.redis = redisClient;
     this.startCleanupProcess();
   }
