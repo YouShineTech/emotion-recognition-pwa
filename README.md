@@ -127,33 +127,90 @@ npm run dev
 
 See **[Developer Onboarding Guide](docs/DEVELOPER_ONBOARDING.md)** for comprehensive setup, debugging, and contribution instructions.
 
-## 🧪 Testing
+## 🧪 Comprehensive Testing Framework
 
-### Unit Tests
+### Automated Testing
 
 ```bash
-# Client tests
+# Unit tests
 cd client && npm run test
-
-# Server tests
 cd server && npm run test
+
+# Integration tests
+cd server && npm run test:integration
+
+# End-to-end tests
+npm run test:e2e
 
 # Coverage reports
 npm run test:coverage
 ```
 
-### Integration Tests
+### Manual Testing & QA
+
+The project includes a comprehensive manual testing framework with structured test cases, matrices, and traceability:
 
 ```bash
-# Run integration tests
-cd server && npm run test:integration
+# View testing guidelines
+open tests/templates/testing-guidelines.md
+
+# Access test matrices
+open tests/matrices/coverage-matrix.csv
+open tests/matrices/requirements-traceability.csv
+
+# Execute manual test cases
+open tests/manual/system-tests/functional-tests.csv
 ```
 
-### End-to-End Tests
+#### Testing Organization
+
+**Functional Test Areas:**
+
+- **Media Capture** (`tests/functional/media-capture/`) - Camera/microphone access and device management
+- **Real-time Streaming** (`tests/functional/real-time-streaming/`) - WebRTC connections and media streaming
+- **Emotion Analysis** (`tests/functional/emotion-analysis/`) - Facial and audio emotion detection
+- **Cross-Platform** (`tests/functional/cross-platform/`) - PWA compatibility across devices
+- **Performance** (`tests/functional/performance/`) - Scalability and load testing
+- **Security & Privacy** (`tests/functional/security-privacy/`) - Data protection and compliance
+- **User Experience** (`tests/functional/user-experience/`) - End-to-end workflows
+
+**Manual Test Types:**
+
+- **System Tests** (`tests/manual/system-tests/`) - Functional, performance, and security validation
+- **Integration Tests** (`tests/manual/integration-tests/`) - Module interaction testing
+- **Boundary Tests** (`tests/manual/boundary-tests/`) - Edge cases and limit validation
+- **Acceptance Tests** (`tests/manual/acceptance-tests/`) - User scenario validation
+
+#### Test Coverage Metrics
+
+| Coverage Type       | Requirements Covered | Test Cases | Coverage % |
+| ------------------- | -------------------- | ---------- | ---------- |
+| Functional Positive | 32/32                | 45         | 100%       |
+| Functional Negative | 17/32                | 17         | 53%        |
+| Boundary Value      | 12/32                | 19         | 38%        |
+| Integration         | 12/32                | 13         | 38%        |
+| Performance         | 10/32                | 13         | 31%        |
+| Security            | 6/32                 | 16         | 19%        |
+| User Acceptance     | 8/32                 | 5          | 25%        |
+
+#### Testing Documentation
+
+- **[Testing Guidelines](tests/templates/testing-guidelines.md)** - Execution procedures and quality standards
+- **[Test Matrices](tests/matrices/)** - Coverage analysis and requirements traceability
+- **[Test Templates](tests/templates/)** - Standardized test case formats and examples
+- **[QA Documentation](tests/README.md)** - Complete testing framework overview
+
+### Load Testing
 
 ```bash
-# Run E2E tests
-npm run test:e2e
+# Small load test (100 users)
+npm run test:load:small
+
+# Medium load test (500 users)
+npm run test:load:medium
+
+# Stress test (1000+ users)
+npm run test:stress
 ```
 
 ## 📦 Build and Deployment
@@ -200,6 +257,7 @@ Each module can be configured independently through their respective configurati
 - **[Architecture](docs/ARCHITECTURE.md)** - System design and module relationships
 - **[Implementation Plan](docs/IMPLEMENTATION_PLAN.md)** - Complete task checklist
 - **[Build Guide](docs/BUILD_GUIDE.md)** - Detailed build instructions
+- **[QA Testing Framework](tests/README.md)** - Comprehensive manual testing documentation
 
 ## 🏗️ Development Workflow
 
