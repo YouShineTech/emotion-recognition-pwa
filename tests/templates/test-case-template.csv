@@ -1,0 +1,2 @@
+TC-ID,Requirement-ID,Test-Objective,Priority,Test-Type,Preconditions,Step-Number,Action,Expected-Result,Pass-Criteria,Fail-Criteria,Postconditions,Notes
+TC-XXX,REQ-XXX,[Clear test purpose statement],[P0/P1/P2/P3],[Functional/Performance/Security/Integration/Boundary/UAT],[Setup requirements and prerequisite test cases],[1/2/3/etc],[User/system action to perform],[Expected system response],[Success validation criteria],[Failure conditions],[Cleanup actions and dependent tests enabled],[Additional information and context]

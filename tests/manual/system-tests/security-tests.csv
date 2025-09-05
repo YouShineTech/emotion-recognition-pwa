@@ -1,0 +1,2 @@
+TC-ID,Requirement-ID,Test-Objective,Priority,Test-Type,Preconditions,Step-Number,Action,Expected-Result,Pass-Criteria,Fail-Criteria,Postconditions,Notes
+TC-S001,REQ-007,Validate secure media stream transmission,P1,Security,"HTTPS connection established; Valid SSL certificate",1,Inspect network traffic during media streaming,All media data encrypted via HTTPS/WSS,No unencrypted media data in network logs,Unencrypted data detected,Secure session maintained,Use browser dev tools network tab

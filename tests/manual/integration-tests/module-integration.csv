@@ -1,0 +1,2 @@
+TC-ID,Requirement-ID,Test-Objective,Priority,Test-Type,Preconditions,Step-Number,Action,Expected-Result,Pass-Criteria,Fail-Criteria,Postconditions,Notes
+TC-I001,REQ-003,Validate MediaCaptureModule to WebRTCTransportModule integration,P0,Integration,"Both modules initialized; Network connection available",1,Start media capture and initiate WebRTC connection,Media stream successfully transmitted to server,WebRTC connection established with media flow,Connection fails or no media transmission,Media pipeline active for analysis modules,Monitor WebRTC stats for connection quality

@@ -1,0 +1,20 @@
+TC-ID,Test-Name,Assigned-Tester,Execution-Status,Pass-Fail-Status,Execution-Date,Defect-IDs,Notes,Retry-Count
+TC-001,Camera permission request,,Not Executed,Pending,,,Initial test case,0
+TC-P001,Sub-500ms latency validation,,Not Executed,Pending,,,Performance critical,0
+TC-S001,Secure media transmission,,Not Executed,Pending,,,Security validation,0
+TC-U001,Intuitive user interface,,Not Executed,Pending,,,Usability testing,0
+TC-I001,MediaCapture to WebRTC integration,,Not Executed,Pending,,,Integration testing,0
+TC-A001,WebSocket API validation,,Not Executed,Pending,,,API testing,0
+TC-D001,End-to-end emotion data flow,,Not Executed,Pending,,,Data flow validation,0
+TC-E001,Valid video resolution partition,,Not Executed,Pending,,,Equivalence testing,0
+TC-E002,Invalid video resolution partition,,Not Executed,Pending,,,Negative equivalence,0
+TC-B001,Maximum users boundary (1000),,Not Executed,Pending,,,Boundary testing,0
+TC-B002,Beyond maximum users (1001),,Not Executed,Pending,,,Boundary violation,0
+TC-N001,No camera permission error,,Not Executed,Pending,,,Negative testing,0
+TC-N002,Network disconnection handling,,Not Executed,Pending,,,Network failure,0
+TC-UAT001,Complete user workflow,,Not Executed,Pending,,,User acceptance,0
+TC-BR001,Multi-modal emotion analysis,,Not Executed,Pending,,,Business rule,0
+TC-BR002,Real-time performance requirement,,Not Executed,Pending,,,Performance rule,0
+TC-CP001,Desktop browser compatibility,,Not Executed,Pending,,,Cross-platform,0
+TC-CP002,Mobile device compatibility,,Not Executed,Pending,,,Mobile testing,0
+TC-CP003,PWA installation and offline,,Not Executed,Pending,,,PWA features,0

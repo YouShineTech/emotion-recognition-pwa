@@ -1,0 +1,2 @@
+TC-ID,Requirement-ID,Test-Objective,Priority,Test-Type,Preconditions,Step-Number,Action,Expected-Result,Pass-Criteria,Fail-Criteria,Postconditions,Notes
+TC-A001,REQ-003,Validate WebSocket API for emotion data transmission,P0,Integration,"WebSocket connection established; Authentication completed",1,Send emotion analysis request via WebSocket,Server responds with emotion data in JSON format,Valid JSON response with emotion scores received,Invalid response format or connection error,API ready for continuous emotion streaming,Validate JSON schema compliance

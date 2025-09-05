@@ -1,166 +1,191 @@
-# Load Testing Suite
+# QA Test Documentation Structure
 
-This directory contains load testing configurations for the Emotion Recognition PWA using Artillery.
+## Overview
 
-## Files
+This directory contains comprehensive manual test documentation for the Emotion Recognition PWA project. All test cases are derived exclusively from project documentation (requirements, design, architecture, business rules) to ensure systematic and complete testing coverage.
 
-- `load/small-load.yml` - Small load test (10 concurrent users)
-- `load/medium-load.yml` - Medium load test (100 concurrent users)
-- `load/stress-test.yml` - Stress test (1000+ concurrent users)
-- `load/load-test-functions.js` - Helper functions for load testing
+## Directory Structure
 
-## Usage
-
-### Prerequisites
-
-Install Artillery globally:
-
-```bash
-npm install -g artillery
+```
+tests/
+├── manual/                          # Manual test case documentation
+│   ├── system-tests/               # Requirements-based system tests
+│   │   ├── functional-tests.csv    # Functional requirement test cases
+│   │   ├── performance-tests.csv   # Performance requirement test cases
+│   │   ├── security-tests.csv      # Security requirement test cases
+│   │   └── usability-tests.csv     # User experience test cases
+│   ├── integration-tests/          # Design-based integration tests
+│   │   ├── module-integration.csv  # Module interaction test cases
+│   │   ├── api-integration.csv     # API contract test cases
+│   │   └── data-flow-tests.csv     # Data pipeline test cases
+│   ├── boundary-tests/             # Coverage criteria test cases
+│   │   ├── equivalence-partition.csv # Equivalence partitioning tests
+│   │   ├── boundary-value.csv      # Boundary value analysis tests
+│   │   └── negative-tests.csv      # Invalid input and error tests
+│   └── acceptance-tests/           # Business rules and UAT
+│       ├── user-scenarios.csv      # End-to-end user workflows
+│       ├── business-rules.csv      # Business logic validation
+│       └── cross-platform.csv     # Platform compatibility tests
+├── matrices/                       # Traceability and coverage matrices
+│   ├── requirements-traceability.csv # REQ-ID to TC-ID mapping
+│   ├── coverage-matrix.csv         # Coverage criteria tracking
+│   └── test-execution-matrix.csv   # Test execution tracking
+├── templates/                      # Test case templates and guidelines
+│   ├── test-case-template.csv      # Standard test case format
+│   ├── testing-guidelines.md       # Test execution guidelines
+│   └── coverage-criteria.md        # Coverage requirements
+└── README.md                       # This documentation file
 ```
 
-### Running Tests
+## Test Case Categories
 
-```bash
-# Small load test (10 users for 1 minute)
-npm run test:load:small
+### System Tests (Requirements-Based)
 
-# Medium load test (100 users with ramp-up)
-npm run test:load:medium
+- **Source**: REQUIREMENTS_SPECIFICATION.md
+- **Purpose**: Validate functional requirements through systematic testing
+- **Coverage**: 100% of documented requirements with positive and negative scenarios
+- **Files**: functional-tests.csv, performance-tests.csv, security-tests.csv, usability-tests.csv
 
-# Stress test (1000+ users to find breaking point)
-npm run test:stress
-```
+### Integration Tests (Design-Based)
 
-### Custom Load Tests
+- **Source**: DESIGN_SPECIFICATION.md and ARCHITECTURE.md
+- **Purpose**: Validate module interactions and system integration points
+- **Coverage**: All documented interfaces, APIs, and data flows
+- **Files**: module-integration.csv, api-integration.csv, data-flow-tests.csv
 
-You can run Artillery tests directly:
+### Boundary Tests (Coverage Criteria)
 
-```bash
-# Run a specific test file
-artillery run tests/load/small-load.yml
+- **Source**: Requirements and design specifications
+- **Purpose**: Systematic validation of input domains and system limits
+- **Coverage**: Equivalence partitioning, boundary value analysis, negative testing
+- **Files**: equivalence-partition.csv, boundary-value.csv, negative-tests.csv
 
-# Run with custom target
-artillery run tests/load/small-load.yml --target http://localhost:3001
+### Acceptance Tests (Business Rules)
 
-# Run with output file
-artillery run tests/load/small-load.yml --output results.json
-```
+- **Source**: BUSINESS_RULES.md and user workflows
+- **Purpose**: End-to-end user scenarios and business validation
+- **Coverage**: All documented user stories and business rules
+- **Files**: user-scenarios.csv, business-rules.csv, cross-platform.csv
 
-## Test Scenarios
+## Test Case Format
 
-### Basic API Health Check
+Each test case follows a standardized CSV format with the following fields:
 
-- Tests `/health` endpoint
-- Verifies response structure
-- Checks for 200 status code
+| Field           | Description                               | Example                                     |
+| --------------- | ----------------------------------------- | ------------------------------------------- |
+| TC-ID           | Unique test case identifier               | TC-001                                      |
+| Requirement-ID  | Source requirement reference              | REQ-001                                     |
+| Test-Objective  | Clear test purpose                        | Validate camera permission request          |
+| Priority        | Test criticality (P0-P3)                  | P0                                          |
+| Test-Type       | Category                                  | Functional                                  |
+| Preconditions   | Setup requirements and prerequisite tests | Browser supports WebRTC; TC-000 passed      |
+| Step-Number     | Sequential step identifier                | 1                                           |
+| Action          | User/system action to perform             | Click "Start Emotion Recognition"           |
+| Expected-Result | Expected system response                  | Permission dialog appears                   |
+| Pass-Criteria   | Success validation                        | Dialog shows camera/mic permissions         |
+| Fail-Criteria   | Failure conditions                        | No dialog or error message                  |
+| Postconditions  | Cleanup actions and dependent tests       | Permission dialog dismissed; enables TC-002 |
+| Notes           | Additional information                    | Test on Chrome, Firefox, Safari             |
 
-### WebRTC Connection Test
+## Traceability and Coverage
 
-- Tests WebRTC session creation
-- Tests SDP offer/answer exchange
-- Simulates real-time connection setup
+### Requirements Traceability Matrix
 
-### Emotion Analysis Pipeline
+- **File**: matrices/requirements-traceability.csv
+- **Purpose**: Bidirectional mapping between requirements and test cases
+- **Content**: REQ-ID to TC-ID relationships with coverage type tracking
 
-- Tests emotion analysis endpoint
-- Sends mock frame and audio data
-- Validates response structure
+### Coverage Matrix
 
-### Session Management
+- **File**: matrices/coverage-matrix.csv
+- **Purpose**: Track coverage completeness across all test categories
+- **Metrics**: Coverage percentages, test case counts, gap analysis
 
-- Tests concurrent session handling
-- Validates session state management
-- Checks resource cleanup
+### Test Execution Matrix
 
-## Configuration
+- **File**: matrices/test-execution-matrix.csv
+- **Purpose**: Track test execution status, results, and defect linking
+- **Content**: Execution status, pass/fail results, tester assignments, defect IDs
 
-### Environment Variables
+## Usage Instructions
 
-Set these environment variables for custom testing:
+### For QA Engineers
 
-```bash
-export ARTILLERY_TARGET=http://localhost:3001
-export ARTILLERY_WORKERS=4
-export ARTILLERY_TIMEOUT=30000
-```
+1. **Test Case Execution**: Use CSV files in spreadsheet applications for execution tracking
+2. **Independent Execution**: All test cases designed for execution without source code access
+3. **Result Recording**: Update test-execution-matrix.csv with results and defects
+4. **Coverage Validation**: Use coverage-matrix.csv to ensure complete testing
 
-### Custom Test Data
+### For Test Managers
 
-Modify `load-test-functions.js` to customize:
+1. **Coverage Analysis**: Review matrices for coverage gaps and completeness
+2. **Progress Tracking**: Monitor execution status across all test categories
+3. **Quality Metrics**: Use coverage percentages and pass/fail rates for reporting
+4. **Resource Planning**: Assign test cases based on priority and complexity
 
-- Mock frame data generation
-- Mock audio data generation
-- SDP offer generation
-- Session ID generation
+### For Development Teams
 
-## Performance Metrics
+1. **Requirement Validation**: Ensure all requirements have corresponding test cases
+2. **Design Verification**: Validate integration points through design-based tests
+3. **Defect Analysis**: Link defects to specific test cases for impact analysis
+4. **Documentation Sync**: Update test cases when requirements or design changes
 
-The tests collect the following metrics:
+## Coverage Criteria
 
-- Response times (p50, p90, p95, p99)
-- Request rates (requests per second)
-- Error rates
-- Concurrent connections
-- Memory usage
-- CPU usage
+### Functional Coverage
 
-## Results Analysis
+- 100% requirements coverage with positive and negative scenarios
+- All documented acceptance criteria validated through test cases
+- Business rule compliance verified through UAT scenarios
 
-After running tests, analyze results:
+### Input Domain Coverage
 
-```bash
-# Generate HTML report
-artillery report results.json -o report.html
+- Equivalence partitioning for all input types (video, audio, user interactions)
+- Boundary value analysis for numeric inputs (users, latency, frame rates)
+- Negative testing for invalid inputs and error conditions
 
-# View summary
-artillery report results.json --format summary
-```
+### Interface Coverage
 
-## Troubleshooting
+- All documented API endpoints and WebSocket protocols
+- WebRTC signaling, media transport, and data channel validation
+- Cross-platform compatibility across supported browsers and devices
 
-### Common Issues
+### Real-Time System Coverage
 
-1. **Port already in use**: Kill processes on ports 3000, 3001
-2. **Memory issues**: Reduce concurrent users or increase system memory
-3. **Network timeouts**: Check firewall settings and network connectivity
-4. **Server overload**: Monitor server resources during testing
+- Timing constraints (sub-500ms latency requirements)
+- Concurrency scenarios (1000+ simultaneous users)
+- Resource constraints (memory, CPU, bandwidth)
+- Failure recovery scenarios (network interruption, device disconnection)
 
-### Debug Mode
+## Quality Standards
 
-Run tests with verbose output:
+### Test Case Quality
 
-```bash
-artillery run tests/load/small-load.yml --verbose
-```
+- All test cases trace to documented requirements
+- Test steps are action-based and independently executable
+- Expected results are specific, observable, and measurable
+- Pass/fail criteria are objective and unambiguous
 
-## Integration with CI/CD
+### Documentation Standards
 
-Add load testing to your CI pipeline:
+- CSV format for spreadsheet compatibility and execution tracking
+- Consistent field naming and structure across all test categories
+- Clear, concise language suitable for any tester
+- Regular synchronization with source documentation updates
 
-```yaml
-# GitHub Actions example
-- name: Load Test
-  run: |
-    npm run test:load:small
-    npm run test:load:medium
-```
+### Maintenance Procedures
 
-## Performance Targets
+- Monitor source documentation for changes and update test cases accordingly
+- Perform regular coverage gap analysis and remediation
+- Validate traceability matrix completeness and accuracy
+- Review and update test cases based on execution feedback and defect analysis
 
-Based on requirements specification:
+## Getting Started
 
-- **Latency**: < 500ms end-to-end
-- **Concurrent Users**: 1000+ simultaneous connections
-- **Error Rate**: < 1%
-- **Response Time**: p95 < 1000ms
+1. **Review Templates**: Start with templates/test-case-template.csv and testing-guidelines.md
+2. **Understand Coverage**: Read coverage-criteria.md for comprehensive coverage requirements
+3. **Execute Tests**: Import CSV files into spreadsheet applications for execution tracking
+4. **Track Progress**: Use matrices for coverage analysis and execution monitoring
+5. **Report Results**: Update execution matrix with results and generate coverage reports
 
-## Monitoring
-
-During load tests, monitor:
-
-- Server CPU and memory usage
-- Network bandwidth
-- Database connection pool
-- WebRTC connection stability
-- Emotion analysis processing time
+For detailed guidelines on test case creation, execution, and maintenance, refer to the files in the templates/ directory.

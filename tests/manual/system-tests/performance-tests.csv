@@ -1,0 +1,2 @@
+TC-ID,Requirement-ID,Test-Objective,Priority,Test-Type,Preconditions,Step-Number,Action,Expected-Result,Pass-Criteria,Fail-Criteria,Postconditions,Notes
+TC-P001,REQ-010,Validate sub-500ms emotion detection latency,P0,Performance,"System running; Camera active; Network stable",1,Start emotion recognition session,Emotion overlay appears on video feed,Latency < 500ms measured,Latency >= 500ms or no overlay,Session active for further testing,Use network monitoring tools

@@ -1,0 +1,10 @@
+Requirement-ID,Requirement-Description,Test-Case-IDs,Coverage-Types,Business-Rule-IDs,Design-Component-IDs
+REQ-001,Camera and microphone access with user permission,"TC-001,TC-N001","Positive,Negative",BR-001,DC-001
+REQ-002,Real-time emotion analysis from video and audio streams,"TC-D001,TC-BR001","Integration,Business",BR-002,DC-002
+REQ-003,WebRTC transport for low-latency media streaming,"TC-I001,TC-A001,TC-N002","Integration,Negative",BR-003,DC-003
+REQ-004,Input validation and error handling,"TC-E001,TC-E002","Boundary,Equivalence",,DC-004
+REQ-006,Progressive Web App with cross-platform support,"TC-U001,TC-UAT001,TC-CP001,TC-CP002,TC-CP003","Usability,UAT,Cross-platform",BR-004,DC-005
+REQ-007,Security and privacy protection,"TC-S001,TC-N001","Security,Negative",BR-005,DC-006
+REQ-008,Test case documentation with traceability,"All TC-IDs","Documentation",,DC-007
+REQ-009,Comprehensive test coverage and matrices,"All TC-IDs","Coverage",,DC-008
+REQ-010,Performance requirements and scalability,"TC-P001,TC-B001,TC-B002,TC-BR002","Performance,Boundary,Business",BR-006,DC-009

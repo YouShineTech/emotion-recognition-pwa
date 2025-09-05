@@ -1,0 +1,2 @@
+TC-ID,Requirement-ID,Test-Objective,Priority,Test-Type,Preconditions,Step-Number,Action,Expected-Result,Pass-Criteria,Fail-Criteria,Postconditions,Notes
+TC-U001,REQ-006,Validate intuitive user interface for emotion recognition,P2,Usability,"PWA loaded; User has no prior experience",1,Navigate to emotion recognition interface,User can identify start button without instructions,User clicks correct button within 10 seconds,User confused or clicks wrong element,Interface ready for emotion detection,Test with multiple user personas

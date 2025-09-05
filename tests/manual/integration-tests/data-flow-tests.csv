@@ -1,0 +1,2 @@
+TC-ID,Requirement-ID,Test-Objective,Priority,Test-Type,Preconditions,Step-Number,Action,Expected-Result,Pass-Criteria,Fail-Criteria,Postconditions,Notes
+TC-D001,REQ-002,Validate end-to-end emotion data flow from capture to overlay,P0,Integration,"Full system initialized; All modules connected",1,Perform facial expression in front of camera,Emotion overlay updates on video feed reflecting expression,Overlay shows correct emotion with confidence score,Incorrect emotion or no overlay update,Data pipeline validated for production use,Test multiple emotions for accuracy
