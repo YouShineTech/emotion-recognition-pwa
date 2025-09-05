@@ -1,0 +1,48 @@
+Project Name,Emotion Recognition PWA
+Module Name,Media Capture - Camera and Microphone Access
+Created By,[Tester Name]
+Created Date,yyyy-mm-dd
+Executed By,[Tester Name]
+Executed Date,yyyy-mm-dd
+
+Test Case ID,Test Case Description,Pre Steps,Test Step,Preconditions,Test Data,Expected Result,Actual Result,Status,Comments
+
+TC-MC-001,Verify camera and microphone permission request,,Setup clean browser environment,Browser supports WebRTC; Device has camera and microphone; Clean browser state,Supported browser (Chrome/Firefox/Safari),"Clean browser environment ready",,Pass/Fail,
+,,1,Open PWA URL in supported browser,,,"PWA loads and displays main interface within 3 seconds",,Pass/Fail,
+,,2,Click "Start Emotion Recognition" button,,,"Permission dialog appears requesting camera and microphone access",,Pass/Fail,
+,,3,Verify dialog content and clarity,,,"Dialog clearly explains camera and microphone requirements with Allow/Block options",,Pass/Fail,
+
+TC-MC-002,Verify permission grant and video feed activation,,Complete TC-MC-001 successfully,TC-MC-001 passed; Permission dialog displayed,Permission dialog,"Permission dialog visible",,Pass/Fail,
+,,1,Click "Allow" on permission dialog,,,"Permission granted and dialog closes immediately",,Pass/Fail,
+,,2,Verify live video feed appears,,,"Video feed displays real-time camera input clearly within 1 second",,Pass/Fail,
+,,3,Check video quality and frame rate,,,"Video quality acceptable (720p) with smooth frame rate (30fps)",,Pass/Fail,
+
+TC-MC-003,Verify permission denial error handling,,Complete TC-MC-001 successfully,TC-MC-001 passed; Permission dialog displayed,Permission dialog,"Permission dialog visible",,Pass/Fail,
+,,1,Click "Block" or "Deny" on permission dialog,,,"Permission denied and dialog closes",,Pass/Fail,
+,,2,Verify error message appears,,,"Clear error message explaining permission requirement appears",,Pass/Fail,
+,,3,Check error message provides guidance,,,"Error message includes specific instructions to enable permissions",,Pass/Fail,
+
+TC-MC-004,Verify multiple camera selection,,Complete TC-MC-002 successfully,TC-MC-002 passed; Device has multiple cameras (front/back),Video feed with multiple cameras available,"Video feed active",,Pass/Fail,
+,,1,Access camera selection interface,,,"Camera selection options become available in settings",,Pass/Fail,
+,,2,View available camera options,,,"List of cameras displayed with clear labels (Front Camera Back Camera)",,Pass/Fail,
+,,3,Select different camera,,,"Video feed switches to selected camera successfully without interruption",,Pass/Fail,
+
+TC-MC-005,Verify recording status indicator,,Complete TC-MC-002 successfully,TC-MC-002 passed; Camera active,Active video feed,"Video feed streaming",,Pass/Fail,
+,,1,Observe interface while camera active,,,"Recording status indicator clearly visible (red dot or similar)",,Pass/Fail,
+,,2,Verify indicator shows active state,,,"Indicator clearly shows camera is recording/active",,Pass/Fail,
+
+TC-MC-006,Verify camera permission denial handling,,Setup permission denial scenario,Browser with camera; Clean permission state,Permission denial test,"Clean permission state",,Pass/Fail,
+,,1,Deny camera permission when prompted,,,"System displays appropriate camera-specific error message",,Pass/Fail,
+,,2,Verify error message clarity,,,"Clear error with guidance on enabling camera permissions",,Pass/Fail,
+
+TC-MC-007,Verify microphone permission denial handling,,Setup permission denial scenario,Browser with microphone; Clean permission state,Permission denial test,"Clean permission state",,Pass/Fail,
+,,1,Deny microphone permission when prompted,,,"System displays appropriate microphone-specific error message",,Pass/Fail,
+,,2,Verify microphone-specific guidance,,,"Error explains microphone requirement and how to enable",,Pass/Fail,
+
+TC-MC-008,Verify no camera device handling,,Setup system without camera,System without camera device; Camera simulation disabled,No camera scenario,"System without camera",,Pass/Fail,
+,,1,Attempt camera access on device without camera,,,"System handles missing camera gracefully",,Pass/Fail,
+,,2,Verify appropriate error message,,,"Error message indicates no camera available with clear explanation",,Pass/Fail,
+
+TC-MC-009,Verify no microphone device handling,,Setup system without microphone,System without microphone; Audio simulation disabled,No microphone scenario,"System without microphone",,Pass/Fail,
+,,1,Attempt microphone access without device,,,"System handles missing microphone gracefully",,Pass/Fail,
+,,2,Verify appropriate error message,,,"Error message indicates no microphone available with guidance",,Pass/Fail,

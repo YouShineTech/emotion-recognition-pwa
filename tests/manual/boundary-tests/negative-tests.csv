@@ -1,3 +1,83 @@
-TC-ID,Requirement-ID,Test-Objective,Priority,Test-Type,Preconditions,Step-Number,Action,Expected-Result,Pass-Criteria,Fail-Criteria,Postconditions,Notes
-TC-N001,REQ-007,Validate system behavior with no camera permission,P1,Negative,"Browser loaded; Camera permission denied by user",1,Attempt to start emotion recognition without camera access,System displays clear error message and provides retry option,User-friendly error message with actionable guidance,System crashes or shows technical error,System ready for permission retry,Test error message clarity and user guidance
-TC-N002,REQ-003,Validate system behavior with network disconnection,P0,Negative,"Emotion recognition active; Stable network connection",1,Disconnect network during active emotion analysis session,System detects disconnection and attempts reconnection,Reconnection attempt with user notification,System hangs or crashes without notification,System recovers when network restored,Test automatic reconnection logic
+Project Name,Emotion Recognition PWA
+Module Name,Negative Tests
+Created By,[Tester Name]
+Created Date,yyyy-mm-dd
+Executed By,[Tester Name]
+Executed Date,yyyy-mm-dd
+
+Test Case ID,Test Case Description,Pre Steps,Test Step,Preconditions,Test Data,Expected Result,Actual Result,Status,Comments
+
+TC-601,Test camera permission denial,,Setup clean browser state,Browser with camera; Clean permission state,Permission denial scenario,"Clean browser state",,Pass/Fail,
+,,1,Deny camera permission when prompted,,,"System displays appropriate error message",,Pass/Fail,
+,,2,Verify error message clarity,,,"Clear error with guidance on enabling permissions",,Pass/Fail,
+,,3,Check error actionability,,,"Error provides specific steps to resolve issue",,Pass/Fail,
+
+TC-602,Test microphone permission denial,,Setup clean browser state,Browser with microphone; Clean permission state,Permission denial scenario,"Permission denial handled",,Pass/Fail,
+,,1,Deny microphone permission when prompted,,,"System displays appropriate error message",,Pass/Fail,
+,,2,Verify microphone-specific error,,,"Clear error explaining microphone requirement",,Pass/Fail,
+
+TC-603,Test no camera device available,,Setup system without camera,System without camera; Simulation disabled,No camera scenario,"Microphone denial handled",,Pass/Fail,
+,,1,Attempt camera access on device without camera,,,"System handles missing camera gracefully",,Pass/Fail,
+,,2,Verify error message,,,"Appropriate error indicating no camera available",,Pass/Fail,
+,,3,Check device detection,,,"System properly detects camera absence",,Pass/Fail,
+
+TC-604,Test no microphone device available,,Setup system without microphone,System without microphone; Audio disabled,No microphone scenario,"No camera handled",,Pass/Fail,
+,,1,Attempt microphone access without microphone,,,"System handles missing microphone gracefully",,Pass/Fail,
+,,2,Verify error message,,,"Appropriate error indicating no microphone available",,Pass/Fail,
+
+TC-605,Test network disconnection during streaming,,Setup active streaming,Active streaming; Network control capability,Network disconnection scenario,"No microphone handled",,Pass/Fail,
+,,1,Disconnect network during streaming,,,"System detects disconnection and attempts recovery",,Pass/Fail,
+,,2,Verify disconnection detection,,,"Connection status shows disconnected",,Pass/Fail,
+,,3,Check recovery attempts,,,"Recovery attempts visible to user",,Pass/Fail,
+
+TC-606,Test server unavailable during connection,,Setup server offline,System ready; Backend server stopped,Server unavailable scenario,"Network failure handled",,Pass/Fail,
+,,1,Attempt connection with server offline,,,"System handles server unavailability gracefully",,Pass/Fail,
+,,2,Verify error message,,,"Clear error indicating server connection failure",,Pass/Fail,
+
+TC-607,Test corrupted media stream data,,Setup media corruption,Active streaming; Corruption simulation,Corrupted media data,"Server failure handled",,Pass/Fail,
+,,1,Inject corrupted data into media stream,,,"System handles corrupted data gracefully",,Pass/Fail,
+,,2,Verify data validation,,,"System skips corrupted frames and continues",,Pass/Fail,
+,,3,Check recovery behavior,,,"System recovers and processes valid data",,Pass/Fail,
+
+TC-608,Test overlay rendering failure,,Setup rendering failure,Emotion detection active; Rendering failure simulation,Rendering component failure,"Corrupted data handled",,Pass/Fail,
+,,1,Simulate overlay rendering failure,,,"System continues emotion detection without overlays",,Pass/Fail,
+,,2,Verify graceful degradation,,,"Emotion processing continues with fallback display",,Pass/Fail,
+
+TC-609,Test facial analysis model failure,,Setup AI failure,Video streaming active; AI model failure simulation,Facial AI failure scenario,"Rendering failure handled",,Pass/Fail,
+,,1,Simulate facial analysis model crash,,,"System handles AI failure gracefully",,Pass/Fail,
+,,2,Verify fallback behavior,,,"System continues with audio-only analysis",,Pass/Fail,
+,,3,Check status indication,,,"System shows appropriate status to user",,Pass/Fail,
+
+TC-610,Test audio analysis model failure,,Setup audio AI failure,Audio streaming active; Audio AI failure simulation,Audio AI failure scenario,"AI failure handled",,Pass/Fail,
+,,1,Simulate audio emotion analysis failure,,,"System handles audio AI failure gracefully",,Pass/Fail,
+,,2,Verify multi-modal fallback,,,"System continues with facial-only analysis",,Pass/Fail,
+,,3,Check status communication,,,"System communicates status to user",,Pass/Fail,
+
+TC-611,Test unsupported browser,,Setup older browser,Older browser without WebRTC support,Unsupported browser scenario,"Audio AI failure handled",,Pass/Fail,
+,,1,Access PWA from unsupported browser,,,"System displays browser compatibility message",,Pass/Fail,
+,,2,Verify compatibility message,,,"Clear message indicating browser requirements",,Pass/Fail,
+,,3,Check alternative suggestions,,,"Message provides alternatives or upgrade path",,Pass/Fail,
+
+TC-612,Test media relay server overload,,Setup server overload,Media relay at capacity; Additional connection,Server overload scenario,"Browser compatibility handled",,Pass/Fail,
+,,1,Attempt connection when relay overloaded,,,"System rejects connection gracefully",,Pass/Fail,
+,,2,Verify rejection message,,,"Connection rejected with retry suggestion",,Pass/Fail,
+,,3,Check queue information,,,"System provides queue position if applicable",,Pass/Fail,
+
+TC-613,Test system resource exhaustion,,Setup extreme load,System under extreme load; Resource monitoring,Resource exhaustion scenario,"Overload handled",,Pass/Fail,
+,,1,Push system beyond resource limits,,,"System implements protective measures",,Pass/Fail,
+,,2,Verify load shedding,,,"System sheds load or rejects new connections",,Pass/Fail,
+,,3,Check system stability,,,"System protects stability and doesn't crash",,Pass/Fail,
+
+TC-614,Test encryption key corruption,,Setup key corruption,Active encryption; Key corruption simulation,Key corruption scenario,"Resource exhaustion handled",,Pass/Fail,
+,,1,Simulate encryption key corruption,,,"System handles key issues securely",,Pass/Fail,
+,,2,Verify security response,,,"System regenerates keys or terminates securely",,Pass/Fail,
+,,3,Check cryptographic resilience,,,"System doesn't continue with compromised encryption",,Pass/Fail,
+
+TC-615,Test consent data corruption,,Setup consent corruption,Stored consent data; Data corruption simulation,Consent corruption scenario,"Key corruption handled",,Pass/Fail,
+,,1,Simulate consent record corruption,,,"System handles consent issues appropriately",,Pass/Fail,
+,,2,Verify consent integrity,,,"System requests fresh consent or denies access",,Pass/Fail,
+
+TC-616,Test data anonymization failure,,Setup anonymization failure,Biometric processing active; Anonymization failure,Anonymization failure scenario,"Consent corruption handled",,Pass/Fail,
+,,1,Simulate anonymization component failure,,,"System handles anonymization failure securely",,Pass/Fail,
+,,2,Verify privacy protection,,,"System stops processing or applies alternative protection",,Pass/Fail,
+,,3,Check fallback mechanisms,,,"System doesn't continue without anonymization",,Pass/Fail,

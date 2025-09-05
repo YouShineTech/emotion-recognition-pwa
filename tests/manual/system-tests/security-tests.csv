@@ -1,2 +1,83 @@
-TC-ID,Requirement-ID,Test-Objective,Priority,Test-Type,Preconditions,Step-Number,Action,Expected-Result,Pass-Criteria,Fail-Criteria,Postconditions,Notes
-TC-S001,REQ-007,Validate secure media stream transmission,P1,Security,"HTTPS connection established; Valid SSL certificate",1,Inspect network traffic during media streaming,All media data encrypted via HTTPS/WSS,No unencrypted media data in network logs,Unencrypted data detected,Secure session maintained,Use browser dev tools network tab
+Project Name,Emotion Recognition PWA
+Module Name,Security Tests
+Created By,[Tester Name]
+Created Date,yyyy-mm-dd
+Executed By,[Tester Name]
+Executed Date,yyyy-mm-dd
+
+Test Case ID,Test Case Description,Pre Steps,Test Step,Preconditions,Test Data,Expected Result,Actual Result,Status,Comments
+
+TC-201,Verify end-to-end encryption for media streams,,Setup network packet capture,Active video/audio streaming; Packet capture tools,Wireshark or similar tools,"Network monitoring ready",,Pass/Fail,
+,,1,Capture network traffic during streaming,,,"All media data encrypted in transit",,Pass/Fail,
+,,2,Analyze captured packets,,,"No plaintext video/audio data visible",,Pass/Fail,
+,,3,Verify encryption protocols,,,"Strong encryption protocols in use",,Pass/Fail,
+
+TC-202,Verify AES-256-GCM encryption for biometric data,,Setup data storage monitoring,Emotion processing active; Data monitoring tools,Data encryption analysis tools,"Data processing active",,Pass/Fail,
+,,1,Monitor stored emotion data,,,"Biometric data encrypted with AES-256-GCM",,Pass/Fail,
+,,2,Verify encryption headers,,,"Proper encryption headers present",,Pass/Fail,
+,,3,Check for unencrypted data,,,"No unencrypted biometric data found",,Pass/Fail,
+
+TC-203,Verify TLS 1.3 for internal communications,,Setup TLS monitoring,System components communicating; TLS analysis tools,TLS monitoring tools,"Internal communications active",,Pass/Fail,
+,,1,Analyze internal API communications,,,"All internal traffic uses TLS 1.3",,Pass/Fail,
+,,2,Verify perfect forward secrecy,,,"PFS enabled for all connections",,Pass/Fail,
+,,3,Check cipher suites,,,"Strong cipher suites in use",,Pass/Fail,
+
+TC-204,Verify secure signaling server connections,,Setup certificate monitoring,WebRTC signaling active; Certificate tools,Certificate validation tools,"Signaling active",,Pass/Fail,
+,,1,Verify signaling server certificates,,,"Valid certificates with proper validation",,Pass/Fail,
+,,2,Test with invalid certificates,,,"Invalid certificates properly rejected",,Pass/Fail,
+,,3,Check secure connection establishment,,,"Secure connections established successfully",,Pass/Fail,
+
+TC-205,Verify cryptographic key rotation,,Setup long-term monitoring,System running 24+ hours; Key monitoring tools,Key management monitoring,"System running 24+ hours",,Pass/Fail,
+,,1,Monitor key rotation after 24 hours,,,"New encryption keys generated",,Pass/Fail,
+,,2,Verify old key invalidation,,,"Old keys properly invalidated",,Pass/Fail,
+,,3,Check key generation entropy,,,"Keys generated with sufficient entropy",,Pass/Fail,
+
+TC-206,Verify consent dialog display and clarity,,Setup clean browser state,First-time user access; Clean browser state,Clean browser environment,"Clean browser state",,Pass/Fail,
+,,1,Access system as new user,,,"Clear consent dialog appears",,Pass/Fail,
+,,2,Review consent information,,,"Dialog explains data collection processing and retention",,Pass/Fail,
+,,3,Verify GDPR compliance language,,,"Consent language meets GDPR requirements",,Pass/Fail,
+
+TC-207,Verify granular consent options,,Complete TC-206 successfully,TC-206 passed; Consent dialog displayed,Consent dialog,"Consent dialog displayed",,Pass/Fail,
+,,1,Review consent options,,,"Separate options for facial and audio analysis",,Pass/Fail,
+,,2,Verify individual checkboxes,,,"Individual checkboxes for each data type",,Pass/Fail,
+,,3,Test partial consent scenarios,,,"System respects partial consent selections",,Pass/Fail,
+
+TC-208,Verify consent withdrawal functionality,,Complete TC-207 successfully,TC-207 passed; Consent granted,Active consent state,"Consent granted",,Pass/Fail,
+,,1,Withdraw consent through interface,,,"Consent withdrawal option available",,Pass/Fail,
+,,2,Verify processing cessation,,,"All biometric processing stops within 30 seconds",,Pass/Fail,
+,,3,Confirm data deletion,,,"Data deletion confirmed",,Pass/Fail,
+
+TC-209,Verify consent expiration and renewal,,Setup consent expiration test,Consent granted 90 days ago; System access,90-day old consent,"Expired consent state",,Pass/Fail,
+,,1,Access system after consent expiration,,,"System requests consent renewal",,Pass/Fail,
+,,2,Verify re-authorization requirement,,,"New consent dialog requires re-authorization",,Pass/Fail,
+,,3,Check consent audit logging,,,"Consent events properly logged",,Pass/Fail,
+
+TC-210,Verify secure authentication without password storage,,Setup authentication monitoring,User registration/login system; Auth monitoring,Authentication system,"Authentication system active",,Pass/Fail,
+,,1,Attempt user authentication,,,"Authentication succeeds using secure methods",,Pass/Fail,
+,,2,Verify no password storage,,,"No passwords stored in database",,Pass/Fail,
+,,3,Check authentication methods,,,"Secure authentication methods (OAuth JWT) in use",,Pass/Fail,
+
+TC-211,Verify session token security,,Complete TC-210 successfully,TC-210 passed; User authenticated,Token analysis tools,"User authenticated",,Pass/Fail,
+,,1,Analyze generated session tokens,,,"Tokens have 256-bit entropy",,Pass/Fail,
+,,2,Verify token expiration,,,"Tokens expire after 4 hours",,Pass/Fail,
+,,3,Check token randomness,,,"Tokens are cryptographically secure",,Pass/Fail,
+
+TC-212,Verify brute force protection,,Setup authentication system,Authentication active; Attack simulation tools,Brute force testing tools,"Authentication system ready",,Pass/Fail,
+,,1,Attempt multiple failed logins rapidly,,,"System detects brute force attempts",,Pass/Fail,
+,,2,Verify exponential backoff,,,"Login attempts blocked with increasing delays (1s 2s 4s 8s 16s)",,Pass/Fail,
+,,3,Test with automated tools,,,"Protection effective against automated attacks",,Pass/Fail,
+
+TC-213,Verify differential privacy for facial landmarks,,Setup privacy analysis,Facial analysis active; Privacy analysis tools,Privacy analysis tools,"Facial analysis active",,Pass/Fail,
+,,1,Extract facial landmark data,,,"Facial landmarks show privacy noise",,Pass/Fail,
+,,2,Analyze privacy protection,,,"Differential privacy applied with ε=1.0",,Pass/Fail,
+,,3,Test identity reconstruction,,,"Identity reconstruction prevented",,Pass/Fail,
+
+TC-214,Verify speaker identification removal from audio,,Setup audio analysis,Audio analysis active; Voice analysis tools,Voice identification tools,"Audio analysis active",,Pass/Fail,
+,,1,Analyze processed audio features,,,"Speaker identification characteristics removed",,Pass/Fail,
+,,2,Verify emotion data preservation,,,"Audio features preserve emotion data",,Pass/Fail,
+,,3,Test voice identification,,,"Speaker identification not possible from processed audio",,Pass/Fail,
+
+TC-215,Verify automatic biometric data deletion,,Setup data retention monitoring,Session active; Data monitoring tools,Data retention monitoring,"Session active",,Pass/Fail,
+,,1,End user session,,,"Session terminates cleanly",,Pass/Fail,
+,,2,Monitor data cleanup,,,"Raw biometric data deleted within 60 seconds",,Pass/Fail,
+,,3,Verify complete data purging,,,"All raw facial and audio data removed",,Pass/Fail,

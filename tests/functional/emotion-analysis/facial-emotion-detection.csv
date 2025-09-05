@@ -1,0 +1,55 @@
+Project Name,Emotion Recognition PWA
+Module Name,Emotion Analysis - Facial Emotion Detection
+Created By,[Tester Name]
+Created Date,yyyy-mm-dd
+Executed By,[Tester Name]
+Executed Date,yyyy-mm-dd
+
+Test Case ID,Test Case Description,Pre Steps,Test Step,Preconditions,Test Data,Expected Result,Actual Result,Status,Comments
+
+TC-FAD-001,Verify emotion overlay display functionality,,Complete streaming setup,Real-time streaming active; Backend processing enabled,Active streaming with backend processing,"Streaming and processing active",,Pass/Fail,
+,,1,Display clear facial expressions (happy),,,"Emotion overlays appear on video feed within 500ms",,Pass/Fail,
+,,2,Verify overlay visibility and clarity,,,"Overlay graphics clearly visible on live video without obstruction",,Pass/Fail,
+
+TC-FAD-002,Verify facial emotion bounding boxes,,Complete TC-FAD-001 successfully,TC-FAD-001 passed; Facial emotions detected,Clear facial expressions visible,"Emotion overlays active",,Pass/Fail,
+,,1,Position face clearly in camera view,,,"Bounding boxes appear around detected faces accurately",,Pass/Fail,
+,,2,Verify bounding box accuracy,,,"Rectangular boxes outline detected faces with proper positioning",,Pass/Fail,
+,,3,Test with multiple faces,,,"System detects and bounds multiple faces independently",,Pass/Fail,
+
+TC-FAD-003,Verify emotion labels and confidence scores,,Complete TC-FAD-002 successfully,TC-FAD-002 passed; Faces detected and bounded,Facial detection active with bounding,"Facial detection verified",,Pass/Fail,
+,,1,Display clear happy expression,,,"Emotion label shows 'Happy' with confidence percentage (>70%)",,Pass/Fail,
+,,2,Display clear sad expression,,,"Emotion label updates to 'Sad' with appropriate confidence score",,Pass/Fail,
+,,3,Display clear angry expression,,,"Emotion label updates to 'Angry' with confidence score",,Pass/Fail,
+,,4,Verify emotion transition accuracy,,,"Labels update smoothly as expressions change",,Pass/Fail,
+
+TC-FAD-004,Verify clean video feed with no emotions,,Complete streaming setup,Real-time streaming active; No clear emotions present,Neutral expression maintained,"Streaming active",,Pass/Fail,
+,,1,Maintain neutral expression,,,"Video feed displays cleanly without emotion overlays",,Pass/Fail,
+,,2,Verify clean display state,,,"No emotion graphics or labels appear during neutral state",,Pass/Fail,
+
+TC-FAD-005,Verify overlay timeout for outdated data,,Complete TC-FAD-001 successfully,TC-FAD-001 passed; Emotion overlays active,Active emotion overlays,"Emotion overlays displayed",,Pass/Fail,
+,,1,Stop emotion processing (cover camera),,,"System detects absence of clear emotions",,Pass/Fail,
+,,2,Wait for timeout period,,,"Overlays disappear after exactly 2 seconds of no detection",,Pass/Fail,
+,,3,Verify complete overlay removal,,,"All emotion graphics and labels removed from display",,Pass/Fail,
+
+TC-FAD-006,Verify facial analysis accuracy under various conditions,,Setup facial analysis testing,Facial analysis active; Various lighting conditions,Different lighting scenarios,"Facial analysis ready",,Pass/Fail,
+,,1,Test under normal lighting,,,"Facial emotions detected with >85% accuracy",,Pass/Fail,
+,,2,Test under low lighting,,,"System maintains reasonable accuracy or indicates low confidence",,Pass/Fail,
+,,3,Test under bright lighting,,,"System adapts to bright conditions and maintains detection",,Pass/Fail,
+
+TC-FAD-007,Verify facial analysis model failure handling,,Setup AI failure simulation,Video streaming active; AI model failure capability,Facial AI failure simulation,"Video streaming active",,Pass/Fail,
+,,1,Simulate facial analysis model crash,,,"System handles AI failure gracefully without crashing",,Pass/Fail,
+,,2,Verify fallback behavior,,,"System continues operation and shows appropriate status message",,Pass/Fail,
+,,3,Check recovery attempts,,,"System attempts to restart facial analysis automatically",,Pass/Fail,
+
+TC-FAD-008,Verify facial analysis with poor video quality,,Setup poor quality video,Active streaming; Video quality degradation capability,Poor quality video simulation,"Active streaming",,Pass/Fail,
+,,1,Degrade video quality (low resolution),,,"System handles poor quality video gracefully",,Pass/Fail,
+,,2,Verify detection capability,,,"System maintains detection or indicates low confidence appropriately",,Pass/Fail,
+
+TC-FAD-009,Verify facial analysis boundary conditions,,Setup boundary testing,Facial analysis active; Edge case scenarios,Boundary condition scenarios,"Facial analysis active",,Pass/Fail,
+,,1,Test with face partially out of frame,,,"System detects partial faces or indicates insufficient data",,Pass/Fail,
+,,2,Test with face too close to camera,,,"System handles close-up faces appropriately",,Pass/Fail,
+,,3,Test with face too far from camera,,,"System indicates when face is too distant for analysis",,Pass/Fail,
+
+TC-FAD-010,Verify facial analysis performance under load,,Setup performance testing,System under high load; Multiple concurrent users,High system load scenario,"System under load",,Pass/Fail,
+,,1,Monitor facial analysis accuracy under load,,,"Accuracy remains >=85% even with high system load",,Pass/Fail,
+,,2,Verify processing time maintenance,,,"Facial analysis completes within 200ms per frame under load",,Pass/Fail,

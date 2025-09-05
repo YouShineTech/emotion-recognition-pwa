@@ -1,3 +1,73 @@
-TC-ID,Requirement-ID,Test-Objective,Priority,Test-Type,Preconditions,Step-Number,Action,Expected-Result,Pass-Criteria,Fail-Criteria,Postconditions,Notes
-TC-E001,REQ-004,Validate video resolution input partitions,P1,Boundary,"Camera device available; Multiple resolution support",1,Set video resolution to 640x480 (valid partition),System accepts resolution and starts video capture,Video stream active at specified resolution,Resolution rejected or video fails to start,System ready for emotion analysis,Test valid partition: 640x480 to 1920x1080
-TC-E002,REQ-004,Validate invalid video resolution partition,P1,Boundary,"Camera device available",1,Attempt to set video resolution to 100x100 (invalid partition),System rejects invalid resolution with error message,Clear error message displayed to user,System accepts invalid resolution or crashes,System remains stable for retry,Test invalid partition: below minimum supported
+Project Name,Emotion Recognition PWA
+Module Name,Equivalence Partition Tests
+Created By,[Tester Name]
+Created Date,yyyy-mm-dd
+Executed By,[Tester Name]
+Executed Date,yyyy-mm-dd
+
+Test Case ID,Test Case Description,Pre Steps,Test Step,Preconditions,Test Data,Expected Result,Actual Result,Status,Comments
+
+TC-401,Test valid concurrent user range (1-999 users),,Setup load testing environment,Load testing capability; User simulation tools,500 concurrent users (mid-range),"Load testing environment ready",,Pass/Fail,
+,,1,Connect 500 users simultaneously,,,"All users connect successfully with normal performance",,Pass/Fail,
+,,2,Verify connection success rate,,,"Connection success rate >= 99%",,Pass/Fail,
+,,3,Check latency performance,,,"Latency < 500ms for all connections",,Pass/Fail,
+
+TC-402,Test maximum valid concurrent users (1000 users),,Complete TC-401 successfully,TC-401 passed; Load testing capability,1000 concurrent users,"Valid partition verified",,Pass/Fail,
+,,1,Connect exactly 1000 users simultaneously,,,"System handles maximum load successfully",,Pass/Fail,
+,,2,Verify all connections accepted,,,"All 1000 users connected",,Pass/Fail,
+,,3,Check performance within limits,,,"Performance remains within acceptable limits",,Pass/Fail,
+
+TC-403,Test invalid concurrent user range (1001+ users),,Complete TC-402 successfully,TC-402 passed; System at capacity,1001 concurrent users,"Maximum boundary verified",,Pass/Fail,
+,,1,Attempt to connect 1001st user,,,"System gracefully rejects additional connections",,Pass/Fail,
+,,2,Verify rejection message,,,"Connection rejected with appropriate error message",,Pass/Fail,
+,,3,Check system stability,,,"System remains stable and doesn't crash",,Pass/Fail,
+
+TC-404,Test valid latency range (0-499ms),,Setup latency measurement,Active streaming; Latency measurement tools,Normal network conditions,"Invalid partition verified",,Pass/Fail,
+,,1,Measure latency during normal operation,,,"Latency remains in valid range consistently",,Pass/Fail,
+,,2,Verify consistent performance,,,"Measured latency consistently < 500ms",,Pass/Fail,
+
+TC-405,Test latency boundary (500ms),,Complete TC-404 successfully,TC-404 passed; Latency monitoring active,Network simulation at 500ms,"Valid latency verified",,Pass/Fail,
+,,1,Simulate network to achieve 500ms latency,,,"System operates at latency boundary",,Pass/Fail,
+,,2,Verify functionality at boundary,,,"System functions correctly at exactly 500ms",,Pass/Fail,
+
+TC-406,Test invalid latency range (501ms+),,Setup network simulation,Network simulation capability,Network conditions >500ms latency,"Latency boundary verified",,Pass/Fail,
+,,1,Simulate network causing >500ms latency,,,"System handles high latency gracefully",,Pass/Fail,
+,,2,Verify user feedback,,,"System provides appropriate user feedback",,Pass/Fail,
+,,3,Check adaptation mechanisms,,,"System adapts or degrades gracefully",,Pass/Fail,
+
+TC-407,Test valid bandwidth range (500kbps-10Mbps),,Setup bandwidth testing,Network throttling capability,2Mbps bandwidth (mid-range),"Invalid latency handling verified",,Pass/Fail,
+,,1,Test with 2Mbps bandwidth,,,"System operates normally with good quality",,Pass/Fail,
+,,2,Verify video quality,,,"Video quality appropriate for bandwidth",,Pass/Fail,
+,,3,Check connection stability,,,"Connection remains stable",,Pass/Fail,
+
+TC-408,Test minimum valid bandwidth (500kbps),,Complete TC-407 successfully,TC-407 passed; Bandwidth throttling active,500kbps bandwidth,"Valid bandwidth verified",,Pass/Fail,
+,,1,Throttle bandwidth to exactly 500kbps,,,"System adapts to minimum bandwidth",,Pass/Fail,
+,,2,Verify quality adaptation,,,"Video quality reduces but connection stable",,Pass/Fail,
+
+TC-409,Test invalid bandwidth range (<500kbps),,Complete TC-408 successfully,TC-408 passed; Bandwidth control,400kbps bandwidth,"Minimum bandwidth verified",,Pass/Fail,
+,,1,Throttle bandwidth below 500kbps,,,"System handles insufficient bandwidth gracefully",,Pass/Fail,
+,,2,Verify error handling,,,"System provides appropriate error message or fallback",,Pass/Fail,
+
+TC-410,Test valid memory usage (0-49MB client),,Setup memory monitoring,Memory monitoring tools; Active session,Normal memory usage scenario,"Invalid bandwidth handling verified",,Pass/Fail,
+,,1,Monitor memory during normal operation,,,"Memory stays within valid range consistently",,Pass/Fail,
+,,2,Verify memory efficiency,,,"Client memory usage consistently < 50MB per session",,Pass/Fail,
+
+TC-411,Test memory boundary (50MB client),,Complete TC-410 successfully,TC-410 passed; Memory monitoring active,High memory usage scenario,"Valid memory usage verified",,Pass/Fail,
+,,1,Generate memory usage approaching 50MB,,,"System operates at memory boundary",,Pass/Fail,
+,,2,Verify functionality at limit,,,"System functions correctly at memory limit",,Pass/Fail,
+
+TC-412,Test invalid memory usage (51MB+ client),,Setup memory stress testing,Memory stress capability,Memory overflow scenario,"Memory boundary verified",,Pass/Fail,
+,,1,Force memory usage above 50MB,,,"System handles memory overflow gracefully",,Pass/Fail,
+,,2,Verify cleanup mechanisms,,,"System triggers cleanup or warnings",,Pass/Fail,
+
+TC-413,Test valid CPU usage (0-79%),,Setup CPU monitoring,CPU monitoring tools; Load generation,60% CPU usage scenario,"Invalid memory handling verified",,Pass/Fail,
+,,1,Generate load for 60% CPU usage,,,"System operates normally within CPU limits",,Pass/Fail,
+,,2,Verify performance stability,,,"CPU usage stable with normal performance",,Pass/Fail,
+
+TC-414,Test CPU boundary (80%),,Complete TC-413 successfully,TC-413 passed; CPU load generation,80% CPU usage scenario,"Valid CPU usage verified",,Pass/Fail,
+,,1,Generate load for exactly 80% CPU,,,"System operates at CPU boundary",,Pass/Fail,
+,,2,Verify performance maintenance,,,"System maintains performance at 80% CPU",,Pass/Fail,
+
+TC-415,Test invalid CPU usage (81%+),,Setup CPU stress testing,CPU stress capability,>80% CPU usage scenario,"CPU boundary verified",,Pass/Fail,
+,,1,Generate load exceeding 80% CPU,,,"System handles CPU overload gracefully",,Pass/Fail,
+,,2,Verify protection mechanisms,,,"System implements adaptive processing or load shedding",,Pass/Fail,

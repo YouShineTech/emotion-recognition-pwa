@@ -1,4 +1,41 @@
-TC-ID,Requirement-ID,Test-Objective,Priority,Test-Type,Preconditions,Step-Number,Action,Expected-Result,Pass-Criteria,Fail-Criteria,Postconditions,Notes
-TC-UAT001,REQ-006,Validate complete user workflow for emotion recognition session,P0,UAT,"PWA installed; User has camera and microphone",1,Open PWA and grant camera/microphone permissions,Permission dialog appears and user grants access,Permissions granted successfully,Permission denied or dialog fails,Camera and microphone access enabled,Test complete end-to-end user journey
-TC-UAT001,REQ-006,Validate complete user workflow for emotion recognition session,P0,UAT,"Permissions granted from step 1",2,Click start emotion recognition button,Video feed appears with emotion analysis overlay,Live video with real-time emotion detection,No video or overlay missing,Emotion recognition session active,Verify overlay accuracy and responsiveness
-TC-UAT001,REQ-006,Validate complete user workflow for emotion recognition session,P0,UAT,"Emotion recognition active from step 2",3,Perform various facial expressions,Emotion overlay updates to reflect expressions,Accurate emotion detection with confidence scores,Incorrect emotions or no updates,Session demonstrates system capability,Test multiple emotions: happy sad angry surprised
+Project Name,Emotion Recognition PWA
+Module Name,User Acceptance Tests
+Created By,[Tester Name]
+Created Date,yyyy-mm-dd
+Executed By,[Tester Name]
+Executed Date,yyyy-mm-dd
+
+Test Case ID,Test Case Description,Pre Steps,Test Step,Preconditions,Test Data,Expected Result,Actual Result,Status,Comments
+
+TC-701,Complete first-time user emotion recognition session,,Setup new user environment,New user; Clean browser state; Device with camera and microphone,First-time user scenario,"New user environment ready",,Pass/Fail,
+,,1,Open PWA URL in supported browser,,,"PWA loads and displays welcome interface within 3 seconds",,Pass/Fail,
+,,2,Click "Start Emotion Recognition" button,,,"Permission dialog appears for camera and microphone",,Pass/Fail,
+,,3,Grant camera and microphone permissions,,,"Live video feed appears with user's face clearly",,Pass/Fail,
+,,4,Wait for backend connection establishment,,,"Connection status shows connected within 10 seconds",,Pass/Fail,
+,,5,Display clear happy facial expression,,,"Emotion overlay appears showing 'Happy' with confidence score",,Pass/Fail,
+,,6,Speak with happy/excited tone,,,"Audio emotion indicator appears showing positive emotion",,Pass/Fail,
+,,7,Change to sad facial expression,,,"Emotion overlay updates to show 'Sad' with confidence",,Pass/Fail,
+,,8,Return to neutral expression and silence,,,"Overlays disappear after 2 seconds of no detection",,Pass/Fail,
+
+TC-702,Cross-platform PWA experience validation,,Setup multiple devices,Multiple devices available (mobile tablet desktop),Cross-platform testing devices,"Multiple devices ready",,Pass/Fail,
+,,1,Access PWA from mobile device (smartphone),,,"PWA loads and functions correctly on mobile with touch-friendly controls",,Pass/Fail,
+,,2,Access PWA from tablet device,,,"PWA loads and adapts to tablet screen size effectively",,Pass/Fail,
+,,3,Access PWA from desktop browser,,,"PWA loads and utilizes desktop screen real estate appropriately",,Pass/Fail,
+,,4,Test device orientation changes on mobile/tablet,,,"Interface adapts smoothly to orientation changes",,Pass/Fail,
+
+TC-703,Multi-user concurrent session validation,,Setup multi-user testing,Multiple user accounts; Load testing capability,10 concurrent users initially,"Cross-platform compatibility confirmed",,Pass/Fail,
+,,1,Have 10 users start emotion recognition simultaneously,,,"All users connect and receive individual emotion analysis",,Pass/Fail,
+,,2,Scale up to 100 concurrent users,,,"System maintains performance with 100 users",,Pass/Fail,
+,,3,Monitor system performance indicators,,,"Performance indicators show system health (green status)",,Pass/Fail,
+
+TC-704,Network resilience user experience,,Setup network testing,Active emotion recognition session; Network control capability,Network interruption scenarios,"Multi-user baseline established",,Pass/Fail,
+,,1,Start normal emotion recognition session,,,"Session operates normally with good performance",,Pass/Fail,
+,,2,Simulate brief network interruption (5 seconds),,,"System shows 'Reconnecting' status during interruption",,Pass/Fail,
+,,3,Restore network connection,,,"Session resumes automatically without user intervention",,Pass/Fail,
+,,4,Test with poor network conditions (high latency),,,"System adapts with quality adjustments and status messages",,Pass/Fail,
+
+TC-705,Privacy-conscious user consent workflow,,Setup privacy testing,New user; Privacy-focused browser settings,Privacy-conscious user scenario,"Network resilience validated",,Pass/Fail,
+,,1,Access PWA as privacy-conscious user,,,"Detailed consent dialog appears with clear privacy information",,Pass/Fail,
+,,2,Review granular consent options,,,"Individual consent options for facial and audio analysis available",,Pass/Fail,
+,,3,Grant only facial analysis consent (deny audio),,,"System respects partial consent - facial works audio disabled",,Pass/Fail,
+,,4,Withdraw consent during active session,,,"Processing stops within 30 seconds with confirmation message",,Pass/Fail,

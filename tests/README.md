@@ -1,191 +1,180 @@
-# QA Test Documentation Structure
+# QA Test Documentation - Functional Organization
 
 ## Overview
 
-This directory contains comprehensive manual test documentation for the Emotion Recognition PWA project. All test cases are derived exclusively from project documentation (requirements, design, architecture, business rules) to ensure systematic and complete testing coverage.
+This test documentation is organized by **functional areas** rather than testing techniques, making it easier for QA teams to understand what system functionality is being tested and ensuring comprehensive coverage of user-facing features.
 
-## Directory Structure
+## Functional Test Organization
 
-```
-tests/
-├── manual/                          # Manual test case documentation
-│   ├── system-tests/               # Requirements-based system tests
-│   │   ├── functional-tests.csv    # Functional requirement test cases
-│   │   ├── performance-tests.csv   # Performance requirement test cases
-│   │   ├── security-tests.csv      # Security requirement test cases
-│   │   └── usability-tests.csv     # User experience test cases
-│   ├── integration-tests/          # Design-based integration tests
-│   │   ├── module-integration.csv  # Module interaction test cases
-│   │   ├── api-integration.csv     # API contract test cases
-│   │   └── data-flow-tests.csv     # Data pipeline test cases
-│   ├── boundary-tests/             # Coverage criteria test cases
-│   │   ├── equivalence-partition.csv # Equivalence partitioning tests
-│   │   ├── boundary-value.csv      # Boundary value analysis tests
-│   │   └── negative-tests.csv      # Invalid input and error tests
-│   └── acceptance-tests/           # Business rules and UAT
-│       ├── user-scenarios.csv      # End-to-end user workflows
-│       ├── business-rules.csv      # Business logic validation
-│       └── cross-platform.csv     # Platform compatibility tests
-├── matrices/                       # Traceability and coverage matrices
-│   ├── requirements-traceability.csv # REQ-ID to TC-ID mapping
-│   ├── coverage-matrix.csv         # Coverage criteria tracking
-│   └── test-execution-matrix.csv   # Test execution tracking
-├── templates/                      # Test case templates and guidelines
-│   ├── test-case-template.csv      # Standard test case format
-│   ├── testing-guidelines.md       # Test execution guidelines
-│   └── coverage-criteria.md        # Coverage requirements
-└── README.md                       # This documentation file
-```
+### 1. Media Capture (`tests/functional/media-capture/`)
 
-## Test Case Categories
+Tests related to accessing and managing device cameras and microphones.
 
-### System Tests (Requirements-Based)
+**Files:**
 
-- **Source**: REQUIREMENTS_SPECIFICATION.md
-- **Purpose**: Validate functional requirements through systematic testing
-- **Coverage**: 100% of documented requirements with positive and negative scenarios
-- **Files**: functional-tests.csv, performance-tests.csv, security-tests.csv, usability-tests.csv
+- `camera-microphone-access.csv` - Camera and microphone permission, device detection, error handling
 
-### Integration Tests (Design-Based)
+**Key Test Areas:**
 
-- **Source**: DESIGN_SPECIFICATION.md and ARCHITECTURE.md
-- **Purpose**: Validate module interactions and system integration points
-- **Coverage**: All documented interfaces, APIs, and data flows
-- **Files**: module-integration.csv, api-integration.csv, data-flow-tests.csv
+- Permission request and grant/denial flows
+- Multiple camera selection
+- Recording status indicators
+- Device availability detection
+- Error handling for missing devices
 
-### Boundary Tests (Coverage Criteria)
+### 2. Real-time Streaming (`tests/functional/real-time-streaming/`)
 
-- **Source**: Requirements and design specifications
-- **Purpose**: Systematic validation of input domains and system limits
-- **Coverage**: Equivalence partitioning, boundary value analysis, negative testing
-- **Files**: equivalence-partition.csv, boundary-value.csv, negative-tests.csv
+Tests for establishing and maintaining real-time connections and media streaming.
 
-### Acceptance Tests (Business Rules)
+**Files:**
 
-- **Source**: BUSINESS_RULES.md and user workflows
-- **Purpose**: End-to-end user scenarios and business validation
-- **Coverage**: All documented user stories and business rules
-- **Files**: user-scenarios.csv, business-rules.csv, cross-platform.csv
+- `connection-management.csv` - Backend connections, streaming, network resilience
 
-## Test Case Format
+**Key Test Areas:**
 
-Each test case follows a standardized CSV format with the following fields:
+- Backend connection establishment
+- Video and audio streaming
+- Network failure recovery
+- Latency maintenance
+- Bandwidth adaptation
+- Connection quality management
 
-| Field           | Description                               | Example                                     |
-| --------------- | ----------------------------------------- | ------------------------------------------- |
-| TC-ID           | Unique test case identifier               | TC-001                                      |
-| Requirement-ID  | Source requirement reference              | REQ-001                                     |
-| Test-Objective  | Clear test purpose                        | Validate camera permission request          |
-| Priority        | Test criticality (P0-P3)                  | P0                                          |
-| Test-Type       | Category                                  | Functional                                  |
-| Preconditions   | Setup requirements and prerequisite tests | Browser supports WebRTC; TC-000 passed      |
-| Step-Number     | Sequential step identifier                | 1                                           |
-| Action          | User/system action to perform             | Click "Start Emotion Recognition"           |
-| Expected-Result | Expected system response                  | Permission dialog appears                   |
-| Pass-Criteria   | Success validation                        | Dialog shows camera/mic permissions         |
-| Fail-Criteria   | Failure conditions                        | No dialog or error message                  |
-| Postconditions  | Cleanup actions and dependent tests       | Permission dialog dismissed; enables TC-002 |
-| Notes           | Additional information                    | Test on Chrome, Firefox, Safari             |
+### 3. Emotion Analysis (`tests/functional/emotion-analysis/`)
 
-## Traceability and Coverage
+Tests for facial and audio emotion detection and processing.
 
-### Requirements Traceability Matrix
+**Files:**
 
-- **File**: matrices/requirements-traceability.csv
-- **Purpose**: Bidirectional mapping between requirements and test cases
-- **Content**: REQ-ID to TC-ID relationships with coverage type tracking
+- `facial-emotion-detection.csv` - Facial emotion recognition and overlays
+- `audio-emotion-detection.csv` - Voice emotion analysis and indicators
 
-### Coverage Matrix
+**Key Test Areas:**
 
-- **File**: matrices/coverage-matrix.csv
-- **Purpose**: Track coverage completeness across all test categories
-- **Metrics**: Coverage percentages, test case counts, gap analysis
+- Emotion overlay display and accuracy
+- Facial bounding boxes and labels
+- Audio emotion indicators
+- Multi-modal emotion fusion
+- AI model failure handling
+- Processing performance
 
-### Test Execution Matrix
+### 4. Cross-Platform Compatibility (`tests/functional/cross-platform/`)
 
-- **File**: matrices/test-execution-matrix.csv
-- **Purpose**: Track test execution status, results, and defect linking
-- **Content**: Execution status, pass/fail results, tester assignments, defect IDs
+Tests for PWA functionality across different devices and browsers.
 
-## Usage Instructions
+**Files:**
 
-### For QA Engineers
+- `pwa-compatibility.csv` - Mobile, tablet, desktop compatibility
 
-1. **Test Case Execution**: Use CSV files in spreadsheet applications for execution tracking
-2. **Independent Execution**: All test cases designed for execution without source code access
-3. **Result Recording**: Update test-execution-matrix.csv with results and defects
-4. **Coverage Validation**: Use coverage-matrix.csv to ensure complete testing
+**Key Test Areas:**
 
-### For Test Managers
+- Mobile device functionality
+- Tablet interface adaptation
+- Desktop browser compatibility
+- Responsive design
+- PWA installation and offline functionality
+- Accessibility compliance
 
-1. **Coverage Analysis**: Review matrices for coverage gaps and completeness
-2. **Progress Tracking**: Monitor execution status across all test categories
-3. **Quality Metrics**: Use coverage percentages and pass/fail rates for reporting
-4. **Resource Planning**: Assign test cases based on priority and complexity
+### 5. Performance and Scalability (`tests/functional/performance/`)
 
-### For Development Teams
+Tests for system performance under various load conditions.
 
-1. **Requirement Validation**: Ensure all requirements have corresponding test cases
-2. **Design Verification**: Validate integration points through design-based tests
-3. **Defect Analysis**: Link defects to specific test cases for impact analysis
-4. **Documentation Sync**: Update test cases when requirements or design changes
+**Files:**
 
-## Coverage Criteria
+- `scalability-load.csv` - Load testing, resource management, performance monitoring
 
-### Functional Coverage
+**Key Test Areas:**
 
-- 100% requirements coverage with positive and negative scenarios
-- All documented acceptance criteria validated through test cases
-- Business rule compliance verified through UAT scenarios
+- 1000+ concurrent user support
+- Memory and CPU optimization
+- Connection scaling
+- Processing performance
+- Resource cleanup
+- Long-term stability
 
-### Input Domain Coverage
+### 6. Security and Privacy (`tests/functional/security-privacy/`)
 
-- Equivalence partitioning for all input types (video, audio, user interactions)
-- Boundary value analysis for numeric inputs (users, latency, frame rates)
-- Negative testing for invalid inputs and error conditions
+Tests for data protection, encryption, and privacy compliance.
 
-### Interface Coverage
+**Files:**
 
-- All documented API endpoints and WebSocket protocols
-- WebRTC signaling, media transport, and data channel validation
-- Cross-platform compatibility across supported browsers and devices
+- `data-protection.csv` - Encryption, consent, data handling, compliance
 
-### Real-Time System Coverage
+**Key Test Areas:**
 
-- Timing constraints (sub-500ms latency requirements)
-- Concurrency scenarios (1000+ simultaneous users)
-- Resource constraints (memory, CPU, bandwidth)
-- Failure recovery scenarios (network interruption, device disconnection)
+- End-to-end encryption
+- Biometric data protection
+- User consent management
+- Data anonymization
+- GDPR compliance
+- Security incident handling
 
-## Quality Standards
+### 7. User Experience (`tests/functional/user-experience/`)
 
-### Test Case Quality
+Tests for complete user workflows and experience quality.
 
-- All test cases trace to documented requirements
-- Test steps are action-based and independently executable
-- Expected results are specific, observable, and measurable
-- Pass/fail criteria are objective and unambiguous
+**Files:**
 
-### Documentation Standards
+- `end-to-end-workflows.csv` - Complete user journeys, error recovery, accessibility
 
-- CSV format for spreadsheet compatibility and execution tracking
-- Consistent field naming and structure across all test categories
-- Clear, concise language suitable for any tester
-- Regular synchronization with source documentation updates
+**Key Test Areas:**
 
-### Maintenance Procedures
+- First-time user onboarding
+- Multi-modal emotion recognition workflows
+- Network resilience user experience
+- Privacy-conscious user flows
+- Cross-platform consistency
+- Error recovery and guidance
+- Accessibility and inclusive design
 
-- Monitor source documentation for changes and update test cases accordingly
-- Perform regular coverage gap analysis and remediation
-- Validate traceability matrix completeness and accuracy
-- Review and update test cases based on execution feedback and defect analysis
+## Test Case Naming Convention
 
-## Getting Started
+Test cases are named by functional area:
 
-1. **Review Templates**: Start with templates/test-case-template.csv and testing-guidelines.md
-2. **Understand Coverage**: Read coverage-criteria.md for comprehensive coverage requirements
-3. **Execute Tests**: Import CSV files into spreadsheet applications for execution tracking
-4. **Track Progress**: Use matrices for coverage analysis and execution monitoring
-5. **Report Results**: Update execution matrix with results and generate coverage reports
+- **TC-MC-XXX**: Media Capture tests
+- **TC-RTS-XXX**: Real-time Streaming tests
+- **TC-FAD-XXX**: Facial Emotion Detection tests
+- **TC-AED-XXX**: Audio Emotion Detection tests
+- **TC-PWA-XXX**: PWA Compatibility tests
+- **TC-PERF-XXX**: Performance tests
+- **TC-SEC-XXX**: Security and Privacy tests
+- **TC-UX-XXX**: User Experience tests
 
-For detailed guidelines on test case creation, execution, and maintenance, refer to the files in the templates/ directory.
+## Coverage Analysis
+
+### Functional Coverage Matrix
+
+Each functional area maps to specific requirements and provides comprehensive coverage including:
+
+- **Positive Testing**: Normal functionality validation
+- **Negative Testing**: Error condition handling
+- **Boundary Testing**: Edge cases and limits
+- **Performance Testing**: Load and resource constraints
+- **Security Testing**: Data protection and privacy
+- **User Acceptance Testing**: End-to-end workflows
+
+### Traceability
+
+The `functional-traceability.csv` file maps requirements to functional areas and test cases, ensuring:
+
+- Complete requirement coverage
+- Clear functional area ownership
+- Easy impact analysis for requirement changes
+- Comprehensive test planning by feature area
+
+## Benefits of Functional Organization
+
+1. **Clear Ownership**: Each functional area can be assigned to specific QA team members
+2. **Feature-Based Testing**: Tests align with user-facing functionality
+3. **Easier Maintenance**: Changes to features only impact related test areas
+4. **Better Coverage**: Ensures all aspects of a feature are tested together
+5. **User-Centric**: Test organization matches how users interact with the system
+6. **Requirement Alignment**: Direct mapping between requirements and functional test areas
+
+## Execution Guidelines
+
+1. **Sequential Dependencies**: Some functional areas depend on others (e.g., Emotion Analysis requires Real-time Streaming)
+2. **Cross-Functional Testing**: User Experience tests often combine multiple functional areas
+3. **Environment Requirements**: Each functional area may require specific test environments or tools
+4. **Coverage Validation**: Use the traceability matrix to ensure complete functional coverage
+
+This organization makes it easier for QA teams to understand what they're testing, plan test execution by functional area, and ensure comprehensive coverage of the Emotion Recognition PWA system.

@@ -1,2 +1,68 @@
-TC-ID,Requirement-ID,Test-Objective,Priority,Test-Type,Preconditions,Step-Number,Action,Expected-Result,Pass-Criteria,Fail-Criteria,Postconditions,Notes
-TC-I001,REQ-003,Validate MediaCaptureModule to WebRTCTransportModule integration,P0,Integration,"Both modules initialized; Network connection available",1,Start media capture and initiate WebRTC connection,Media stream successfully transmitted to server,WebRTC connection established with media flow,Connection fails or no media transmission,Media pipeline active for analysis modules,Monitor WebRTC stats for connection quality
+Project Name,Emotion Recognition PWA
+Module Name,Integration Tests
+Created By,[Tester Name]
+Created Date,yyyy-mm-dd
+Executed By,[Tester Name]
+Executed Date,yyyy-mm-dd
+
+Test Case ID,Test Case Description,Pre Steps,Test Step,Preconditions,Test Data,Expected Result,Actual Result,Status,Comments
+
+TC-301,Verify MediaCaptureModule to FrameExtractionModule integration,,Setup media capture,MediaCaptureModule active; Video stream available,Video stream data,"Media capture active",,Pass/Fail,
+,,1,Initiate video capture,,,"Video frames successfully extracted from media stream",,Pass/Fail,
+,,2,Verify frame extraction,,,"Frame extraction receives video data correctly",,Pass/Fail,
+,,3,Check frame processing,,,"Frames processed without corruption",,Pass/Fail,
+
+TC-302,Verify FrameExtractionModule to FacialAnalysisModule integration,,Complete TC-301 successfully,TC-301 passed; Frame extraction active,Extracted video frames,"Frame extraction active",,Pass/Fail,
+,,1,Send extracted frames to facial analysis,,,"Facial analysis processes frames successfully",,Pass/Fail,
+,,2,Verify face detection,,,"Face detection results returned with bounding boxes",,Pass/Fail,
+,,3,Check landmark detection,,,"Facial landmarks detected accurately",,Pass/Fail,
+
+TC-303,Verify MediaCaptureModule to AudioAnalysisModule integration,,Setup audio capture,MediaCaptureModule active; Audio stream available,Audio stream data,"Audio capture active",,Pass/Fail,
+,,1,Initiate audio capture,,,"Audio data successfully processed for emotion detection",,Pass/Fail,
+,,2,Verify audio analysis,,,"Audio analysis receives stream and processes features",,Pass/Fail,
+,,3,Check emotion detection,,,"Audio emotion features extracted correctly",,Pass/Fail,
+
+TC-304,Verify FacialAnalysisModule to OverlayDataGenerator integration,,Complete TC-302 successfully,TC-302 passed; Facial analysis active,Facial emotion data,"Facial analysis active",,Pass/Fail,
+,,1,Send facial emotion data to overlay generator,,,"Overlay data generated from facial analysis results",,Pass/Fail,
+,,2,Verify coordinate generation,,,"Overlay generator creates accurate display coordinates",,Pass/Fail,
+,,3,Check coordinate scaling,,,"Coordinates properly scaled for display",,Pass/Fail,
+
+TC-305,Verify AudioAnalysisModule to OverlayDataGenerator integration,,Complete TC-303 successfully,TC-303 passed; Audio analysis active,Audio emotion data,"Audio analysis active",,Pass/Fail,
+,,1,Send audio emotion data to overlay generator,,,"Overlay data generated from audio analysis results",,Pass/Fail,
+,,2,Verify display element creation,,,"Overlay generator creates appropriate display elements",,Pass/Fail,
+,,3,Check audio emotion visualization,,,"Audio emotion visualization accurate",,Pass/Fail,
+
+TC-306,Verify OverlayDataGenerator to OverlayRendererModule integration,,Complete TC-304 and TC-305,TC-304 and TC-305 passed; Overlay data available,Combined overlay data,"Overlay data ready",,Pass/Fail,
+,,1,Send overlay data to renderer,,,"Emotion overlays rendered on video feed",,Pass/Fail,
+,,2,Verify graphics display,,,"Overlay renderer displays graphics correctly",,Pass/Fail,
+,,3,Check overlay positioning,,,"Overlays positioned accurately on video",,Pass/Fail,
+
+TC-307,Verify WebRTCTransportModule to MediaRelayModule integration,,Setup WebRTC connection,WebRTC connection established; Media relay active,WebRTC stream data,"WebRTC connection active",,Pass/Fail,
+,,1,Stream media through WebRTC,,,"Media successfully relayed through WebRTC transport",,Pass/Fail,
+,,2,Verify media relay,,,"Media relay receives streams and forwards to processing",,Pass/Fail,
+,,3,Check stream quality,,,"Stream quality maintained through relay",,Pass/Fail,
+
+TC-308,Verify MediaRelayModule to ConnectionManagerModule integration,,Complete TC-307 successfully,TC-307 passed; Multiple user connections,Multiple user sessions,"Media relay integration verified",,Pass/Fail,
+,,1,Manage multiple user sessions,,,"Connection manager handles multiple relay sessions",,Pass/Fail,
+,,2,Verify session routing,,,"Sessions routed without conflicts",,Pass/Fail,
+,,3,Check concurrent handling,,,"Multiple streams handled simultaneously",,Pass/Fail,
+
+TC-309,Verify ConnectionManagerModule to WebRTCTransportModule integration,,Complete TC-308 successfully,TC-308 passed; Connection management active,New connection requests,"Multi-session management verified",,Pass/Fail,
+,,1,Establish new WebRTC connections,,,"New connections properly managed",,Pass/Fail,
+,,2,Verify connection isolation,,,"New connections don't affect existing sessions",,Pass/Fail,
+,,3,Check connection lifecycle,,,"Connection lifecycle managed properly",,Pass/Fail,
+
+TC-310,Verify OverlayRendererModule to PWAShellModule integration,,Complete TC-306 successfully,TC-306 passed; PWA shell active,PWA interface with overlays,"Overlay rendering active",,Pass/Fail,
+,,1,Display overlays within PWA interface,,,"Overlays integrated into PWA user interface",,Pass/Fail,
+,,2,Verify UI integration,,,"PWA shell displays overlays with proper integration",,Pass/Fail,
+,,3,Check responsive design,,,"Overlays adapt to different screen sizes",,Pass/Fail,
+
+TC-311,Verify PWAShellModule cross-platform functionality,,Complete TC-310 successfully,TC-310 passed; Multiple device types,Mobile tablet desktop devices,"PWA overlay integration verified",,Pass/Fail,
+,,1,Test on mobile devices,,,"PWA works consistently on mobile",,Pass/Fail,
+,,2,Test on tablet devices,,,"PWA works consistently on tablet",,Pass/Fail,
+,,3,Test on desktop browsers,,,"PWA works consistently on desktop",,Pass/Fail,
+
+TC-312,Verify NginxWebServerModule to MediaRelayModule integration,,Setup load balancer,Nginx active; Multiple media relay instances,Load balancer configuration,"Load balancer active",,Pass/Fail,
+,,1,Route sessions through Nginx,,,"Load balancing distributes sessions across instances",,Pass/Fail,
+,,2,Verify session distribution,,,"Sessions distributed evenly",,Pass/Fail,
+,,3,Test failover capability,,,"Failover works when instances become unavailable",,Pass/Fail,

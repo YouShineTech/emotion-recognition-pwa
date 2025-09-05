@@ -1,0 +1,53 @@
+Project Name,Emotion Recognition PWA
+Module Name,Real-time Streaming - Connection Management
+Created By,[Tester Name]
+Created Date,yyyy-mm-dd
+Executed By,[Tester Name]
+Executed Date,yyyy-mm-dd
+
+Test Case ID,Test Case Description,Pre Steps,Test Step,Preconditions,Test Data,Expected Result,Actual Result,Status,Comments
+
+TC-RTS-001,Verify real-time backend connection establishment,,Complete media capture setup,Camera and microphone active; Video feed streaming,Active media streams,"Media capture active",,Pass/Fail,
+,,1,Monitor connection status during activation,,,"Connection status indicator appears within 5 seconds",,Pass/Fail,
+,,2,Wait for backend connection establishment,,,"Connection shows 'Connected' or positive state within 10 seconds",,Pass/Fail,
+,,3,Verify connection stability,,,"Connection remains stable without disconnection warnings",,Pass/Fail,
+
+TC-RTS-002,Verify video and audio streaming,,Complete TC-RTS-001 successfully,TC-RTS-001 passed; Backend connection established,Established backend connection,"Backend connected",,Pass/Fail,
+,,1,Verify video streaming indicators,,,"Video streaming indicator shows active transmission",,Pass/Fail,
+,,2,Verify audio streaming indicators,,,"Audio streaming indicator shows active transmission",,Pass/Fail,
+,,3,Check streaming quality and stability,,,"Both video and audio streams stable without interruption",,Pass/Fail,
+
+TC-RTS-003,Verify automatic reconnection on network failure,,Complete TC-RTS-002 successfully,TC-RTS-002 passed; Streaming active; Network control capability,Active streaming with network control,"Media streaming active",,Pass/Fail,
+,,1,Simulate network disconnection,,,"System detects disconnection within 5 seconds",,Pass/Fail,
+,,2,Observe reconnection attempts,,,"Reconnection attempts visible with exponential backoff (1s 2s 4s 8s)",,Pass/Fail,
+,,3,Restore network and verify recovery,,,"Connection resumes automatically without user intervention",,Pass/Fail,
+
+TC-RTS-004,Verify low latency maintenance,,Complete TC-RTS-002 successfully,TC-RTS-002 passed; Streaming active; Latency measurement tools,Active streaming with measurement tools,"Streaming active",,Pass/Fail,
+,,1,Measure end-to-end latency during operation,,,"Latency consistently under 500ms (95th percentile)",,Pass/Fail,
+,,2,Monitor latency over extended period,,,"Latency remains stable during 10-minute test period",,Pass/Fail,
+
+TC-RTS-005,Verify adaptive quality on network degradation,,Complete TC-RTS-002 successfully,TC-RTS-002 passed; Streaming active; Network throttling capability,Active streaming with bandwidth control,"Streaming active",,Pass/Fail,
+,,1,Simulate poor network conditions (throttle to 500kbps),,,"System detects network degradation within 10 seconds",,Pass/Fail,
+,,2,Verify quality adaptation,,,"Video resolution reduces and frame rate drops to maintain connection",,Pass/Fail,
+,,3,Check connection stability,,,"Connection remains stable despite quality reduction",,Pass/Fail,
+
+TC-RTS-006,Verify server unavailable handling,,Setup server offline scenario,System ready; Backend server stopped,Server unavailable scenario,"System ready",,Pass/Fail,
+,,1,Attempt connection with server offline,,,"System handles server unavailability gracefully",,Pass/Fail,
+,,2,Verify error message,,,"Clear error indicating server connection failure with retry option",,Pass/Fail,
+
+TC-RTS-007,Verify corrupted media stream handling,,Setup media corruption simulation,Active streaming; Media corruption capability,Corrupted media simulation,"Active streaming",,Pass/Fail,
+,,1,Inject corrupted data into media stream,,,"System handles corrupted data gracefully",,Pass/Fail,
+,,2,Verify data validation and recovery,,,"System skips corrupted frames and continues processing valid data",,Pass/Fail,
+
+TC-RTS-008,Verify bandwidth optimization for cellular,,Setup mobile cellular testing,Mobile device; Cellular network connection,Mobile device on cellular,"Mobile cellular environment",,Pass/Fail,
+,,1,Use emotion recognition on cellular network,,,"System optimizes for cellular connection automatically",,Pass/Fail,
+,,2,Monitor data usage,,,"Data consumption <= 10MB per 10-minute session",,Pass/Fail,
+,,3,Verify functionality maintenance,,,"All core features work within cellular data limits",,Pass/Fail,
+
+TC-RTS-009,Verify connection at minimum bandwidth,,Setup bandwidth testing,Network throttling capability; Bandwidth monitoring,500kbps bandwidth limit,"Bandwidth control ready",,Pass/Fail,
+,,1,Set bandwidth to exactly 500kbps,,,"System adapts to minimum bandwidth successfully",,Pass/Fail,
+,,2,Verify quality adaptation at boundary,,,"Video quality reduces appropriately while maintaining connection",,Pass/Fail,
+
+TC-RTS-010,Verify connection below minimum bandwidth,,Setup bandwidth testing,Network throttling capability,400kbps bandwidth (below minimum),"Bandwidth control ready",,Pass/Fail,
+,,1,Throttle bandwidth below 500kbps,,,"System handles insufficient bandwidth gracefully",,Pass/Fail,
+,,2,Verify graceful degradation,,,"System provides appropriate error message or fallback mode",,Pass/Fail,

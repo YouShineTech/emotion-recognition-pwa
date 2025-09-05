@@ -1,2 +1,64 @@
-TC-ID,Requirement-ID,Test-Objective,Priority,Test-Type,Preconditions,Step-Number,Action,Expected-Result,Pass-Criteria,Fail-Criteria,Postconditions,Notes
-TC-P001,REQ-010,Validate sub-500ms emotion detection latency,P0,Performance,"System running; Camera active; Network stable",1,Start emotion recognition session,Emotion overlay appears on video feed,Latency < 500ms measured,Latency >= 500ms or no overlay,Session active for further testing,Use network monitoring tools
+Project Name,Emotion Recognition PWA
+Module Name,Performance Tests
+Created By,[Tester Name]
+Created Date,yyyy-mm-dd
+Executed By,[Tester Name]
+Executed Date,yyyy-mm-dd
+
+Test Case ID,Test Case Description,Pre Steps,Test Step,Preconditions,Test Data,Expected Result,Actual Result,Status,Comments
+
+TC-101,Verify 1000 simultaneous user connections,,Setup load testing environment,Load testing tools configured; 1000 test accounts,Load testing tools (JMeter/Artillery),"Load testing environment ready",,Pass/Fail,
+,,1,Initiate 1000 concurrent user sessions,,,"All 1000 users connect successfully (>=99% success rate)",,Pass/Fail,
+,,2,Monitor connection success rate,,,"Connection success rate >= 99%",,Pass/Fail,
+
+TC-102,Verify response time maintenance under maximum load,,Complete TC-101 successfully,TC-101 passed; 1000 users connected,Performance monitoring tools,"1000 users connected",,Pass/Fail,
+,,1,Measure response times during peak load,,,"95th percentile response time <= baseline + 10%",,Pass/Fail,
+,,2,Compare against baseline performance,,,"Response times remain within acceptable range",,Pass/Fail,
+
+TC-103,Verify emotion recognition accuracy under load,,Complete TC-102 successfully,TC-102 passed; Performance baseline maintained,Emotion test datasets,"Performance maintained under load",,Pass/Fail,
+,,1,Execute emotion recognition with all users,,,"Facial emotion accuracy >= 85%",,Pass/Fail,
+,,2,Measure audio emotion accuracy,,,"Audio emotion accuracy >= 78%",,Pass/Fail,
+,,3,Verify accuracy maintenance,,,"Accuracy thresholds maintained under load",,Pass/Fail,
+
+TC-104,Verify sub-500ms latency at maximum capacity,,Complete TC-103 successfully,TC-103 passed; System at capacity,Latency measurement tools,"Accuracy maintained under load",,Pass/Fail,
+,,1,Measure end-to-end latency with 1000 users,,,"95th percentile latency < 500ms",,Pass/Fail,
+,,2,Monitor latency distribution,,,"<5% of requests exceed 500ms latency",,Pass/Fail,
+
+TC-105,Verify system stability without crashes,,Complete TC-104 successfully,TC-104 passed; Maximum load active,System monitoring tools,"Latency requirements met",,Pass/Fail,
+,,1,Monitor system for 30 minutes at peak load,,,"No server crashes detected",,Pass/Fail,
+,,2,Check for memory leaks,,,"No memory leaks or resource exhaustion",,Pass/Fail,
+,,3,Verify connection stability,,,"All connections remain stable",,Pass/Fail,
+
+TC-106,Verify memory usage per session limits,,Setup memory monitoring,Active user sessions; Memory profiling tools,Memory monitoring tools,"Memory monitoring active",,Pass/Fail,
+,,1,Monitor memory usage per user session,,,"Client memory <= 50MB per session",,Pass/Fail,
+,,2,Monitor server memory usage,,,"Server memory <= 100MB per session",,Pass/Fail,
+,,3,Verify memory limits enforcement,,,"Memory usage stays within defined limits",,Pass/Fail,
+
+TC-107,Verify memory cleanup on session termination,,Complete TC-106 successfully,TC-106 passed; Memory monitoring active,Memory profiling tools,"Memory limits enforced",,Pass/Fail,
+,,1,Terminate user sessions,,,"Sessions terminate cleanly",,Pass/Fail,
+,,2,Monitor memory deallocation,,,"Memory deallocated within 30 seconds",,Pass/Fail,
+,,3,Verify garbage collection,,,"Memory usage drops to baseline",,Pass/Fail,
+
+TC-108,Verify CPU usage limits under normal load,,Setup CPU monitoring,System under normal load; CPU monitoring active,CPU monitoring tools,"CPU monitoring active",,Pass/Fail,
+,,1,Monitor CPU utilization during operation,,,"CPU usage <= 80% on all server instances",,Pass/Fail,
+,,2,Check CPU distribution across cores,,,"CPU load distributed evenly",,Pass/Fail,
+
+TC-109,Verify adaptive processing under CPU pressure,,Complete TC-108 successfully,TC-108 passed; CPU monitoring active,Load generation tools,"CPU limits maintained",,Pass/Fail,
+,,1,Increase system load to trigger CPU limits,,,"System detects high CPU usage (>75%)",,Pass/Fail,
+,,2,Verify adaptive behavior,,,"Frame rate reduces from 10fps to 5fps",,Pass/Fail,
+,,3,Monitor system responsiveness,,,"System remains responsive with adaptive processing",,Pass/Fail,
+
+TC-110,Verify bandwidth adaptation on limited networks,,Setup network throttling,Active streaming; Network control capability,Network throttling tools,"Streaming active",,Pass/Fail,
+,,1,Throttle network bandwidth to 500kbps,,,"System detects bandwidth limitation",,Pass/Fail,
+,,2,Verify quality adaptation,,,"Video resolution reduces and frame rate drops to 15fps",,Pass/Fail,
+,,3,Check connection stability,,,"Connection remains stable despite limitations",,Pass/Fail,
+
+TC-111,Verify cellular network optimization,,Setup mobile testing environment,Mobile device; Cellular network connection,Mobile device with cellular,"Mobile environment ready",,Pass/Fail,
+,,1,Use emotion recognition on cellular network,,,"System optimizes for cellular connection",,Pass/Fail,
+,,2,Monitor data usage,,,"Data consumption <= 10MB per 10-minute session",,Pass/Fail,
+,,3,Verify functionality maintenance,,,"All features work within data limits",,Pass/Fail,
+
+TC-112,Verify mobile battery optimization,,Setup mobile battery monitoring,Mobile device; Battery monitoring enabled,Mobile device with battery monitoring,"Battery monitoring active",,Pass/Fail,
+,,1,Run emotion recognition for 30 minutes,,,"System minimizes battery consumption",,Pass/Fail,
+,,2,Monitor battery drain,,,"Battery consumption <= 10% per 30 minutes",,Pass/Fail,
+,,3,Verify optimization effectiveness,,,"Battery drain within acceptable limits",,Pass/Fail,

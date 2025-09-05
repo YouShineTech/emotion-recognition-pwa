@@ -1,0 +1,59 @@
+Project Name,Emotion Recognition PWA
+Module Name,Security and Privacy - Data Protection
+Created By,[Tester Name]
+Created Date,yyyy-mm-dd
+Executed By,[Tester Name]
+Executed Date,yyyy-mm-dd
+
+Test Case ID,Test Case Description,Pre Steps,Test Step,Preconditions,Test Data,Expected Result,Actual Result,Status,Comments
+
+TC-SEC-001,Verify end-to-end encryption for media streams,,Setup network monitoring,Active video/audio streaming; Network packet capture tools,Wireshark or similar packet analysis tools,"Network monitoring ready",,Pass/Fail,
+,,1,Capture network traffic during media streaming,,,"All media data encrypted in transit (no plaintext visible)",,Pass/Fail,
+,,2,Analyze encryption protocols in use,,,"Strong encryption protocols (TLS 1.3 WebRTC DTLS) verified",,Pass/Fail,
+,,3,Verify no data leakage,,,"No unencrypted biometric data found in network traffic",,Pass/Fail,
+
+TC-SEC-002,Verify biometric data encryption at rest,,Setup data storage monitoring,Emotion processing active; Data storage analysis tools,Data encryption analysis tools,"Data processing active",,Pass/Fail,
+,,1,Monitor stored emotion data encryption,,,"Biometric data encrypted with AES-256-GCM",,Pass/Fail,
+,,2,Verify encryption key management,,,"Unique encryption keys per session with proper rotation",,Pass/Fail,
+,,3,Check for unencrypted data storage,,,"No unencrypted biometric data found in storage systems",,Pass/Fail,
+
+TC-SEC-003,Verify user consent management,,Setup consent testing,First-time user access; Clean browser state,Clean browser environment for consent testing,"Clean browser state",,Pass/Fail,
+,,1,Access system as new user,,,"Detailed consent dialog appears with clear privacy information",,Pass/Fail,
+,,2,Review granular consent options,,,"Individual consent options for facial analysis audio analysis and analytics",,Pass/Fail,
+,,3,Test partial consent (facial only),,,"System respects partial consent - enables facial disables audio",,Pass/Fail,
+,,4,Verify consent withdrawal,,,"Processing stops within 30 seconds when consent withdrawn",,Pass/Fail,
+
+TC-SEC-004,Verify data anonymization and minimization,,Setup privacy analysis,Biometric processing active; Privacy analysis tools,Privacy analysis and monitoring tools,"Biometric processing active",,Pass/Fail,
+,,1,Analyze facial landmark anonymization,,,"Differential privacy applied to facial landmarks (ε=1.0)",,Pass/Fail,
+,,2,Verify speaker identification removal,,,"Audio features preserve emotion but remove speaker identity",,Pass/Fail,
+,,3,Test identity reconstruction prevention,,,"Processed data cannot be used to reconstruct user identity",,Pass/Fail,
+
+TC-SEC-005,Verify automatic data deletion,,Setup data retention monitoring,Active user session; Data retention monitoring tools,Data retention and deletion monitoring,"Active user session",,Pass/Fail,
+,,1,End user session normally,,,"Session terminates cleanly",,Pass/Fail,
+,,2,Monitor biometric data cleanup,,,"Raw biometric data deleted within 60 seconds of session end",,Pass/Fail,
+,,3,Verify complete data purging,,,"All facial and audio raw data completely removed from system",,Pass/Fail,
+
+TC-SEC-006,Verify authentication and session security,,Setup authentication testing,Authentication system active; Security analysis tools,Authentication security testing tools,"Authentication system ready",,Pass/Fail,
+,,1,Test secure authentication methods,,,"Authentication uses secure methods (OAuth JWT) without password storage",,Pass/Fail,
+,,2,Analyze session token security,,,"Session tokens have 256-bit entropy and 4-hour expiration",,Pass/Fail,
+,,3,Test brute force protection,,,"System implements exponential backoff (1s 2s 4s 8s 16s) against attacks",,Pass/Fail,
+
+TC-SEC-007,Verify encryption key rotation and management,,Setup long-term security monitoring,System running 24+ hours; Cryptographic monitoring,Cryptographic key monitoring tools,"System running 24+ hours",,Pass/Fail,
+,,1,Monitor encryption key rotation,,,"New encryption keys generated every 24 hours",,Pass/Fail,
+,,2,Verify old key invalidation,,,"Previous keys properly invalidated and cannot be used",,Pass/Fail,
+,,3,Check key generation entropy,,,"Keys generated with cryptographically secure randomness",,Pass/Fail,
+
+TC-SEC-008,Verify GDPR compliance mechanisms,,Setup GDPR compliance testing,Data processing active; GDPR compliance tools,GDPR compliance testing framework,"Data processing active",,Pass/Fail,
+,,1,Test data access request (Article 15),,,"System provides complete emotion data report within 30 days",,Pass/Fail,
+,,2,Test data deletion request (Article 17),,,"System permanently deletes all biometric data within 30 days",,Pass/Fail,
+,,3,Test data portability request (Article 20),,,"System exports emotion analytics in machine-readable format",,Pass/Fail,
+
+TC-SEC-009,Verify security incident handling,,Setup security incident simulation,Security monitoring active; Incident simulation capability,Security incident simulation tools,"Security monitoring active",,Pass/Fail,
+,,1,Simulate data breach scenario,,,"System detects and logs security incident appropriately",,Pass/Fail,
+,,2,Verify incident notification procedures,,,"Supervisory authorities notified within 72 hours (simulated)",,Pass/Fail,
+,,3,Test user notification process,,,"Affected users notified within 30 days (simulated)",,Pass/Fail,
+
+TC-SEC-010,Verify consent expiration and renewal,,Setup consent expiration testing,90-day old consent; System access capability,Expired consent scenario,"90-day old consent state",,Pass/Fail,
+,,1,Access system with expired consent,,,"System detects consent expiration and requests renewal",,Pass/Fail,
+,,2,Verify re-authorization requirement,,,"New consent dialog requires explicit re-authorization",,Pass/Fail,
+,,3,Check consent audit logging,,,"All consent events properly logged with timestamps and details",,Pass/Fail,

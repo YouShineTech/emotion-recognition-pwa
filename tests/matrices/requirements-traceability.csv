@@ -1,10 +1,20 @@
-Requirement-ID,Requirement-Description,Test-Case-IDs,Coverage-Types,Business-Rule-IDs,Design-Component-IDs
-REQ-001,Camera and microphone access with user permission,"TC-001,TC-N001","Positive,Negative",BR-001,DC-001
-REQ-002,Real-time emotion analysis from video and audio streams,"TC-D001,TC-BR001","Integration,Business",BR-002,DC-002
-REQ-003,WebRTC transport for low-latency media streaming,"TC-I001,TC-A001,TC-N002","Integration,Negative",BR-003,DC-003
-REQ-004,Input validation and error handling,"TC-E001,TC-E002","Boundary,Equivalence",,DC-004
-REQ-006,Progressive Web App with cross-platform support,"TC-U001,TC-UAT001,TC-CP001,TC-CP002,TC-CP003","Usability,UAT,Cross-platform",BR-004,DC-005
-REQ-007,Security and privacy protection,"TC-S001,TC-N001","Security,Negative",BR-005,DC-006
-REQ-008,Test case documentation with traceability,"All TC-IDs","Documentation",,DC-007
-REQ-009,Comprehensive test coverage and matrices,"All TC-IDs","Coverage",,DC-008
-REQ-010,Performance requirements and scalability,"TC-P001,TC-B001,TC-B002,TC-BR002","Performance,Boundary,Business",BR-006,DC-009
+Requirement-ID,Requirement-Description,Test-Case-IDs,Coverage-Type,Business-Rule-IDs,Design-Component-IDs
+REQ-001,Device camera and microphone access through PWA,"TC-001,TC-002,TC-003,TC-004,TC-005,TC-601,TC-602,TC-603,TC-604,TC-701","Positive,Negative,Boundary,UAT",BR-001,DC-001
+REQ-002,Real-time video and audio streaming to cloud backend,"TC-006,TC-007,TC-008,TC-009,TC-010,TC-404,TC-405,TC-406,TC-505,TC-506,TC-507,TC-508,TC-605,TC-606,TC-607,TC-701,TC-704","Positive,Negative,Boundary,Performance,UAT",BR-002,DC-002
+REQ-003,Emotion analysis results overlaid on live video feed,"TC-011,TC-012,TC-013,TC-014,TC-015,TC-016,TC-304,TC-305,TC-306,TC-310,TC-608,TC-701","Positive,Negative,Integration,UAT",BR-003,DC-003
+REQ-004,Cloud backend video stream processing for facial analysis,"TC-302,TC-304,TC-609,TC-103","Positive,Negative,Integration,Performance",BR-004,DC-004
+REQ-005,Cloud backend audio stream analysis for voice emotion recognition,"TC-303,TC-305,TC-610,TC-103","Positive,Negative,Integration,Performance",BR-005,DC-005
+REQ-006,Cross-platform PWA functionality (mobile tablet desktop),"TC-311,TC-611,TC-702","Positive,Negative,Integration,UAT",BR-006,DC-006
+REQ-007,Scalable real-time media relay for multiple users,"TC-307,TC-308,TC-312,TC-612","Positive,Negative,Integration",BR-007,DC-007
+REQ-008,Handle 1000 simultaneous connections without performance degradation,"TC-101,TC-102,TC-103,TC-104,TC-105,TC-401,TC-402,TC-403,TC-501,TC-502,TC-503,TC-504,TC-613,TC-703","Positive,Negative,Boundary,Performance,UAT",BR-008,DC-008
+REQ-009,Real-time feedback on system performance and connection status,"TC-102,TC-703,TC-704","Performance,UAT",BR-009,DC-009
+REQ-018,Data encryption and transmission security,"TC-201,TC-202,TC-203,TC-204,TC-205,TC-614","Positive,Negative,Security",BR-018,DC-018
+REQ-019,User consent management for emotion data collection,"TC-206,TC-207,TC-208,TC-209,TC-615,TC-705","Positive,Negative,Security,UAT",BR-019,DC-019
+REQ-020,Authentication and authorization mechanisms,"TC-210,TC-211,TC-212","Positive,Security",BR-020,DC-020
+REQ-021,Data anonymization and minimization for biometric data,"TC-213,TC-214,TC-215,TC-616,TC-705","Positive,Negative,Security,UAT",BR-021,DC-021
+REQ-023,Network failure detection and recovery,"TC-704","Positive,UAT",BR-023,DC-023
+REQ-024,Server overload handling,"TC-704","Positive,UAT",BR-024,DC-024
+REQ-029,Memory usage optimization per user session,"TC-106,TC-107,TC-410,TC-411,TC-412,TC-511,TC-512,TC-513,TC-514","Positive,Negative,Boundary,Performance",BR-029,DC-029
+REQ-030,CPU utilization management,"TC-108,TC-109,TC-413,TC-414,TC-415,TC-515,TC-516,TC-517,TC-518","Positive,Negative,Boundary,Performance",BR-030,DC-030
+REQ-031,Bandwidth optimization for various network conditions,"TC-110,TC-111,TC-407,TC-408,TC-409,TC-509,TC-510","Positive,Negative,Boundary,Performance",BR-031,DC-031
+REQ-032,Mobile battery optimization,"TC-112","Positive,Performance",BR-032,DC-032

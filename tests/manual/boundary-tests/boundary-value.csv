@@ -1,3 +1,81 @@
-TC-ID,Requirement-ID,Test-Objective,Priority,Test-Type,Preconditions,Step-Number,Action,Expected-Result,Pass-Criteria,Fail-Criteria,Postconditions,Notes
-TC-B001,REQ-010,Validate maximum concurrent users boundary (1000 users),P0,Boundary,"Load testing environment; 999 users already connected",1,Connect 1000th user to emotion recognition system,System accepts connection and maintains performance,All 1000 users have active sessions with <500ms latency,Connection rejected or performance degrades,System at maximum capacity,Monitor server resources during test
-TC-B002,REQ-010,Validate beyond maximum users boundary (1001 users),P0,Boundary,"Load testing environment; 1000 users connected",1,Attempt to connect 1001st user,System gracefully rejects connection with appropriate message,Clear rejection message; existing users unaffected,System crashes or accepts overload,System maintains stability at capacity,Test graceful degradation behavior
+Project Name,Emotion Recognition PWA
+Module Name,Boundary Value Tests
+Created By,[Tester Name]
+Created Date,yyyy-mm-dd
+Executed By,[Tester Name]
+Executed Date,yyyy-mm-dd
+
+Test Case ID,Test Case Description,Pre Steps,Test Step,Preconditions,Test Data,Expected Result,Actual Result,Status,Comments
+
+TC-501,Test minimum valid concurrent users (1 user),,Setup single user environment,System ready; Single user capability,1 user connection,"System ready",,Pass/Fail,
+,,1,Connect exactly 1 user to system,,,"Single user connects successfully",,Pass/Fail,
+,,2,Verify full functionality,,,"Connection established with complete functionality",,Pass/Fail,
+,,3,Check baseline performance,,,"Single user performance meets requirements",,Pass/Fail,
+
+TC-502,Test just below minimum (0 users),,Setup idle system,System idle; No active connections,0 users (idle state),"Minimum boundary verified",,Pass/Fail,
+,,1,Verify system behavior with no users,,,"System remains stable in idle state",,Pass/Fail,
+,,2,Check resource usage,,,"System maintains readiness without errors",,Pass/Fail,
+
+TC-503,Test maximum valid users (1000 users),,Setup maximum load testing,Load testing capability; 1000 user simulation,1000 users exactly,"Zero user state verified",,Pass/Fail,
+,,1,Connect exactly 1000 users simultaneously,,,"System handles maximum capacity successfully",,Pass/Fail,
+,,2,Verify performance requirements,,,"All 1000 users connected with requirements met",,Pass/Fail,
+
+TC-504,Test just above maximum (1001 users),,Complete TC-503 successfully,TC-503 passed; Additional user simulation,1001 users,"Maximum boundary verified",,Pass/Fail,
+,,1,Attempt to connect 1001st user,,,"System rejects connection gracefully",,Pass/Fail,
+,,2,Verify rejection mechanism,,,"Connection rejected with HTTP 503 and clear error",,Pass/Fail,
+
+TC-505,Test minimum valid latency (1ms),,Setup optimal network,Local network; Minimal latency environment,Optimal network conditions,"Over-capacity handling verified",,Pass/Fail,
+,,1,Measure latency in optimal conditions,,,"System achieves minimal latency (1-10ms range)",,Pass/Fail,
+,,2,Verify optimal performance,,,"Performance baseline established",,Pass/Fail,
+
+TC-506,Test maximum valid latency (499ms),,Setup network simulation,Network simulation; Latency control,499ms network latency,"Minimum latency verified",,Pass/Fail,
+,,1,Simulate 499ms latency,,,"System operates correctly just below limit",,Pass/Fail,
+,,2,Verify functionality near boundary,,,"System maintains functionality at 499ms",,Pass/Fail,
+
+TC-507,Test latency boundary (500ms),,Complete TC-506 successfully,TC-506 passed; Precise latency control,500ms network latency exactly,"Near-maximum latency verified",,Pass/Fail,
+,,1,Simulate exactly 500ms latency,,,"System operates at exact boundary",,Pass/Fail,
+,,2,Verify boundary performance,,,"System functions correctly at 500ms boundary",,Pass/Fail,
+
+TC-508,Test just above latency limit (501ms),,Complete TC-507 successfully,TC-507 passed; Latency simulation,501ms network latency,"Boundary latency verified",,Pass/Fail,
+,,1,Simulate 501ms latency,,,"System handles excess latency appropriately",,Pass/Fail,
+,,2,Verify adaptation response,,,"System provides feedback or adapts to high latency",,Pass/Fail,
+
+TC-509,Test minimum valid bandwidth (500kbps),,Setup bandwidth control,Network throttling; Bandwidth control,500kbps bandwidth exactly,"Over-limit latency handling verified",,Pass/Fail,
+,,1,Set bandwidth to exactly 500kbps,,,"System adapts to minimum bandwidth",,Pass/Fail,
+,,2,Verify quality adaptation,,,"Video quality reduces while maintaining connection",,Pass/Fail,
+
+TC-510,Test just below minimum bandwidth (499kbps),,Complete TC-509 successfully,TC-509 passed; Precise bandwidth control,499kbps bandwidth,"Minimum bandwidth verified",,Pass/Fail,
+,,1,Throttle bandwidth to 499kbps,,,"System handles insufficient bandwidth",,Pass/Fail,
+,,2,Verify graceful handling,,,"System provides error or graceful degradation",,Pass/Fail,
+
+TC-511,Test minimum valid client memory (1MB),,Setup memory monitoring,Memory monitoring; Minimal usage scenario,Minimal processing scenario,"Below-minimum bandwidth verified",,Pass/Fail,
+,,1,Monitor memory with minimal processing,,,"System uses minimal memory efficiently (1-5MB)",,Pass/Fail,
+,,2,Verify efficiency baseline,,,"Memory usage appropriate for minimal operations",,Pass/Fail,
+
+TC-512,Test maximum valid client memory (49MB),,Setup high memory scenario,Memory monitoring; High usage scenario,High memory usage scenario,"Minimum memory verified",,Pass/Fail,
+,,1,Generate high memory usage approaching 49MB,,,"System operates efficiently near limit",,Pass/Fail,
+,,2,Verify memory management,,,"Memory usage approaches but stays under 50MB",,Pass/Fail,
+
+TC-513,Test client memory boundary (50MB),,Complete TC-512 successfully,TC-512 passed; Memory stress capability,50MB memory usage exactly,"Near-maximum memory verified",,Pass/Fail,
+,,1,Generate exactly 50MB memory usage,,,"System operates at memory boundary",,Pass/Fail,
+,,2,Verify boundary behavior,,,"System functions correctly at 50MB limit",,Pass/Fail,
+
+TC-514,Test just above client memory limit (51MB),,Complete TC-513 successfully,TC-513 passed; Memory overflow capability,51MB memory usage,"Memory boundary verified",,Pass/Fail,
+,,1,Force client memory to 51MB,,,"System handles memory overflow",,Pass/Fail,
+,,2,Verify cleanup triggers,,,"System triggers garbage collection or cleanup",,Pass/Fail,
+
+TC-515,Test minimum valid CPU usage (1%),,Setup CPU monitoring,CPU monitoring; Minimal load scenario,Idle system state,"Memory overflow handling verified",,Pass/Fail,
+,,1,Monitor CPU during idle operation,,,"System uses minimal CPU efficiently (1-5%)",,Pass/Fail,
+,,2,Verify efficiency baseline,,,"CPU usage appropriate for idle state",,Pass/Fail,
+
+TC-516,Test maximum valid CPU usage (79%),,Setup high CPU load,CPU monitoring; High load generation,79% CPU load scenario,"Minimum CPU verified",,Pass/Fail,
+,,1,Generate CPU load approaching 79%,,,"System operates efficiently at high CPU usage",,Pass/Fail,
+,,2,Verify performance maintenance,,,"CPU usage approaches but stays under 80%",,Pass/Fail,
+
+TC-517,Test CPU boundary (80%),,Complete TC-516 successfully,TC-516 passed; Precise CPU control,80% CPU load exactly,"Near-maximum CPU verified",,Pass/Fail,
+,,1,Generate exactly 80% CPU load,,,"System operates at CPU boundary",,Pass/Fail,
+,,2,Verify boundary performance,,,"System maintains performance at 80% CPU",,Pass/Fail,
+
+TC-518,Test just above CPU limit (81%),,Complete TC-517 successfully,TC-517 passed; CPU overload capability,81% CPU load,"CPU boundary verified",,Pass/Fail,
+,,1,Generate 81% CPU load,,,"System handles CPU overload",,Pass/Fail,
+,,2,Verify protection mechanisms,,,"System implements adaptive processing or load shedding",,Pass/Fail,

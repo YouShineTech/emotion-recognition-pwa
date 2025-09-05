@@ -1,0 +1,80 @@
+Project Name,Emotion Recognition PWA
+Module Name,User Experience - End-to-End Workflows
+Created By,[Tester Name]
+Created Date,yyyy-mm-dd
+Executed By,[Tester Name]
+Executed Date,yyyy-mm-dd
+
+Test Case ID,Test Case Description,Pre Steps,Test Step,Preconditions,Test Data,Expected Result,Actual Result,Status,Comments
+
+TC-UX-001,Complete first-time user emotion recognition workflow,,Setup new user environment,New user; Clean browser state; Device with camera and microphone,First-time user scenario,"New user environment ready",,Pass/Fail,
+,,1,Open PWA URL in supported browser,,,"PWA loads and displays welcome interface within 3 seconds",,Pass/Fail,
+,,2,Click "Start Emotion Recognition" button,,,"Permission dialog appears clearly explaining requirements",,Pass/Fail,
+,,3,Grant camera and microphone permissions,,,"Live video feed appears showing user's face clearly",,Pass/Fail,
+,,4,Wait for system initialization,,,"Connection status shows 'Connected' within 10 seconds",,Pass/Fail,
+,,5,Display clear happy facial expression,,,"Emotion overlay appears showing 'Happy' with confidence score and bounding box",,Pass/Fail,
+,,6,Speak with happy/excited tone,,,"Audio emotion indicator appears showing positive voice emotion",,Pass/Fail,
+,,7,Change to sad facial expression,,,"Emotion overlay smoothly updates to show 'Sad' with new confidence score",,Pass/Fail,
+,,8,Return to neutral expression and silence,,,"All overlays disappear after 2 seconds creating clean video feed",,Pass/Fail,
+
+TC-UX-002,Multi-modal emotion recognition user experience,,Complete basic setup,Emotion recognition system active; Both facial and audio analysis enabled,Multi-modal emotion scenario,"System fully active",,Pass/Fail,
+,,1,Display happy face while speaking sadly,,,"System shows both facial (happy) and audio (sad) emotions simultaneously",,Pass/Fail,
+,,2,Display sad face while speaking happily,,,"System correctly identifies conflicting emotions from face and voice",,Pass/Fail,
+,,3,Display consistent emotion (happy face + happy voice),,,"System shows reinforced emotion detection with higher confidence",,Pass/Fail,
+,,4,Verify emotion fusion accuracy,,,"Combined facial+audio analysis provides more accurate results than individual modes",,Pass/Fail,
+
+TC-UX-003,Network resilience user experience workflow,,Setup network testing,Active emotion recognition session; Network control capability,Network interruption scenarios,"Active emotion session",,Pass/Fail,
+,,1,Start normal emotion recognition session,,,"Session operates smoothly with real-time emotion detection",,Pass/Fail,
+,,2,Simulate brief network interruption (5 seconds),,,"System shows 'Reconnecting' status with clear user feedback",,Pass/Fail,
+,,3,Restore network connection,,,"Session resumes automatically without requiring user intervention",,Pass/Fail,
+,,4,Test with poor network conditions,,,"System adapts quality and provides status messages about network conditions",,Pass/Fail,
+,,5,Verify user experience during adaptation,,,"User receives clear feedback about system adaptations and limitations",,Pass/Fail,
+
+TC-UX-004,Privacy-conscious user consent and control workflow,,Setup privacy testing,New user; Privacy-focused browser settings,Privacy-conscious user scenario,"Privacy-focused environment",,Pass/Fail,
+,,1,Access PWA as privacy-conscious user,,,"Comprehensive consent dialog appears with detailed privacy information",,Pass/Fail,
+,,2,Review all consent options carefully,,,"Individual consent checkboxes for facial analysis audio analysis and data analytics",,Pass/Fail,
+,,3,Grant only facial analysis consent,,,"System enables facial emotion detection but disables audio analysis",,Pass/Fail,
+,,4,Verify partial functionality works correctly,,,"Facial emotions detected and displayed audio emotions not processed",,Pass/Fail,
+,,5,Access consent management during session,,,"User can easily access and modify consent settings",,Pass/Fail,
+,,6,Withdraw all consent during active session,,,"All processing stops within 30 seconds with clear confirmation message",,Pass/Fail,
+
+TC-UX-005,Cross-platform user experience consistency,,Setup cross-platform testing,Multiple devices (mobile tablet desktop); Same user account,Cross-platform consistency testing,"Multiple devices ready",,Pass/Fail,
+,,1,Use emotion recognition on mobile device,,,"Mobile interface optimized for touch with appropriate sizing",,Pass/Fail,
+,,2,Switch to tablet device with same account,,,"Tablet interface adapts screen space effectively maintains functionality",,Pass/Fail,
+,,3,Switch to desktop browser,,,"Desktop interface utilizes screen real estate optimally",,Pass/Fail,
+,,4,Verify feature consistency across platforms,,,"All core features work identically across mobile tablet desktop",,Pass/Fail,
+,,5,Test orientation changes on mobile/tablet,,,"Interface adapts smoothly to orientation changes without losing functionality",,Pass/Fail,
+
+TC-UX-006,Error recovery and user guidance workflow,,Setup error scenario testing,System with simulated failure capabilities,Error scenario simulation tools,"Error simulation ready",,Pass/Fail,
+,,1,Simulate camera permission denial,,,"Clear error message with specific steps to enable camera permissions",,Pass/Fail,
+,,2,Simulate network connection failure,,,"User-friendly error message with troubleshooting suggestions",,Pass/Fail,
+,,3,Simulate server unavailability,,,"Informative message about server issues with retry options",,Pass/Fail,
+,,4,Test recovery from each error scenario,,,"System guides user through recovery process effectively",,Pass/Fail,
+,,5,Verify error messages are actionable,,,"All error messages provide specific actionable steps for resolution",,Pass/Fail,
+
+TC-UX-007,Performance feedback and user awareness workflow,,Setup performance monitoring,System with performance monitoring; Variable load capability,Performance monitoring and load simulation,"Performance monitoring ready",,Pass/Fail,
+,,1,Use system under normal conditions,,,"Performance indicators show green/positive status",,Pass/Fail,
+,,2,Simulate high system load,,,"Performance indicators show appropriate warnings about system load",,Pass/Fail,
+,,3,Simulate high latency conditions,,,"System displays latency warnings and suggests optimizations",,Pass/Fail,
+,,4,Test bandwidth limitation feedback,,,"System provides clear feedback about bandwidth adaptations",,Pass/Fail,
+,,5,Verify user understanding of system status,,,"Status indicators are intuitive and help users understand system state",,Pass/Fail,
+
+TC-UX-008,Accessibility and inclusive design workflow,,Setup accessibility testing,Accessibility testing tools; Various user capabilities,Accessibility testing framework,"Accessibility testing ready",,Pass/Fail,
+,,1,Navigate PWA using keyboard only,,,"All functionality accessible via keyboard navigation",,Pass/Fail,
+,,2,Test with screen reader software,,,"Screen reader can access and announce all interface elements",,Pass/Fail,
+,,3,Verify color contrast and visibility,,,"Interface meets WCAG guidelines for color contrast and visibility",,Pass/Fail,
+,,4,Test with reduced motion preferences,,,"System respects user preferences for reduced motion",,Pass/Fail,
+,,5,Verify text scaling compatibility,,,"Interface remains functional when text is scaled up to 200%",,Pass/Fail,
+
+TC-UX-009,Long-term usage and session management,,Setup extended session testing,System with session management; Extended usage capability,Extended session testing setup,"Extended session testing ready",,Pass/Fail,
+,,1,Use emotion recognition for extended period (30 minutes),,,"System maintains performance and accuracy over extended use",,Pass/Fail,
+,,2,Test session timeout and renewal,,,"Session timeout handled gracefully with clear user notification",,Pass/Fail,
+,,3,Verify battery optimization on mobile,,,"Mobile battery consumption optimized for extended use",,Pass/Fail,
+,,4,Test data usage awareness,,,"System provides feedback about data consumption during extended use",,Pass/Fail,
+
+TC-UX-010,Advanced user customization and preferences,,Setup customization testing,System with user preferences; Customization options,User preference and customization framework,"Customization testing ready",,Pass/Fail,
+,,1,Access user preferences and settings,,,"Settings interface is intuitive and easily accessible",,Pass/Fail,
+,,2,Customize emotion display preferences,,,"User can adjust overlay styles colors and information displayed",,Pass/Fail,
+,,3,Configure privacy and data preferences,,,"User has granular control over data collection and processing",,Pass/Fail,
+,,4,Test preference persistence,,,"User preferences saved and restored across sessions",,Pass/Fail,
+,,5,Verify customization impact on functionality,,,"Customizations enhance user experience without breaking functionality",,Pass/Fail,

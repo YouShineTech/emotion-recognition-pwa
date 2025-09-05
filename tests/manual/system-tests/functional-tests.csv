@@ -1,0 +1,79 @@
+Project Name,Emotion Recognition PWA
+Module Name,System Functionality Tests
+Created By,[Tester Name]
+Created Date,yyyy-mm-dd
+Executed By,[Tester Name]
+Executed Date,yyyy-mm-dd
+
+Test Case ID,Test Case Description,Pre Steps,Test Step,Preconditions,Test Data,Expected Result,Actual Result,Status,Comments
+
+TC-001,Verify camera and microphone permission request functionality,,Navigate to PWA URL,Browser supports WebRTC; Device has camera and microphone,PWA URL,PWA loads and displays main interface,,Pass/Fail,
+,,1,Click "Start Emotion Recognition" button,,,"Permission dialog appears requesting camera and microphone access",,Pass/Fail,
+,,2,Verify dialog content and clarity,,,"Dialog clearly explains camera and microphone requirements with Allow/Block options",,Pass/Fail,
+
+TC-002,Verify permission grant and video feed activation,,Navigate to PWA and display permission dialog,TC-001 passed; Permission dialog displayed,,Permission dialog visible,,Pass/Fail,
+,,1,Click "Allow" on permission dialog,,,"Permission granted and dialog closes",,Pass/Fail,
+,,2,Verify live video feed appears,,,"Video feed displays real-time camera input clearly",,Pass/Fail,
+,,3,Check video quality and frame rate,,,"Video quality acceptable with smooth frame rate",,Pass/Fail,
+
+TC-003,Verify permission denial error handling,,Navigate to PWA and display permission dialog,TC-001 passed; Permission dialog displayed,,Permission dialog visible,,Pass/Fail,
+,,1,Click "Block" or "Deny" on permission dialog,,,"Permission denied and dialog closes",,Pass/Fail,
+,,2,Verify error message appears,,,"Clear error message explaining permission requirement",,Pass/Fail,
+,,3,Check error message provides guidance,,,"Error message includes instructions to enable permissions",,Pass/Fail,
+
+TC-004,Verify multiple camera selection functionality,,Complete TC-002 successfully,TC-002 passed; Device has multiple cameras,,Video feed active with multiple cameras available,,Pass/Fail,
+,,1,Access camera selection interface,,,"Camera selection options become available",,Pass/Fail,
+,,2,View available camera options,,,"List of cameras displayed with clear labels (Front/Back)",,Pass/Fail,
+,,3,Select different camera,,,"Video feed switches to selected camera successfully",,Pass/Fail,
+
+TC-005,Verify recording status indicator display,,Complete TC-002 successfully,TC-002 passed; Camera active,,Video feed active,,Pass/Fail,
+,,1,Observe interface while camera active,,,"Recording status indicator clearly visible",,Pass/Fail,
+,,2,Verify indicator shows active state,,,"Indicator shows camera is recording (red dot/green light)",,Pass/Fail,
+
+TC-006,Verify real-time backend connection establishment,,Complete TC-002 successfully,TC-002 passed; Video feed active,,Video feed streaming,,Pass/Fail,
+,,1,Monitor connection status during activation,,,"Connection status indicator appears",,Pass/Fail,
+,,2,Wait for backend connection,,,"Connection shows 'Connected' within 10 seconds",,Pass/Fail,
+,,3,Verify connection stability,,,"Connection remains stable without warnings",,Pass/Fail,
+
+TC-007,Verify video and audio streaming functionality,,Complete TC-006 successfully,TC-006 passed; Backend connected,,Backend connection established,,Pass/Fail,
+,,1,Verify video streaming indicators,,,"Video streaming indicator shows active transmission",,Pass/Fail,
+,,2,Verify audio streaming indicators,,,"Audio streaming indicator shows active transmission",,Pass/Fail,
+,,3,Check streaming quality and stability,,,"Both streams stable without interruption",,Pass/Fail,
+
+TC-008,Verify automatic reconnection on network failure,,Complete TC-007 successfully,TC-007 passed; Streaming active,,Media streaming active,,Pass/Fail,
+,,1,Simulate network disconnection,,,"System detects disconnection within 5 seconds",,Pass/Fail,
+,,2,Observe reconnection attempts,,,"Reconnection attempts visible with status indicators",,Pass/Fail,
+,,3,Restore network and verify recovery,,,"Connection resumes automatically",,Pass/Fail,
+
+TC-009,Verify low latency maintenance during streaming,,Complete TC-007 successfully,TC-007 passed; Streaming active,Network analysis tools,"Streaming active",,Pass/Fail,
+,,1,Measure end-to-end latency,,,"Latency consistently under 500ms",,Pass/Fail,
+,,2,Monitor latency over time,,,"Latency remains stable during operation",,Pass/Fail,
+
+TC-010,Verify adaptive quality on network degradation,,Complete TC-007 successfully,TC-007 passed; Streaming active,Network throttling tools,"Streaming active",,Pass/Fail,
+,,1,Simulate poor network conditions,,,"System detects network degradation",,Pass/Fail,
+,,2,Verify quality adaptation,,,"Video quality reduces to maintain connection",,Pass/Fail,
+,,3,Check connection stability,,,"Connection remains stable despite quality reduction",,Pass/Fail,
+
+TC-011,Verify emotion overlay display functionality,,Complete TC-007 successfully,TC-007 passed; Backend processing active,,Streaming and processing active,,Pass/Fail,
+,,1,Display clear facial expressions,,,"Emotion overlays appear on video feed",,Pass/Fail,
+,,2,Verify overlay visibility,,,"Overlay graphics clearly visible on live video",,Pass/Fail,
+
+TC-012,Verify facial emotion bounding boxes,,Complete TC-011 successfully,TC-011 passed; Emotions detected,,Emotion overlays active,,Pass/Fail,
+,,1,Position face clearly in camera view,,,"Bounding boxes appear around detected faces",,Pass/Fail,
+,,2,Verify bounding box accuracy,,,"Boxes accurately outline detected faces",,Pass/Fail,
+
+TC-013,Verify emotion labels and confidence scores,,Complete TC-012 successfully,TC-012 passed; Faces detected,,Facial detection active,,Pass/Fail,
+,,1,Display clear emotions (happy/sad/angry),,,"Emotion labels with confidence scores appear",,Pass/Fail,
+,,2,Verify label accuracy,,,"Labels show correct emotion with percentage confidence",,Pass/Fail,
+
+TC-014,Verify audio emotion indicators,,Complete TC-007 successfully,TC-007 passed; Audio streaming active,,Audio streaming active,,Pass/Fail,
+,,1,Speak with clear emotional tone,,,"Audio emotion indicators appear",,Pass/Fail,
+,,2,Verify audio emotion accuracy,,,"Visual indicators show detected voice emotions correctly",,Pass/Fail,
+
+TC-015,Verify clean video feed with no emotions,,Complete TC-007 successfully,TC-007 passed; No emotions present,,Streaming active,,Pass/Fail,
+,,1,Maintain neutral expression and silence,,,"Video feed displays without overlays",,Pass/Fail,
+,,2,Verify clean display,,,"Clean video visible without emotion graphics",,Pass/Fail,
+
+TC-016,Verify overlay timeout for outdated data,,Complete TC-011 successfully,TC-011 passed; Overlays active,,Emotion overlays displayed,,Pass/Fail,
+,,1,Stop emotion processing (cover camera),,,"System detects no emotions",,Pass/Fail,
+,,2,Wait for timeout period,,,"Overlays disappear after 2 seconds",,Pass/Fail,
