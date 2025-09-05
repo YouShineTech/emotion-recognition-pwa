@@ -78,7 +78,12 @@ jobs:
               echo "Installing dependencies for $poc_dir"
               cd "$poc_dir"
               if [ -f "package-lock.json" ]; then
-                npm ci
+                # Try npm ci first, fallback to npm install if sync issues
+                if ! npm ci; then
+                  echo "npm ci failed, falling back to npm install for $poc_dir"
+                  rm -f package-lock.json
+                  npm install
+                fi
               else
                 echo "No package-lock.json found, using npm install"
                 npm install
