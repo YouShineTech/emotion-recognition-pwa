@@ -1,2 +1,0 @@
-TC-ID,Requirement-ID,Test-Objective,Priority,Test-Type,Preconditions,Step-Number,Action,Expected-Result,Pass-Criteria,Fail-Criteria,Postconditions,Notes
-TC-001,REQ-001,Validate camera permission request,P0,Functional,"Browser supports WebRTC; User has camera device",1,Click "Start Emotion Recognition",Permission dialog appears,Dialog shows camera/mic permissions,No dialog or error message,Permission dialog dismissed; enables TC-002,Test on Chrome Firefox Safari
