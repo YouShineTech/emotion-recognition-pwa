@@ -31,6 +31,7 @@
       "cwd": "${workspaceFolder}/client",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
+      "stopOnEntry": true,
       "env": {
         "NODE_ENV": "test"
       }
@@ -45,6 +46,21 @@
       "cwd": "${workspaceFolder}/client",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
+      "stopOnEntry": true,
+      "env": {
+        "NODE_ENV": "test"
+      }
+    },
+    {
+      "name": "Debug MediaCaptureModule Tests",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/client/node_modules/.bin/jest",
+      "args": ["--runInBand", "--no-cache", "--testPathPattern=MediaCaptureModule.test.ts"],
+      "cwd": "${workspaceFolder}/client",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "stopOnEntry": true,
       "env": {
         "NODE_ENV": "test"
       }
